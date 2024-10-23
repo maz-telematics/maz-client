@@ -18,11 +18,11 @@ const Header = () => {
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
-        height: "90px",
+        height: "10vh",
         alignItems: "center",
         padding: "20px 40px",
         backgroundColor: "#3b82f6", // Потемненный цвет фона
-    color:"white",
+        color:"white",
         boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
         position: "relative", // Позиция для управления вложенными элементами
       }}

@@ -84,7 +84,7 @@ const NewCar = () => {
       backgroundColor: "#F0F4F8",
       boxSizing: "border-box", // Чтобы отступы учитывались в общей высоте
       }}>
-      <Header />
+      {/* <Header /> */}
       <Row style={{ width: "80%", margin: "30px auto" }}>
         <Col xs={12}>
           <Form form={form} onFinish={onFinish}>

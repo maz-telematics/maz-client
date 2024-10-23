@@ -106,7 +106,7 @@ const handleCancel = () => {
       backgroundColor: "#F0F4F8",
       boxSizing: "border-box", // Чтобы отступы учитывались в общей высоте
       }}>
- <Header/>
+ {/* <Header/> */}
  <Row style={{ display: 'flex',flexDirection:"column", marginTop:"40px", width: "100%"}}>
    <Col offset={1}  xs={10} sm={10} md={10} lg={10} xl={10} >
 

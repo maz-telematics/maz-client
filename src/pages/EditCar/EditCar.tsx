@@ -138,7 +138,7 @@ const EditCar = () => {
       boxSizing: "border-box",
       }}
     >
-      <Header />
+      {/* <Header /> */}
       <Row style={{ width: "80%", margin: "30px auto" }}>
         <Col xs={24}>
           <Form form={form} onFinish={onFinish}>

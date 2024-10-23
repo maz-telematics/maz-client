@@ -305,7 +305,7 @@ const OrganizationDetails: React.FC = () => {
       width: "100%",
       backgroundColor: "#F0F4F8",
     }}>
-    <Header />
+    {/* <Header /> */}
     <Card
       title="Информация об организации"
       style={{

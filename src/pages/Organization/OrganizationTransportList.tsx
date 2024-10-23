@@ -65,7 +65,7 @@ const OrganizationTransportList = () => {
       overflow: "hidden",
       scrollbarWidth: "thin",
       scrollbarColor:"#3b82f6 white"}}>
-      <Header />
+      {/* <Header /> */}
 
       <Row style={{ width: "80%", margin: "30px auto" }}>
         <Col xs={24}>

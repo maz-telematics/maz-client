@@ -46,17 +46,17 @@ const ManufacturerTransportList = () => {
         },
       });
       if (response.status === 200) {
-        message.success("Авто удалено!");
+        message.success("Авто перемещена в архив успешно!!");
         setCars(response.data.remainingCars);
         setDeleteModalVisible(false);
       } else {
-        message.error("Ошибка удаления!");
+        message.error("Ошибка при архивировании!");
       }
     } catch (error) {
-      message.error("Ошибка удаления!");
+      message.error("Ошибка при архивировании!");
     }
-  };
-
+  }; 
+  
   const handleCancelDelete = () => {
     setDeleteModalVisible(false);
   };
@@ -92,9 +92,9 @@ const ManufacturerTransportList = () => {
   };
   const handleDeleteOrganization = async (idOrganization: number) => {
     Modal.confirm({
-      title: "Подтверждение удаления",
-      content: `Вы уверены, что хотите удалить организацию ?`,
-      okText: "Удалить",
+      title: "Подтверждение архивирования",
+      content: `Вы уверены, что хотите переместить организацию в архив?`,
+      okText: "Переместить в архив",
       okType: "danger",
       cancelText: "Отмена",
       onOk: async () => {
@@ -104,12 +104,12 @@ const ManufacturerTransportList = () => {
           );
 
           if (response.status === 200) {
-            message.success(`Организация удалена успешно!`);
+            message.success(`Организация перемещена в архив успешно!`);
             fetchOrganizatios();
           }
         } catch (error) {
-          console.error("Ошибка при удалении:", error);
-          message.error("Не удалось удалить организацию.");
+          console.error("Ошибка при архивировании:", error);
+          message.error("Не удалось переместить организацию в архив.");
         }
       },
     });
@@ -129,7 +129,7 @@ const ManufacturerTransportList = () => {
       scrollbarColor:"#3b82f6 white"
 
       }}>
-      <Header />
+      {/* <Header /> */}
       <Row style={{  width: "80%", 
         margin: "30px auto", 
         flex: "1", 
@@ -220,7 +220,7 @@ const ManufacturerTransportList = () => {
                                 color: "#fff",
                               }}
                             >
-                              Удалить
+                              Переместить в архив
                             </Button>
                           </>
                         ),
@@ -320,7 +320,7 @@ const ManufacturerTransportList = () => {
                               color: "#fff",
                             }}
                           >
-                            Удалить
+                             Переместить в архив
                           </Button>
                         ),
                       },
@@ -358,15 +358,15 @@ const ManufacturerTransportList = () => {
       </Row>
 
       <Modal
-        title="Подтверждение удаления"
+        title="Подтверждение архивирования"
         visible={deleteModalVisible}
         onOk={handleConfirmDelete}
         onCancel={handleCancelDelete}
-        okText="Да, удалить"
+        okText="Переместить в архив"
         cancelText="Отменить"
         style={{ borderRadius: "8px" }} // Добавим стиль к модальному окну
       >
-        <p>Вы уверены, что хотите удалить этот элемент?</p>
+        <p>Вы уверены, что хотите переместить транспорт в архив?</p>
       </Modal>
     </div>
   );

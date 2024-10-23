@@ -6,6 +6,13 @@ const NotFound: React.FC = () => {
   const navigate = useNavigate(); 
   return (
     <Result
+     style={{
+      height:'90vh', width:'100%',
+      display:'flex',  
+      flexDirection: "column",
+      // alignItems: "center",
+      // justifyContent: "center"
+    }}
       status="404"
       title="404"
       subTitle="Извините, страница не найдена."

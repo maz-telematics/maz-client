@@ -45,7 +45,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken,setIsAuthenticated }) => {
         );
         setIsAuthenticated(true);
         setRole(response.data.role);
-        navigate("/transports", { replace: true });
+        navigate("/dashboard", { replace: true });
         return Number(200);
       }
     } catch (error:any) {
