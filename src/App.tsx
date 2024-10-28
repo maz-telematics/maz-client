@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom"; // Импортируйте useLocation
+import { Routes, Route, useLocation } from "react-router-dom"; 
 import LoginPage from "./pages/AuthPage/LoginPage";
 import MainPage from "./pages/MainPage/MainPage";
 import ArchivePage from "./pages/Archive/Archive";
@@ -28,9 +28,10 @@ const App = () => {
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
-    setToken(user.token);
     if (user.token) {
+      setToken(user.token);
       setIsAuthenticated(true);
+      setRole(user.role); // Установите роль пользователя
     }
   }, []);
 
@@ -59,41 +60,42 @@ const App = () => {
   return (
     <AuthContext.Provider value={{ isAuthenticated, token, role, logout }}>
       {token && location.pathname !== '/' && <Header />}
-      <div style={{
-        display: 'flex',
-        // justifyContent: 'space-between',
-        width:'100%',
-        // height: '100', // Используйте 100vh для заполнения высоты
-      }}>
-        {token && location.pathname !== '/' && <Navbar />}
+      
+      {token && location.pathname !== '/' ? (
+        <div style={{ display: 'flex', width: '100%' }}>
+          <Navbar />
+          <Routes>
+            <Route element={<ProtectedRoute requiredRoles={["SuperAdmin", "Admin", "Operator", "Head", "Manager", "Mechanic"]} />}>
+              <Route path="/dashboard" element={<MainPage />} />
+              <Route path="/reports" element={<ReportsPage />} />
+              <Route path="/archive" element={<ArchivePage />} /> 
+              <Route path="/parameters" element={<CarTracking />} />
+              <Route path="/transports" element={<TransportList />} />
+              <Route path="/edit-profile" element={<EditProfile />} />
+            </Route>
+            <Route element={<ProtectedRoute requiredRoles={["SuperAdmin"]} />}>
+              <Route path="/edit-car" element={<EditCar />} />
+              <Route path="/new-car" element={<NewCar />} />
+              <Route path="/new-organization" element={<NewOrganization />} />
+              <Route path="/organization" element={<OrganizationDetails />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+      ) : (
         <Routes>
           <Route
             path="/"
             element={
               <LoginPage
                 setRole={setRole}
-                setToken={setRole}
+                setToken={setToken} // Исправлено: передаем setToken правильно
                 setIsAuthenticated={setIsAuthenticated}
               />
             }
           />
-          <Route element={<ProtectedRoute requiredRoles={["SuperAdmin", "Admin", "Operator", "Head","Manager","Mechanic"]} />}>
-            <Route path="/dashboard" element={<MainPage />} />
-            <Route path="/reports" element={<ReportsPage/>} />
-            <Route path="/archive" element={<ArchivePage/>} /> 
-            <Route path="/parameters" element={<CarTracking />} />
-            <Route path="/transports" element={<TransportList />} />
-            <Route path="/edit-profile" element={<EditProfile />} />
-          </Route>
-          <Route element={<ProtectedRoute requiredRoles={["SuperAdmin"]} />}>
-            <Route path="/edit-car" element={<EditCar />} />
-            <Route path="/new-car" element={<NewCar />} />
-            <Route path="/new-organization" element={<NewOrganization />} />
-            <Route path="/organization" element={<OrganizationDetails />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
         </Routes>
-      </div>
+      )}
     </AuthContext.Provider>
   );
 };

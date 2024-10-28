@@ -57,7 +57,7 @@ const Card: React.FC<{ title: string; value: string }> = ({ title, value }) => {
 
 // Стили для компонентов
 const containerStyle: React.CSSProperties = {
-    padding: '2rem',
+    padding: '2rem', 
 //   display: 'flex',
 //   flexDirection: 'column',
 //   alignItems: 'center',
