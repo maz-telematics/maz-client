@@ -32,6 +32,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken,setIsAuthenticated }) => {
         username,
         password,
       });
+      console.log(response)
       if (response.status === 200) {
         setToken(response.data.token);
         localStorage.setItem(
@@ -45,7 +46,29 @@ const LoginPage: React.FC<LoginProps> = ({ setToken,setIsAuthenticated }) => {
         );
         setIsAuthenticated(true);
         setRole(response.data.role);
-        navigate("/dashboard", { replace: true });
+        switch (response.data.role) {
+          case "SuperAdmin":
+            navigate("/super-admin/main", { replace: true });
+            break;
+          case "Admin":
+            navigate("/admin/main", { replace: true });
+            break;
+          case "Operator":
+            navigate("/operator/main", { replace: true });
+            break;
+          case "Head":
+            navigate("/head/main", { replace: true });
+            break;
+          case "Manager":
+            navigate("/manager/main", { replace: true });
+            break;
+          case "Mechanic":
+            navigate("/mechanic/main", { replace: true });
+            break;
+          default:
+            navigate("/", { replace: true }); // начальная страница, если роль не распознана
+        }
+        // navigate("/dashboard", { replace: true });
         return Number(200);
       }
     } catch (error:any) {
@@ -63,6 +86,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken,setIsAuthenticated }) => {
     try {
       const { username, password } = values;
       const result = await login(username, password);
+      // console.log(result)
       if (result === null) {
         message.error("Возникли проблемы при авторизации!");
       } else if (result === 200) {

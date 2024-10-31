@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom"; 
 import LoginPage from "./pages/AuthPage/LoginPage";
-import MainPage from "./pages/MainPage/MainPage";
-import ArchivePage from "./pages/Archive/Archive";
-import ReportsPage from "./pages/Reports/Reports";
+
+import SuperAdminMainPage from "./pages/SuperAdminPages/MainPage/MainPage";
+import SuperAdminArchivePage from "./pages/SuperAdminPages/ArchivePage/ArchivePage";
+import SuperAdminReportsPage from "./pages/SuperAdminPages/ReportsPage/ReportsPage";
+
 import EditCar from "./pages/EditCar/EditCar";
 import NewCar from "./pages/NewCar/NewCar";
 import ManufacturerTransportList from "./pages/Manufacturer/ManufacturerTransportList";
 import OrganizationTransportList from "./pages/Organization/OrganizationTransportList";
-import EditProfile from "./pages/EditProfilePage/EditProfilePage";
-import CarTracking from "./pages/CarTracking/CarTracking";
+import SuperAdminEditProfile from "./pages/EditProfilePage/EditProfilePage";
+import SuperAdminCarTracking from "./pages/CarTracking/CarTracking";
 import { useUser } from "./services/auth";
 import { AuthContext } from "./services/auth";
 import ProtectedRoute from "./services/auth";
@@ -18,6 +20,9 @@ import OrganizationDetails from "./pages/Manufacturer/Organization";
 import NewOrganization from './pages/NewOrganization/NewOrganization';
 import Navbar from "./components/Navbar/Navbar";
 import Header from "./components/Header";
+import ProtectedRouteSuperAdmin from "./routes/ProtectedRouteSuperAdmin";
+
+
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -65,14 +70,22 @@ const App = () => {
         <div style={{ display: 'flex', width: '100%' }}>
           <Navbar />
           <Routes>
-            <Route element={<ProtectedRoute requiredRoles={["SuperAdmin", "Admin", "Operator", "Head", "Manager", "Mechanic"]} />}>
+          <Route element={<ProtectedRouteSuperAdmin />}>
+            <Route path="/super-admin/main" element={<SuperAdminMainPage />} />
+            <Route path="/super-admin/reports" element={<SuperAdminReportsPage />} />
+            <Route path="/super-admin/archive" element={<SuperAdminArchivePage />} /> 
+            <Route path="/super-admin/parameters" element={<SuperAdminCarTracking />} />
+            <Route path="/super-admin/transports" element={< TransportList />} />
+            <Route path="/super-admin/edit-profile" element={<SuperAdminEditProfile />} />
+          </Route>
+            {/* <Route element={<ProtectedRoute requiredRoles={["SuperAdmin", "Admin", "Operator", "Head", "Manager", "Mechanic"]} />}>
               <Route path="/dashboard" element={<MainPage />} />
               <Route path="/reports" element={<ReportsPage />} />
               <Route path="/archive" element={<ArchivePage />} /> 
               <Route path="/parameters" element={<CarTracking />} />
               <Route path="/transports" element={<TransportList />} />
               <Route path="/edit-profile" element={<EditProfile />} />
-            </Route>
+            </Route> */}
             <Route element={<ProtectedRoute requiredRoles={["SuperAdmin"]} />}>
               <Route path="/edit-car" element={<EditCar />} />
               <Route path="/new-car" element={<NewCar />} />
