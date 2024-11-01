@@ -1,19 +1,9 @@
 import { createContext, useContext } from 'react';
-import {Outlet,Navigate } from "react-router-dom";
 import {AuthContextIntarface} from '../types/authTypes'
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-const apiUrl = process.env.REACT_APP_API_URL;
+const apiUrl = import.meta.env.VITE_API_URL;
 export const AuthContext = createContext<AuthContextIntarface | null>(null);
-
-const ProtectedRoute = ({ requiredRoles }: { requiredRoles: string[] }) => {
-  const role = (JSON.parse(localStorage.getItem('user') || '{}') || {}).role;
-  const token = (JSON.parse(localStorage.getItem('user') || '{}') || {}).token;
-  const hasAccess = token && requiredRoles.includes(role!);
-  return hasAccess ? <Outlet /> : <Navigate to="/" replace />;
-};
-
-export default ProtectedRoute;
 
 interface UserContextType {
   roleUser: string | null;

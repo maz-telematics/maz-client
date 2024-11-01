@@ -1,6 +1,6 @@
 import { Table, Tabs, Row, Col } from "antd";
 import moment from "moment";
-import { Parameters } from "../../types/carTrackingTypes";
+import { Parameters } from "../../../types/carTrackingTypes";
 const { TabPane } = Tabs;
 interface ParametersProps {
   parameters: Parameters[];

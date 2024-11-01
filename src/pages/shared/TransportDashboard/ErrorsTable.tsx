@@ -1,6 +1,6 @@
 import { Table, TableProps } from "antd";
 import moment from "moment";
-import { ErrorData } from "../../types/carTrackingTypes";
+import { ErrorData } from "../../../types/carTrackingTypes";
 
 interface ErrorsProps {
   errors: ErrorData[];

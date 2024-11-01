@@ -1,45 +1,30 @@
+import axios from "axios";
 import { useState, useEffect } from "react";
 import {
   Button,
   Row,
-  DatePicker,
   Col,
+  DatePicker,
   Form,
-  Select,
-  Spin,
   Input,
   message,
+  Select,
 } from "antd";
-import axios from "axios";
-import { Car } from "../../types/transportListTypes";
+import { Car } from "../../../../types/transportListTypes";
+import { Common } from "../../../../types/editCarTypes";
 import dayjs from "dayjs";
-import Header from "../../components/Header";
-import { Common } from "../../types/editCarTypes";
+
 const apiUrl = process.env.REACT_APP_API_URL;
-const EditCar = () => {
-  const [data, setData] = useState<Car>();
+const CreateTransportPage = () => {
+  const [form] = Form.useForm();
   const [techniques, setTechniques] = useState<Common[]>([]);
   const [engines, setEngines] = useState<Common[]>([]);
   const [organizations, setOrganizations] = useState<Common[]>([]);
-  const [idTransport, setIdTransport] = useState<number>(
-    Number(sessionStorage.getItem("id"))
-  );
-
-  const dateValue = data?.year_release
-    ? dayjs(data.year_release).format("YYYY")
-    : null;
 
   useEffect(() => {
-    const fetchData = async () => {
-      fetchEngines();
-      fetchTechniques();
-      fetchOrganizatios();
-      if (idTransport) {
-        fetchTransportData();
-      }
-    };
-
-    fetchData();
+    fetchEngines();
+    fetchTechniques();
+    fetchOrganizatios();
 
     function fetchTechniques() {
       axios
@@ -54,64 +39,26 @@ const EditCar = () => {
         .then((response) => setEngines(response.data))
         .catch((error) => console.error(error));
     }
-
-    function fetchTransportData() {
-      axios
-        .get(`${apiUrl}/transport/car/${idTransport}`)
-        .then((response) => setData(response.data[0]))
-        .catch((error) => console.error(error));
-    }
     function fetchOrganizatios() {
       axios
         .get(`${apiUrl}/organizations`)
         .then((response) => setOrganizations(response.data))
         .catch((error) => console.error(error));
     }
-  }, [idTransport]);
-
-  const [form] = Form.useForm();
-
-  const isValidKey = (key: string): key is keyof typeof data => {
-    if (!data) return false;
-    return Object.keys(data).includes(key);
-  };
-  const onFinish = async (values: Pick<Car, keyof Car>) => {
+  }, []);
+  
+  const onFinish = async (values: Car) => {
     try {
-      const changedFields = Object.keys(values).filter(
-        (key) => form.getFieldValue(key) !== undefined
-      );
-
-      const changedFieldValues = changedFields.map((key) => {
-        return { name: key, value: form.getFieldValue(key) };
-      });
-
-      console.log(changedFieldValues);
-
-      if (changedFieldValues.length > 0) {
-        // Изменено для проверки на массив
-        try {
-          const response = await axios.patch(
-            `${apiUrl}/transport/${idTransport}`,
-            changedFieldValues
-          );
-          setData(response.data);
-          message.success("Авто обновлено!");
-          form.resetFields();
-        } catch (error: any) {
-          console.error(error);
-          const errorMessage =
-            error.response?.data?.error ||
-            "Произошла ошибка при обновлении данных";
-          message.error(errorMessage); // Отображение ошибки
+        const response = await axios.post(`${apiUrl}/new-car`, values);
+        if (response.status === 201) {
+            message.success("Авто добавлено!");
+            form.resetFields();
         }
-      } else {
-        message.warning("Ничего не изменено");
-      }
-    } catch (error) {
-      console.error(error);
-      message.error("Произошла общая ошибка"); // Обрабатываем общую ошибку
+    } catch (error: any) {
+        const errorMessage = error.response?.data?.error || "Произошла ошибка на сервере";
+        message.error(errorMessage);
     }
-  };
+};
 
   const techniqueOptions = techniques.map((technique) => ({
     value: technique.id,
@@ -126,21 +73,20 @@ const EditCar = () => {
     value: organization.organization_id,
     label: organization.organization_name,
   }));
-
+  const formatDate = (date: any) => dayjs(date).format("YYYY");
   return (
-    <div
-      style={{
-        display: "flex", 
+
+    <div style={{
+      display: "flex", 
       flexDirection: "column", 
       width: "100%", 
       height: "100vh", // Установить 100vh, чтобы занять всю высоту
       backgroundColor: "#F0F4F8",
-      boxSizing: "border-box",
-      }}
-    >
+      boxSizing: "border-box", // Чтобы отступы учитывались в общей высоте
+      }}>
       {/* <Header /> */}
       <Row style={{ width: "80%", margin: "30px auto" }}>
-        <Col xs={24}>
+        <Col xs={12}>
           <Form form={form} onFinish={onFinish}>
             <Form.Item
               label={
@@ -158,10 +104,13 @@ const EditCar = () => {
                 </label>
               }
               name="model"
+              rules={[{ required: true, message: "Введите модель автомобиля" }]}
             >
-              <Input placeholder={data?.model} style={{ width: "200px" }} />
+              <Input
+                placeholder="Введите модель автомобиля"
+                style={{ width: "200px" }}
+              />
             </Form.Item>
-
             <Form.Item
               label={
                 <label
@@ -179,20 +128,22 @@ const EditCar = () => {
               }
               name="vin"
               rules={[
-                {
+                { required: true, message: "Введите VIN автомобиля" },
+                { 
                   len: 17,
                   message: "VIN номер должен быть 17 символов",
                 },
                 {
                   pattern: /^[A-HJ-NPR-Z0-9]{17}$/,
-                  message:
-                    "VIN номер должен содержать только буквы A-H, J-N, P-R и цифры",
+                  message: "VIN номер должен содержать только буквы A-H, J-N, P-R и цифры",
                 },
               ]}
             >
-              <Input placeholder={data?.vin} style={{ width: "200px" }} />
+              <Input
+                placeholder="Введите VIN автомобиля"
+                style={{ width: "200px" }}
+              />
             </Form.Item>
-
             <Form.Item
               label={
                 <label
@@ -209,15 +160,14 @@ const EditCar = () => {
                 </label>
               }
               name="year_release"
+              rules={[{ required: true, message: "Выберите дату" }]}
             >
               <DatePicker
                 style={{ width: "200px" }}
-                value={dateValue}
-                format="YYYY"
-                placeholder="Выберите год"
+                format={formatDate}
+                placeholder="YYYY"
               />
             </Form.Item>
-
             <Form.Item
               label={
                 <label
@@ -234,9 +184,15 @@ const EditCar = () => {
                 </label>
               }
               name="engine_type_id"
+              rules={[
+                {
+                  required: true,
+                  message: "Выберите тип двигателя автомобиля",
+                },
+              ]}
             >
               <Select
-                placeholder={data?.engine_type}
+                placeholder="Выберите тип двигателя автомобиля"
                 style={{ width: "200px" }}
                 options={techniqueOptions}
               />
@@ -258,9 +214,10 @@ const EditCar = () => {
                 </label>
               }
               name="vehicle_type_id"
+              rules={[{ required: true, message: "Выберите тип автомобиля" }]}
             >
               <Select
-                placeholder={data?.vehicle_type}
+                placeholder="Выберите тип автомобиля"
                 style={{ width: "200px" }}
                 options={engineOptions}
               />
@@ -281,15 +238,21 @@ const EditCar = () => {
                 </label>
               }
               name="organization_id"
+              rules={[{ required: true, message: "Выберите организацию" }]}
             >
               <Select
-                placeholder={data?.organization}
+                placeholder="Выберите организацию"
                 style={{ width: "200px" }}
                 options={organizationsOptions}
               />
             </Form.Item>
-            <Button type="primary" htmlType="submit">
-              Изменить данные автомобиля
+
+            <Button
+              style={{  marginTop: "30px" }}
+              type="primary"
+              htmlType="submit"
+            >
+              Добавить новый автомобиль
             </Button>
           </Form>
         </Col>
@@ -298,4 +261,4 @@ const EditCar = () => {
   );
 };
 
-export default EditCar;
+export default CreateTransportPage;

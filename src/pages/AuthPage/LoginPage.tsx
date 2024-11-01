@@ -5,7 +5,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {useUser} from '../../services/auth'
 import SvgIcon from '@mui/material/SvgIcon';
-const apiUrl = process.env.REACT_APP_API_URL;
+const apiUrl = import.meta.env.VITE_API_URL;
 interface Point {
   x: number;
   y: number;
@@ -47,28 +47,28 @@ const LoginPage: React.FC<LoginProps> = ({ setToken,setIsAuthenticated }) => {
         setIsAuthenticated(true);
         setRole(response.data.role);
         switch (response.data.role) {
-          case "SuperAdmin":
-            navigate("/super-admin/main", { replace: true });
+          case "ROLE_SUPERADMIN":
+            navigate("super-admin/main", { replace: true });
             break;
-          case "Admin":
-            navigate("/admin/main", { replace: true });
+          case "ROLE_ADMIN":
+            navigate("admin/main", { replace: true });
             break;
-          case "Operator":
+          case "ROLE_OPERATOR":
             navigate("/operator/main", { replace: true });
             break;
-          case "Head":
+          case "ROLE_DIRECTOR":
             navigate("/head/main", { replace: true });
             break;
-          case "Manager":
+          case "ROLE_MANAGER":
             navigate("/manager/main", { replace: true });
             break;
-          case "Mechanic":
+          case "ROLE_MANUFACTURER":
             navigate("/mechanic/main", { replace: true });
             break;
           default:
             navigate("/", { replace: true }); // начальная страница, если роль не распознана
         }
-        // navigate("/dashboard", { replace: true });
+        // navigate("/main", { replace: true });
         return Number(200);
       }
     } catch (error:any) {

@@ -4,7 +4,7 @@ import { useUser } from "../services/auth";
 const ProtectedRouteSuperAdmin = () => {
   const { roleUser } = useUser();
 
-  if (roleUser !== "SuperAdmin") {
+  if (roleUser !== "ROLE_SUPERADMIN") {
     return <Navigate to="/" />;
   }
 

@@ -4,7 +4,7 @@ import { useUser } from "../services/auth";
 const ProtectedRouteOperator = () => {
   const { roleUser } = useUser();
 
-  if (roleUser !== "Operator") {
+  if (roleUser !== "ROLE_OPERATOR") {
     return <Navigate to="/" />;
   }
 

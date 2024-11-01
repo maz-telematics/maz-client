@@ -3,15 +3,15 @@ import { Tabs, DatePicker, Form, Row, Col } from "antd";
 import axios from "axios";
 import { Dayjs } from "dayjs";
 import dayjs from "dayjs";
-import { Car } from "../../types/transportListTypes";
-import Header from "../../components/Header";
+import { Car } from "../../../types/transportListTypes";
+import Header from "../../../components/Header";
 import Map from "./Map";
-import { Location, Parameters, ErrorData } from "../../types/carTrackingTypes";
+import { Location, Parameters, ErrorData } from "../../../types/carTrackingTypes";
 import ErrorsTable from "./ErrorsTable";
 import ParametersTable from "./ParametersTable";
 import moment from "moment";
-const apiUrl = process.env.REACT_APP_API_URL;
-const CarTracking = () => {
+const apiUrl = import.meta.env.VITE_API_URL;
+const TransportDashboard = () => {
   const [errors, setErrors] = useState<ErrorData[]>([]);
   const [parameters, setParameters] = useState<Parameters[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
@@ -348,4 +348,4 @@ const CarTracking = () => {
   );
 };
 
-export default CarTracking;
+export default TransportDashboard;

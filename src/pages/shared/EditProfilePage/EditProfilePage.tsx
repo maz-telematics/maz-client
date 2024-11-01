@@ -2,8 +2,7 @@ import axios from 'axios';
 import { useState,useEffect } from 'react';
 import { Button, Modal, Row, Col,DatePicker, Form, Input, message,Select } from 'antd';
 import dayjs from 'dayjs';
-import Header from '../../components/Header';
-const apiUrl = process.env.REACT_APP_API_URL;
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export interface Organization {
     organization_name: string,

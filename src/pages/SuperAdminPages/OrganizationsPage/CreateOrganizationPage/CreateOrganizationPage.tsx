@@ -11,7 +11,7 @@ import {
   message,
   Modal,
 } from "antd";
-import Header from "../../components/Header";
+import Header from "../../../../components/Header";
 import { subscribe } from "diagnostics_channel";
 const { RangePicker } = DatePicker;
 const apiUrl = process.env.REACT_APP_API_URL;
@@ -20,7 +20,7 @@ interface TransportFormValues {
   }
 
 
-const NewOrganization = () => {
+const CreateOrganizationPage = () => {
     const [transportList, setTransportList] = useState<string[]>([]);
     const [transportFormVisible, setTransportFormVisible] = useState(false);
     const [transportForm] = Form.useForm<TransportFormValues>();
@@ -337,4 +337,4 @@ const NewOrganization = () => {
   );
 };
 
-export default NewOrganization;
+export default CreateOrganizationPage;

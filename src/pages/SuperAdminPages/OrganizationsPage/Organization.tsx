@@ -16,13 +16,11 @@ import {
 } from "antd";
 import moment from "moment";
 import dayjs, { Dayjs } from 'dayjs';
-
-import Header from "../../components/Header";
 import { SubscriptionHistory } from "./subscriptionHistory";
-import { Organization } from "../../types/transportListTypes";
+import { Organization } from "../../../types/transportListTypes";
 import axios from "axios";
 
-const apiUrl = process.env.REACT_APP_API_URL;
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const { RangePicker } = DatePicker;
 const { TabPane } = Tabs;

@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { Table, Row, Col } from "antd";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/Header";
 import axios from "axios";
 import moment from "moment";
-import { Car } from "../../types/organizationTypes";
+import { Car } from "../../../types/organizationTypes";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-const apiUrl = process.env.REACT_APP_API_URL;
-const OrganizationTransportList = () => {
+
+const apiUrl = import.meta.env.VITE_API_URL;
+const TransportsPage = () => {
   const [cars, setCars] = useState<Car[]>([]);
   const [message, setMessage] = useState('');
   
@@ -124,4 +124,4 @@ const OrganizationTransportList = () => {
     </div>
   );
 };
-export default OrganizationTransportList;
+export default TransportsPage;

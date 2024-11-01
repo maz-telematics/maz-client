@@ -4,7 +4,7 @@ import { useUser } from "../services/auth";
 const ProtectedRouteManager = () => {
   const { roleUser } = useUser();
 
-  if (roleUser !== "Manager") {
+  if (roleUser !== "ROLE_MANAGER") {
     return <Navigate to="/" />;
   }
 
