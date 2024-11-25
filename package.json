@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@ant-design/icons": "^5.3.7",
+    "@ant-design/icons": "^5.5.1",
+    "@ant-design/plots": "^2.3.2",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
     "@mui/material": "^5.16.7",
@@ -16,7 +17,7 @@
     "@types/jest": "^27.5.2",
     "@types/redux": "^3.6.0",
     "@vitejs/plugin-react": "^4.3.3",
-    "antd": "^5.18.3",
+    "antd": "^5.22.1",
     "axios": "^1.7.2",
     "chart.js": "^4.4.3",
     "dayjs": "^1.11.11",

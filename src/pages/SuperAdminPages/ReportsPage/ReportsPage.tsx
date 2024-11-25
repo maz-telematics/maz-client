@@ -1,6 +1,6 @@
 // src/pages/ReportsPage/ReportsPage.tsx
 import React, { useEffect, useState } from 'react';
-import { Table, Card, DatePicker, Select, Button } from 'antd';
+import { Table, Card, DatePicker, Row, Col, Select, Button } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
 import DetailView from './DetailView'; // Импортируем новый компонент
 
@@ -69,86 +69,81 @@ const ReportsPage: React.FC = () => {
   ];
 
   return (
-    <div style={containerStyle}>
-      <h1 style={headerStyle}>Отчеты</h1>
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      width: "100%",
+      minHeight: '100vh',
+      backgroundColor: "#F0F4F8",
+    }}>
+      <Row style={{
+        margin: "30px 40px 30px 40px",
+        flex: "1",
+      }}>
+        <Col xs={24} >
+          <Row justify="start" align="middle" style={{ marginBottom: 16 }}>
+            <Col>
+              <h1 style={{ margin: 0, color: '#1e40af' }}>Отчеты</h1>
+            </Col>
+          </Row>
+          <div style={filterContainerStyle}>
 
-      <div style={filterContainerStyle}>
-        <DatePicker onChange={date => setSelectedDate(date)} />
-        <Select placeholder="Выберите транспорт" style={{ width: 200, margin: '0 10px' }} onChange={value => setSelectedTransport(value)}>
-          {transportReports.map(report => (
-            <Select.Option key={report.id} value={report.id}>
-              {report.name}
-            </Select.Option>
-          ))}
-        </Select>
-        <Select placeholder="Выберите организацию" style={{ width: 200, margin: '0 10px' }} onChange={value => setSelectedOrganization(value)}>
-          {organizationReports.map(report => (
-            <Select.Option key={report.id} value={report.id}>
-              {report.name}
-            </Select.Option>
-          ))}
-        </Select>
-        <Button type="primary" onClick={handleFilter}>Фильтровать</Button>
-      </div>
 
-      <Card title="Отчеты по транспорту" style={cardStyle}>
-        <Table
-          dataSource={filteredTransportReports.length > 0 ? filteredTransportReports : transportReports}
-          columns={transportColumns}
-          rowKey="id"
-          onRow={record => ({
-            onClick: () => showDetail(record), // Показать детальный вид при клике
-          })}
-        />
-      </Card>
+            <DatePicker onChange={date => setSelectedDate(date)} />
+            <Select placeholder="Выберите транспорт" style={{ width: 200, margin: '0 10px' }} onChange={value => setSelectedTransport(value)}>
+              {transportReports.map(report => (
+                <Select.Option key={report.id} value={report.id}>
+                  {report.name}
+                </Select.Option>
+              ))}
+            </Select>
+            <Select placeholder="Выберите организацию" style={{ width: 200, margin: '0 10px' }} onChange={value => setSelectedOrganization(value)}>
+              {organizationReports.map(report => (
+                <Select.Option key={report.id} value={report.id}>
+                  {report.name}
+                </Select.Option>
+              ))}
+            </Select>
+            <Button type="primary" onClick={handleFilter}>Фильтровать</Button>
+          </div>
 
-      <Card title="Отчеты по организациям" style={cardStyle}>
-        <Table
-          dataSource={filteredOrganizationReports.length > 0 ? filteredOrganizationReports : organizationReports}
-          columns={organizationColumns}
-          rowKey="id"
-          onRow={record => ({
-            onClick: () => showDetail(record), // Показать детальный вид при клике
-          })}
-        />
-      </Card>
+          <Card title="Отчеты по транспорту" style={cardStyle}>
+            <Table
+              dataSource={filteredTransportReports.length > 0 ? filteredTransportReports : transportReports}
+              columns={transportColumns}
+              rowKey="id"
+              onRow={record => ({
+                onClick: () => showDetail(record), // Показать детальный вид при клике
+              })}
+            />
+          </Card>
 
-      {/* Показываем детальный вид */}
-      {isDetailVisible && (
-        <DetailView
-          title={selectedDetail?.name || 'Детали'}
-          data={selectedDetail}
-          onClose={() => setIsDetailVisible(false)}
-        />
-      )}
+          <Card title="Отчеты по организациям" style={cardStyle}>
+            <Table
+              dataSource={filteredOrganizationReports.length > 0 ? filteredOrganizationReports : organizationReports}
+              columns={organizationColumns}
+              rowKey="id"
+              onRow={record => ({
+                onClick: () => showDetail(record), // Показать детальный вид при клике
+              })}
+            />
+          </Card>
+
+          {isDetailVisible && (
+            <DetailView
+              title={selectedDetail?.name || 'Детали'}
+              data={selectedDetail}
+              onClose={() => setIsDetailVisible(false)}
+            />
+          )}
+        </Col>
+      </Row>
     </div>
   );
 };
 
-// Стили для компонентов
-const containerStyle: React.CSSProperties = {
-//   padding: '20px',
-  width:'100%',
-//   height:'100vh',
-//   display: 'flex',
-//   flexDirection: 'column',
-//   alignItems: 'center',
-justifyContent:'center',
-padding: '20px',
-display: 'flex',
-flexDirection: 'column',
-alignItems: 'center',
-};
-
-const headerStyle: React.CSSProperties = {
-        fontSize: '2rem',
-        color: '#1e40af',
-        marginBottom: '2rem',
-};
-
 const cardStyle: React.CSSProperties = {
   width: '100%',
-  maxWidth: '800px',
   marginBottom: '20px',
 };
 

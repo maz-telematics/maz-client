@@ -12,11 +12,14 @@ interface MapProps {
 const Map: React.FC<MapProps> = ({ locations }) => {
   useEffect(() => {
     const map = L.map("map").setView([53.9, 27.5667], 13);
+
+    // Добавление тайлов
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "© OpenStreetMap contributors",
     }).addTo(map);
-    locations.forEach((location) => {
 
+    // Отображение точек маршрута
+    locations.forEach((location) => {
       const { lantitude, longitude, data } = location;
 
       if (lantitude !== undefined && longitude !== undefined) {
@@ -28,14 +31,13 @@ const Map: React.FC<MapProps> = ({ locations }) => {
           minute: "2-digit",
           second: "2-digit",
         });
+
         L.circle([lantitude, longitude], {
           color: "blue",
           fillColor: "#30f",
           fillOpacity: 1,
           radius: 5,
         })
-
-
           .addTo(map)
           .bindPopup(`Широта: ${lantitude}, Долгота: ${longitude}, Дата: ${formattedDate}`);
       } else {
@@ -45,6 +47,7 @@ const Map: React.FC<MapProps> = ({ locations }) => {
       }
     });
 
+    // Формирование маршрута
     const waypoints = locations
       .map((location) => {
         if (
@@ -62,30 +65,45 @@ const Map: React.FC<MapProps> = ({ locations }) => {
     if (waypoints.length > 0) {
       const routingControl = (L.Routing.control as any)({
         waypoints: waypoints,
-        routeWhileDragging: false,
-        draggableWaypoints: false,
-        show: false,
+        routeWhileDragging: false, // Отключить перетаскивание
+        draggableWaypoints: false, // Отключить редактирование маршрута
+        addWaypoints: false, // Отключить добавление новых точек
+        show: false, // Скрыть панель маршрута
         lineOptions: {
           styles: [
             {
               color: "blue",
-              opacity: 0.7,
-              weight: 5,
+              opacity: 0.9,
+              weight: 6,
             },
           ],
         },
-        createMarker: () => null,
+        createMarker: (i: number, waypoint: any, n: number) => {
+          // Добавление маркеров только для начальной и конечной точек
+          if (i === 0) {
+            return L.marker(waypoint.latLng, { icon: L.icon({
+              iconUrl: "/start-icon.png",
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+            }) }).bindPopup("Начальная точка");
+          }
+          if (i === n - 1) {
+            return L.marker(waypoint.latLng, { icon: L.icon({
+              iconUrl: "/end-icon.png",
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+            }) }).bindPopup("Конечная точка");
+          }
+          return null;
+        },
       }).addTo(map);
-      routingControl.getPlan().on('waypointdragstart', (e: any) => {
-        e.preventDefault(); // Отключить перетаскивание контрольных точек
-      });
 
-      routingControl.getPlan().on('waypointdrag', (e: any) => {
-        e.preventDefault(); // Отключить операцию перетаскивания
-      });
+      // Установить масштаб карты так, чтобы весь маршрут был виден
+      map.fitBounds(routingControl.getPlan().getWaypoints().map((wp: any) => wp.latLng));
     } else {
       console.error("No valid waypoints for the routing control.");
     }
+
     return () => {
       map.remove(); // Удаление экземпляра карты при размонтировании компонента
     };
@@ -97,18 +115,6 @@ const Map: React.FC<MapProps> = ({ locations }) => {
         id="map"
         style={{ display: "flex", width: "100%", height: "100%" }}
       ></div>
-      <div
-        style={{
-          width: '52px',
-          height: '15.4px',
-          position: "absolute",
-          bottom: "0px", // отступ снизу
-          right: "160px", // отступ справа
-          backgroundColor: "white",
-          zIndex: 1000,
-        }}
-      >
-      </div>
     </div>
   );
 };

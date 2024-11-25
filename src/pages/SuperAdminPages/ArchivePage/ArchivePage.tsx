@@ -1,6 +1,6 @@
 // src/pages/Archive/ArchivePage.tsx
 import React, { useState, useEffect } from 'react';
-
+import { Row, Col } from 'antd';
 // Типы данных
 interface Transport {
   id: number;
@@ -60,70 +60,68 @@ const ArchivePage: React.FC = () => {
   };
 
   return (
-    <div style={containerStyle}>
-      <h1 style={headerStyle}>Архив</h1>
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      width: "100%",
+      backgroundColor: "#F0F4F8",
+      height: "100vh"
+    }}>
+      <Row style={{
+        margin: "30px 40px 30px 40px",
+        flex: "1",
+      }}>
+        <Col xs={24} >
+          <Row justify="start" align="middle" style={{ marginBottom: 16 }}>
+            <Col>
+              <h1 style={{ margin: 0, color: '#1e40af' }}>Архив</h1>
+            </Col>
+          </Row>
+          <section style={sectionStyle}>
+            <h2 style={sectionTitleStyle}>Архивированные транспортные средства</h2>
+            <ul style={listStyle}>
+              {archivedTransports.map((transport) => (
+                <li key={transport.id} style={listItemStyle}>
+                  <div>
+                    <strong>{transport.name}</strong> (архивировано: {transport.archivedDate})
+                  </div>
+                  <div>
+                    <button onClick={() => restoreTransport(transport.id)} style={buttonStyle}>
+                      Восстановить
+                    </button>
+                    <button onClick={() => deleteTransport(transport.id)} style={deleteButtonStyle}>
+                      Удалить
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
 
-      <section style={sectionStyle}>
-        <h2 style={sectionTitleStyle}>Архивированные транспортные средства</h2>
-        <ul style={listStyle}>
-          {archivedTransports.map((transport) => (
-            <li key={transport.id} style={listItemStyle}>
-              <div>
-                <strong>{transport.name}</strong> (архивировано: {transport.archivedDate})
-              </div>
-              <div>
-                <button onClick={() => restoreTransport(transport.id)} style={buttonStyle}>
-                  Восстановить
-                </button>
-                <button onClick={() => deleteTransport(transport.id)} style={deleteButtonStyle}>
-                  Удалить
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section style={sectionStyle}>
-        <h2 style={sectionTitleStyle}>Архивированные организации</h2>
-        <ul style={listStyle}>
-          {archivedOrganizations.map((organization) => (
-            <li key={organization.id} style={listItemStyle}>
-              <div>
-                <strong>{organization.name}</strong> (архивировано: {organization.archivedDate})
-              </div>
-              <div>
-                <button onClick={() => restoreOrganization(organization.id)} style={buttonStyle}>
-                  Восстановить
-                </button>
-                <button onClick={() => deleteOrganization(organization.id)} style={deleteButtonStyle}>
-                  Удалить
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
+          <section style={sectionStyle}>
+            <h2 style={sectionTitleStyle}>Архивированные организации</h2>
+            <ul style={listStyle}>
+              {archivedOrganizations.map((organization) => (
+                <li key={organization.id} style={listItemStyle}>
+                  <div>
+                    <strong>{organization.name}</strong> (архивировано: {organization.archivedDate})
+                  </div>
+                  <div>
+                    <button onClick={() => restoreOrganization(organization.id)} style={buttonStyle}>
+                      Восстановить
+                    </button>
+                    <button onClick={() => deleteOrganization(organization.id)} style={deleteButtonStyle}>
+                      Удалить
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </Col>
+      </Row>
     </div>
   );
-};
-
-// Стили для компонентов
-const containerStyle = {
-  width:'100%',
-  padding: '2rem',
-  backgroundColor: '#f3f4f6',
-  minHeight:'90vh',
-//   padding: '20px',
-// display: 'flex',
-// flexDirection: 'column',
-// alignItems: 'center',
-};
-
-const headerStyle = {
-  fontSize: '2rem',
-  color: '#1e40af',
-  marginBottom: '2rem',
 };
 
 const sectionStyle = {

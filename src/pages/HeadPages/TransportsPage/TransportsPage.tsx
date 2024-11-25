@@ -6,6 +6,7 @@ import moment from "moment";
 import { Car } from "../../../types/organizationTypes";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axiosInstance from '../../../services/axiosInstance';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 const TransportsPage = () => {
@@ -24,9 +25,10 @@ const TransportsPage = () => {
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        const response = await axios.get(
-          `${apiUrl}/transport/list/${userId}`
-        );
+        // const response = await axios.get(
+        //   `${apiUrl}/transport/list/${userId}`
+        // );
+        const response = await axiosInstance.get('/transport/list/${userId}');
         // setCars(response.data);
         if (response.data.message) {
           toast.warning(response.data.message, {

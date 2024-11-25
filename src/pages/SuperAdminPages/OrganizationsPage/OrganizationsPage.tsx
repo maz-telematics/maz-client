@@ -4,7 +4,8 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { Organization } from "../../../types/transportListTypes";
 import moment from "moment";
-
+import { HomeOutlined } from "@ant-design/icons";
+import axiosInstance from '../../../services/axiosInstance';
 const apiUrl = import.meta.env.VITE_API_URL;
 const OrganizationsPage = () => {
   const [organization, setOrganizations] = useState<Organization[]>([]);
@@ -19,12 +20,13 @@ const OrganizationsPage = () => {
 
 
   const navigateToNewOrganization = () => {
-    navigate("/new-organization");
+    navigate("/super-admin/new-organization");
   };
 
   const fetchOrganizatios = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/organizations/list`);
+      // const response = await axios.get(`${apiUrl}/organizations/list`);
+      const response = await axiosInstance.get('/organizations/list');
       setOrganizations(response.data);
     } catch (error) {
       console.error(error);
@@ -36,7 +38,7 @@ const OrganizationsPage = () => {
 
   const handleRedirectAndSaveOrganizationId = async (id: number) => {
     await sessionStorage.setItem("organization_id", String(id));
-    navigate("/organization");
+    navigate("/super-admin/organization");
   };
   const handleDeleteOrganization = async (idOrganization: number) => {
     Modal.confirm({
@@ -47,10 +49,10 @@ const OrganizationsPage = () => {
       cancelText: "Отмена",
       onOk: async () => {
         try {
-          const response = await axios.delete(
-            `${apiUrl}/organizations/${idOrganization}`
-          );
-
+          // const response = await axios.delete(
+          //   `${apiUrl}/organizations/${idOrganization}`
+          // );
+          const response = await axiosInstance.delete('/organizations/${idOrganization}');
           if (response.status === 200) {
             message.success(`Организация перемещена в архив успешно!`);
             fetchOrganizatios();
@@ -66,126 +68,112 @@ const OrganizationsPage = () => {
   const navigate = useNavigate();
   return (
     <div style={{
-      display: "flex", 
-      flexDirection: "column", 
-      width: "100%", 
-      height: "100vh", // Установить 100vh, чтобы занять всю высоту
+      display: "flex",
+      flexDirection: "column",
+      width: "100%",
+      height: '100vh',
       backgroundColor: "#F0F4F8",
-      boxSizing: "border-box",
-      overflow: "hidden",
-      scrollbarWidth: "thin",
-      scrollbarColor:"#3b82f6 white"
-
+    }}>
+      <Row style={{
+        margin: "30px 40px 30px 40px",
+        flex: "1",
       }}>
-      {/* <Header /> */}
-      <Row style={{  width: "80%", 
-        margin: "30px auto", 
-        flex: "1", 
-        // overflowY: "auto",
-        overflowX:"hidden"}}>
         <Col xs={24} >
-          <Tabs defaultActiveKey="params" type="card" style={{ margin: 0 }}>
-            <Tabs.TabPane key="Organization" tab="Организации">
-              <Row gutter={[16, 16]}>
-                <Col span={24}>
-                  <Table
-                    columns={[
-                      {
-                        title: "Название организации",
-                        dataIndex: "organization_name",
-                        key: "organization_name",
-                        render: (text, record) => (
-                          <a
-                            onClick={() =>
-                              handleRedirectAndSaveOrganizationId(
-                                record.organization_id
-                              )
-                            }
-                            style={{ color: "#1890ff", fontWeight: "500" }}
-                          >
-                            {text}
-                          </a>
-                        ),
-                      },
-                      {
-                        title: "Номер телефона",
-                        dataIndex: "contact_info",
-                        key: "contact_info",
-                      },
-                      {
-                        title: "Контактное лицо",
-                        dataIndex: "contact_person",
-                        key: "contact_person",
-                      },
-                      {
-                        title: "Адрес",
-                        dataIndex: "organization_address",
-                        key: "organization_address",
-                      },
-                      {
-                        title: "Электронная почта",
-                        dataIndex: "email",
-                        key: "email",
-                      },
-                      {
-                        title: "Дата регистрации",
-                        dataIndex: "registration_date",
-                        key: "registration_date",
-                        render: (text) => (
-                          <span>{moment(text).format("YYYY-MM-DD")}</span>
-                        ),
-                      },
-                      {
-                        dataIndex: "",
-                        key: "actions",
-                        width: 150,
-                        align: "center",
-                        render: (text, record) => (
-                          <Button
-                            size="middle"
-                            onClick={() =>
-                              handleDeleteOrganization(record.organization_id)
-                            }
-                            style={{
-                              backgroundColor: "#007bff", // Темно-синий цвет
-                              borderColor: "#007bff",
-                              color: "#fff",
-                            }}
-                          >
-                             Переместить в архив
-                          </Button>
-                        ),
-                      },
-                    ]}
-                    pagination={false}
-                    dataSource={organization}
-                    bordered
-                    rowKey={(record) => record.organization_id}
+          <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
+            <Col>
+              <h1 style={{ margin: 0, color: '#1e40af' }}>Организации</h1>
+            </Col>
+            <Col>
+              <Button
+                type="primary"
+                onClick={navigateToNewOrganization}
+                icon={<HomeOutlined />}
+              >
+                Создать организацию
+              </Button>
+            </Col>
+          </Row>
+          <Table
+            columns={[
+              {
+                title: "Название организации",
+                dataIndex: "organization_name",
+                key: "organization_name",
+                render: (text, record) => (
+                  <a
+                    onClick={() =>
+                      handleRedirectAndSaveOrganizationId(
+                        record.organization_id
+                      )
+                    }
+                    style={{ color: "#1890ff", fontWeight: "500" }}
+                  >
+                    {text}
+                  </a>
+                ),
+              },
+              {
+                title: "Номер телефона",
+                dataIndex: "contact_info",
+                key: "contact_info",
+              },
+              {
+                title: "Контактное лицо",
+                dataIndex: "contact_person",
+                key: "contact_person",
+              },
+              {
+                title: "Адрес",
+                dataIndex: "organization_address",
+                key: "organization_address",
+              },
+              {
+                title: "Электронная почта",
+                dataIndex: "email",
+                key: "email",
+              },
+              {
+                title: "Дата регистрации",
+                dataIndex: "registration_date",
+                key: "registration_date",
+                render: (text) => (
+                  <span>{moment(text).format("YYYY-MM-DD")}</span>
+                ),
+              },
+              {
+                dataIndex: "",
+                key: "actions",
+                width: 150,
+                align: "center",
+                render: (text, record) => (
+                  <Button
+                    size="middle"
+                    onClick={() =>
+                      handleDeleteOrganization(record.organization_id)
+                    }
                     style={{
-                    
-                      borderRadius: "8px",
-                      overflow: "hidden",
-                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-                      backgroundColor: "#F7F9FB",
+                      backgroundColor: "#007bff", // Темно-синий цвет
+                      borderColor: "#007bff",
+                      color: "#fff",
                     }}
-                  />
-                  <Row justify="end" style={{ marginTop: "30px" }}>
-                    <Button
-                      type="primary"
-                      style={{
-                        backgroundColor: "#007bff", // Основной синий цвет
-                        borderColor: "#007bff",
-                        color: "#fff",
-                      }}
-                      onClick={navigateToNewOrganization}
-                    >
-                      Создать организацию
-                    </Button>
-                  </Row>
-                </Col>
-              </Row>
-            </Tabs.TabPane>
-          </Tabs>
+                  >
+                    Переместить в архив
+                  </Button>
+                ),
+              },
+            ]}
+            pagination={false}
+            dataSource={organization}
+            bordered
+            rowKey={(record) => record.organization_id}
+            style={{
+
+              borderRadius: "8px",
+              overflow: "hidden",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+              backgroundColor: "#F7F9FB",
+            }}
+          />
         </Col>
       </Row>
     </div>

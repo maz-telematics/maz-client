@@ -7,6 +7,7 @@ export const AuthContext = createContext<AuthContextIntarface | null>(null);
 
 interface UserContextType {
   roleUser: string | null;
+  isLoading: boolean | null;
   setRole: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
@@ -14,7 +15,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [roleUser, setRole] = useState<string | null>(null); 
-
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const fetchRoleData = async () => {
       try {
         const token = (JSON.parse(localStorage.getItem('user') || '{}') || {}).token;
@@ -35,7 +36,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
           console.error('Ошибка при получении роли:', error);
         }
+      } finally {
+        setIsLoading(false);
       }
+      
     };
 
     useEffect(() => {
@@ -43,7 +47,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     return (
-        <UserContext.Provider value={{ roleUser,setRole  }}>
+        <UserContext.Provider value={{ roleUser,setRole ,isLoading  }}>
             {children}
         </UserContext.Provider>
     );
@@ -56,3 +60,4 @@ export const useUser = (): UserContextType => {
     }
     return context;
 };
+

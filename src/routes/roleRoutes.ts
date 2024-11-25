@@ -5,11 +5,12 @@ interface Route {
   
   export const roleRoutes: { [key: string]: Route[] } = {
     ROLE_SUPERADMIN: [
-      { path: '/super-admin/main', label: 'Главная' },
+      { path: '/super-admin/main', label: 'Главная'},
       { path: '/super-admin/transports', label: 'Транспорт' },
       { path: '/super-admin/organizations', label: 'Организации' },
-      { path: '/super-admin/archive', label: 'Архив' },
+      { path: '/super-admin/employees', label: 'Сотрудники' },
       { path: '/super-admin/reports', label: 'Отчеты' },
+      { path: '/super-admin/archive', label: 'Архив' },
     ],
     ROLE_ADMIN: [
       { path: '/admin/main', label: 'Главная' },

@@ -19,7 +19,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { SubscriptionHistory } from "./subscriptionHistory";
 import { Organization } from "../../../types/transportListTypes";
 import axios from "axios";
-
+import axiosInstance from '../../../services/axiosInstance';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const { RangePicker } = DatePicker;
@@ -48,6 +48,12 @@ export interface Subscription{
   organization_id:number;
   status:string
 }
+interface EmployeeType {
+  id: number;
+  name: string;
+  position: string;
+  contact: string;
+}
 
 const OrganizationDetails: React.FC = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -57,11 +63,17 @@ const OrganizationDetails: React.FC = () => {
   const [organizationData, setOrganizationData] = useState<Organization>();
   const [visible, setVisible] = useState<boolean>(false);
   const [vin, setVin] = useState<string>();
+
+  const [employees, setEmployees] = useState<EmployeeType[]>([]);
+  const [isEmployeeModalVisible, setIsEmployeeModalVisible] = useState(false);
+  const [editingEmployee, setEditingEmployee] = useState(null);
+
   const fetchVehicles = async (id: number) => {
     try {
-      const response = await axios.get(
-        `${apiUrl}/transport/manufacturer/${id}`
-      );
+      // const response = await axios.get(
+      //   `${apiUrl}/transport/manufacturer/${id}`
+      // );
+      const response = await axiosInstance.get(`/transport/manufacturer/${id}`);
       setVehicles(response.data);
     } catch (error) {
       console.error("Ошибка при получении транспортных средств:", error);
@@ -70,22 +82,71 @@ const OrganizationDetails: React.FC = () => {
 
   const fetchOrganization = async (id: number) => {
     try {
-      const response = await axios.get(`${apiUrl}/organizations/${id}`);
+      // const response = await axios.get(`${apiUrl}/organizations/${id}`);
+      const response = await axiosInstance.get(`/organizations/${id}`);
       setOrganizationData(response.data[0]);
     } catch (error) {
       console.error("Ошибка при получении транспортных средств:", error);
     }
   };
 
+  const addEmployee = async (employeeData: any) => {
+    try {
+      // const response = await axios.post(`${apiUrl}/organizations/${idOrganization}/employees`, employeeData);
+      const response = await axiosInstance.post(`/organizations/${idOrganization}/employees`, employeeData);
+      setEmployees((prev) => [...prev, response.data]);
+      message.success("Сотрудник успешно добавлен!");
+    } catch (error) {
+      console.error("Ошибка при добавлении сотрудника:", error);
+      message.error("Ошибка при добавлении сотрудника.");
+    }
+  };
+
+  const editEmployee = async (employeeId: number, updatedData: any) => {
+    try {
+      // const response = await axios.patch(`${apiUrl}/organizations/employees/${employeeId}`, updatedData);
+      const response = await axiosInstance.post(`/organizations/employees/${employeeId}`, updatedData);
+      setEmployees((prev) => prev.map((emp) => (emp.id === employeeId ? response.data : emp)));
+      message.success("Сотрудник успешно обновлен!");
+    } catch (error) {
+      console.error("Ошибка при обновлении данных сотрудника:", error);
+      message.error("Ошибка при обновлении данных сотрудника.");
+    }
+  };
+
+  const deleteEmployee = async (employeeId: number) => {
+    try {
+      // await axios.delete(`${apiUrl}/organizations/employees/${employeeId}`);
+      await axiosInstance.delete(`/organizations/employees/${employeeId}`);
+      setEmployees((prev) => prev.filter((emp) => emp.id !== employeeId));
+      message.success("Сотрудник успешно удален!");
+    } catch (error) {
+      console.error("Ошибка при удалении сотрудника:", error);
+      message.error("Ошибка при удалении сотрудника.");
+    }
+  };
+
   const fetchSubscriptionHistory = async (id: number) => {
     try {
-      const response = await axios.get(`${apiUrl}/organizations/subscription/list/${id}`); // Убедитесь, что корректный адрес API
+      // const response = await axios.get(`${apiUrl}/organizations/subscription/list/${id}`); // Убедитесь, что корректный адрес API
+      const response = await axiosInstance.get(`/organizations/subscription/list/${id}`);
       setSubscriptionHistory(response.data);
       console.log(response)
     } catch (error) {
       console.error("Ошибка при получении истории подписок:", error);
     }
   };
+
+  const fetchEmployees = async (orgId: number) => {
+    try {
+      // const response = await axios.get(`${apiUrl}/organizations/${orgId}/employees`);
+      const response = await axiosInstance.get(`/organizations/${orgId}/employees`);
+      setEmployees(response.data);
+    } catch (error) {
+      console.error("Ошибка при получении списка сотрудников:", error);
+    }
+  };
+
   const id = sessionStorage.getItem("organization_id");
 
   useEffect(() => {
@@ -94,6 +155,7 @@ const OrganizationDetails: React.FC = () => {
       fetchVehicles(Number(id));
       fetchSubscriptionHistory(Number(id));
       fetchOrganization(Number(id));
+      fetchEmployees(Number(id))
       console.log(id);
       setIdOrganization(Number(id));
     }
@@ -102,8 +164,9 @@ const OrganizationDetails: React.FC = () => {
 
   const deleteVehicle = async (vehicleId: number) => {
     try {
-      const response = await axios.delete(
-        `${apiUrl}/transport/organization/${vehicleId}`,
+      // const response = await axios.delete(
+      //   `${apiUrl}/transport/organization/${vehicleId}`,
+        const response = await axiosInstance.delete(`/transport/organization/${vehicleId}`,
         {
           data: {
             id, // Передаем ID организации в теле запроса
@@ -158,8 +221,9 @@ const OrganizationDetails: React.FC = () => {
           </>
         ),
         onOk: async () => {
-          const response = await axios.patch(
-            `${apiUrl}/organizations/subscription/${idOrganization}`,
+          // const response = await axios.patch(
+          //   `${apiUrl}/organizations/subscription/${idOrganization}`,
+            const response = await axiosInstance.patch(`/organizations/subscription/${idOrganization}`,
             {
               requestBody: {
                 start_date: start_date,
@@ -184,9 +248,10 @@ const OrganizationDetails: React.FC = () => {
       title: `Подтверждение ${action} доступа к мониторингу`,
       content: `Вы уверены, что хотите ${action} доступ к мониторингу транспортных средств?`,
       onOk: async () => {
-        const response = await axios.patch(
-          `${apiUrl}/organizations/status/${idOrganization}`
-        );
+        // const response = await axios.patch(
+        //   `${apiUrl}/organizations/status/${idOrganization}`
+        // );
+        const response = await axiosInstance.patch(`/organizations/status/${idOrganization}`);
         if (response) {
           fetchOrganization(Number(id));
         }
@@ -257,7 +322,8 @@ const OrganizationDetails: React.FC = () => {
 
   const handleAddVehicle = async () => {
     try {
-      const response = await axios.post(`${apiUrl}/transport/add-car/${vin}`, {
+      const response = await axiosInstance.patch(`/transport/add-car/${vin}`, {
+      // const response = await axios.post(`${apiUrl}/transport/add-car/${vin}`, {
         data: {
           id: idTransport, // Передаем ID организации в теле запроса
         },
@@ -301,25 +367,28 @@ const OrganizationDetails: React.FC = () => {
       display: "flex",
       flexDirection: "column",
       width: "100%",
+      height:"100vh",
       backgroundColor: "#F0F4F8",
     }}>
-    {/* <Header /> */}
+       <Row style={{
+        margin: "30px 40px 30px 40px",
+        flex: "1",
+        maxHeight:'20px'
+      }}> <h1 style={{ margin: 0,  color: '#1e40af' }}> {organizationData?.organization_name || "Название компании"}</h1></Row>
+ 
     <Card
       title="Информация об организации"
       style={{
         backgroundColor: "#F7F9FB",
        width: "auto",
-        margin: 40,
+        marginRight: 40,
+        marginLeft:40,
         borderRadius: 8,
         boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)' // Эффект тени
       }}
     >
       <Row gutter={16}>
         <Col span={24}>
-          <Typography.Title level={4} style={{ color: '#4a4a4a' }}>
-            {organizationData?.organization_name}
-          </Typography.Title>
-
           <Typography.Paragraph>
             <strong>Дата начала подписки:</strong>{" "}
             {moment(organizationData?.subscription_start).format("YYYY-MM-DD")}
@@ -391,6 +460,64 @@ const OrganizationDetails: React.FC = () => {
                 }}
               />
             </TabPane>
+            <TabPane tab="Сотрудники" key="3">
+  <Table
+    bordered
+    dataSource={employees}
+    columns={[
+      {
+        title: "Имя",
+        dataIndex: "name",
+        key: "name",
+      },
+      {
+        title: "Должность",
+        dataIndex: "position",
+        key: "position",
+      },
+      {
+        title: "Контакт",
+        dataIndex: "contact",
+        key: "contact",
+      },
+      {
+        title: "Действия",
+        key: "actions",
+        render: (text, employee) => (
+          <>
+            <Button
+              type="link"
+              onClick={() => {
+                // setEditingEmployee(employee);
+                setIsEmployeeModalVisible(true);
+              }}
+            >
+              Редактировать
+            </Button>
+            <Button
+              type="link"
+              danger
+              onClick={() => deleteEmployee(employee.id)}
+            >
+              Удалить
+            </Button>
+          </>
+        ),
+      },
+    ]}
+    rowKey="id"
+    style={{ marginTop: "16px", borderRadius: "8px", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)" }}
+  />
+  <Button
+    style={{ marginTop: "20px", backgroundColor: "#007bff", color: "#fff", borderColor: "#007bff" }}
+    onClick={() => {
+      setEditingEmployee(null);
+      setIsEmployeeModalVisible(true);
+    }}
+  >
+    Добавить сотрудника
+  </Button>
+</TabPane>
           </Tabs>
         </Col>
       </Row>
@@ -420,6 +547,39 @@ const OrganizationDetails: React.FC = () => {
         </Form.Item>
       </Form>
     </Modal>
+    <Modal
+  title={editingEmployee ? "Редактировать сотрудника" : "Добавить сотрудника"}
+  visible={isEmployeeModalVisible}
+  onCancel={() => setIsEmployeeModalVisible(false)}
+  footer={null}
+>
+  <Form
+    initialValues={editingEmployee || { name: "", position: "", contact: "" }}
+    onFinish={(values) => {
+      if (editingEmployee) {
+        // editEmployee(editingEmployee.id, values);
+      } else {
+        addEmployee(values);
+      }
+      setIsEmployeeModalVisible(false);
+    }}
+  >
+    <Form.Item name="name" label="Имя" rules={[{ required: true, message: "Введите имя!" }]}>
+      <Input />
+    </Form.Item>
+    <Form.Item name="position" label="Должность" rules={[{ required: true, message: "Введите должность!" }]}>
+      <Input />
+    </Form.Item>
+    <Form.Item name="contact" label="Контакт" rules={[{ required: true, message: "Введите контакт!" }]}>
+      <Input />
+    </Form.Item>
+    <Form.Item>
+      <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
+        {editingEmployee ? "Сохранить изменения" : "Добавить"}
+      </Button>
+    </Form.Item>
+  </Form>
+</Modal>
   </div>
   );
 };

@@ -26,26 +26,32 @@ import ProtectedRouteOperator from "./routes/ProtectedRouteOperator";
 import ProtectedRouteHead from "./routes/ProtectedRouteHead";
 import ProtectedRouteManager from "./routes/ProtectedRouteManager";
 import ProtectedRouteMechanic from "./routes/ProtectedRouteMechanic";
+import TransportDashboard from "./pages/shared/TransportDashboard/TransportDashboard";
+import EmployeesPage from "./pages/SuperAdminPages/EmployeesPage/EmployeesPage";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
-
+  const [isLoading, setIsLoading] = useState(true);
   const location = useLocation(); // Получаем текущий путь
 
+  
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     if (user.token) {
       setToken(user.token);
       setIsAuthenticated(true);
-      setRole(user.role); // Установите роль пользователя
+      setRole(user.role);
     }
+    setIsLoading(false); // Завершаем загрузку
+    console.log("xtht")
   }, []);
 
   const logout = () => {
     setToken(null);
     setIsAuthenticated(false);
+    setRole(null);
     localStorage.removeItem("user");
   };
 
@@ -53,7 +59,10 @@ const App = () => {
     <AuthContext.Provider value={{ isAuthenticated, token, role, logout }}>
       {token && location.pathname !== '/' && <Header />}
 
-      {token && location.pathname !== '/' ? (
+      {token
+       && location.pathname !== '/' 
+       ?
+        (
         <div style={{ display: 'flex', width: '100%' }}>
           <Navbar />
           <Routes>
@@ -72,10 +81,11 @@ const App = () => {
               <Route path="/super-admin/organizations" element={< OrganizationsPage />} />
               <Route path="/super-admin/transports" element={< TransportsPage />} />
               <Route path="/super-admin/transport/edit/:id" element={<EditTransportPage />} />
-              <Route path="/super-admin/transport/add" element={<CreateTransportPage />} />
+              <Route path="/super-admin/transport/new-car" element={<CreateTransportPage />} />
               <Route path="/super-admin/organization" element={<OrganizationDetails />} />
-              <Route path="/organizations/new" element={<CreateOrganizationPage />} />
-              {/* <Route path="/organizations/:id" element={<OrganizationDetails />} /> */}
+              <Route path="/super-admin/new-organization" element={<CreateOrganizationPage />} />
+              <Route path="/super-admin/transport" element={<TransportDashboard />} />
+              <Route path="/super-admin/employees" element={<EmployeesPage />} />
             </Route>
             <Route element={<ProtectedRouteHead />}>
             <Route path="/head/main" element={<SuperAdminMainPage />} />

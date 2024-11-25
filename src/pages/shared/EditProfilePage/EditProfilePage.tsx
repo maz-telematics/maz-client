@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useState,useEffect } from 'react';
 import { Button, Modal, Row, Col,DatePicker, Form, Input, message,Select } from 'antd';
 import dayjs from 'dayjs';
+import axiosInstance from '../../../services/axiosInstance';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export interface Organization {
@@ -31,7 +32,8 @@ const handleCancel = () => {
   
     useEffect(() => {
       if (id) {
-        axios.get(`${apiUrl}/organizations/${id}`)
+       axiosInstance.get('/organizations/${id}')
+        // axios.get(`${apiUrl}/organizations/${id}`)
           .then(response =>  setEditableFields(response.data[0]))
           .catch(error => console.error('Ошибка при получении данных:', error));
       }

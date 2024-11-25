@@ -14,7 +14,8 @@ import axios from "axios";
 import { Car } from "../../../../types/transportListTypes";
 import dayjs from "dayjs";
 import { Common } from "../../../../types/editCarTypes";
-const apiUrl = process.env.REACT_APP_API_URL;
+import axiosInstance from "../../../../services/axiosInstance";
+const apiUrl = import.meta.env.VITE_API_URL;
 const EditTransportPage = () => {
   const [data, setData] = useState<Car>();
   const [techniques, setTechniques] = useState<Common[]>([]);
@@ -41,28 +42,32 @@ const EditTransportPage = () => {
     fetchData();
 
     function fetchTechniques() {
-      axios
-        .get(`${apiUrl}/transport/types-engines`)
+      // axios
+      //   .get(`${apiUrl}/transport/types-engines`)
+       axiosInstance.get(`/transport/types-engines`)
         .then((response) => setTechniques(response.data))
         .catch((error) => console.error(error));
     }
 
     function fetchEngines() {
-      axios
-        .get(`${apiUrl}/transport/types-transport`)
+      // axios
+      //   .get(`${apiUrl}/transport/types-transport`)
+      axiosInstance.get(`/transport/types-transport`)
         .then((response) => setEngines(response.data))
         .catch((error) => console.error(error));
     }
 
     function fetchTransportData() {
-      axios
-        .get(`${apiUrl}/transport/car/${idTransport}`)
+      // axios
+      //   .get(`${apiUrl}/transport/car/${idTransport}`)
+      axiosInstance.get(`/transport/car/${idTransport}`)
         .then((response) => setData(response.data[0]))
         .catch((error) => console.error(error));
     }
     function fetchOrganizatios() {
-      axios
-        .get(`${apiUrl}/organizations`)
+      // axios
+      //   .get(`${apiUrl}/organizations`)
+      axiosInstance.get(`/organizations`)
         .then((response) => setOrganizations(response.data))
         .catch((error) => console.error(error));
     }
@@ -89,8 +94,11 @@ const EditTransportPage = () => {
       if (changedFieldValues.length > 0) {
         // Изменено для проверки на массив
         try {
-          const response = await axios.patch(
-            `${apiUrl}/transport/${idTransport}`,
+          // const response = await axios.patch(
+          //   `${apiUrl}/transport/${idTransport}`,
+          //   changedFieldValues
+          // );
+          const response = await axiosInstance.patch(`/transport/${idTransport}`,
             changedFieldValues
           );
           setData(response.data);

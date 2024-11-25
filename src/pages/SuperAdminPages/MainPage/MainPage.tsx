@@ -2,6 +2,7 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2'; // Если используете Chart.js
 import { Chart, registerables } from 'chart.js';
+import { Row, Col } from 'antd';
 
 // Регистрируем все компоненты Chart.js
 Chart.register(...registerables);
@@ -20,27 +21,40 @@ const MainPage: React.FC = () => {
   };
 
   return (
-    <div style={containerStyle}>
-      <h1 style={headerStyle}>Главная страница</h1>
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      width: "100%",
+      height: '100vh',
+      backgroundColor: "#F0F4F8",
+    }}>
+      <Row style={{
+        margin: "30px 40px 30px 40px",
+        flex: "1",
+      }}>
+        <Col xs={24} >
+          <h1 style={{ margin: 0, color: '#1e40af' }}>Главная страница</h1>
 
-      <div style={cardsContainerStyle}>
-        <Card title="Активные транспортные средства" value="50" />
-        <Card title="Неактивные транспортные средства" value="10" />
-        <Card title="Организации" value="20 (активные: 18, неактивные: 2)" />
-        <Card title="Пользователи" value="100 (Администраторы: 5, Операторы: 20)" />
-      </div>
+          <div style={cardsContainerStyle}>
+            <Card title="Активные транспортные средства" value="50" />
+            <Card title="Неактивные транспортные средства" value="10" />
+            <Card title="Организации" value="20 (активные: 18, неактивные: 2)" />
+            <Card title="Пользователи" value="100 (Администраторы: 5, Операторы: 20)" />
+          </div>
 
-      <section style={sectionStyle}>
-        <h2 style={sectionTitleStyle}>Критическая информация</h2>
-        <p style={infoTextStyle}>Обнаружены проблемы с транспортом #23: ошибка датчика температуры.</p>
-        <p style={infoTextStyle}>Организация "Transport Company A" не активна с 2024-10-01.</p>
-        <p style={infoTextStyle}>Проблемы с маршрутом #12: задержка на 30 минут.</p>
-      </section>
+          <section style={sectionStyle}>
+            <h2 style={sectionTitleStyle}>Критическая информация</h2>
+            <p style={infoTextStyle}>Обнаружены проблемы с транспортом #23: ошибка датчика температуры.</p>
+            <p style={infoTextStyle}>Организация "Transport Company A" не активна с 2024-10-01.</p>
+            <p style={infoTextStyle}>Проблемы с маршрутом #12: задержка на 30 минут.</p>
+          </section>
 
-      <div style={chartContainerStyle}>
-        <h2 style={chartTitleStyle}>График активности транспорта</h2>
-        <Bar data={data} options={chartOptions} />
-      </div>
+          <div style={chartContainerStyle}>
+            <h2 style={chartTitleStyle}>График активности транспорта</h2>
+            <Bar data={data} options={chartOptions} />
+          </div>
+        </Col>
+      </Row>
     </div>
   );
 };
@@ -55,26 +69,13 @@ const Card: React.FC<{ title: string; value: string }> = ({ title, value }) => {
   );
 };
 
-// Стили для компонентов
-const containerStyle: React.CSSProperties = {
-    padding: '2rem', 
-//   display: 'flex',
-//   flexDirection: 'column',
-//   alignItems: 'center',
-};
-
-const headerStyle = {
-    fontSize: '2rem',
-    color: '#1e40af',
-    marginBottom: '2rem',
-    justifyContent: 'left',
-  };
 
 const cardsContainerStyle: React.CSSProperties = {
   display: 'flex',
   justifyContent: 'space-around',
   width: '100%',
   marginBottom: '20px',
+  marginTop: '20px',
 };
 
 const cardStyle: React.CSSProperties = {

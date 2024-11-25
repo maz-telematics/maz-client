@@ -13,8 +13,9 @@ import {
 import { Car } from "../../../../types/transportListTypes";
 import { Common } from "../../../../types/editCarTypes";
 import dayjs from "dayjs";
+import axiosInstance from "../../../../services/axiosInstance";
 
-const apiUrl = process.env.REACT_APP_API_URL;
+const apiUrl = import.meta.env.VITE_API_URL;
 const CreateTransportPage = () => {
   const [form] = Form.useForm();
   const [techniques, setTechniques] = useState<Common[]>([]);
@@ -27,21 +28,24 @@ const CreateTransportPage = () => {
     fetchOrganizatios();
 
     function fetchTechniques() {
-      axios
-        .get(`${apiUrl}/transport/types-engines`)
+      // axios
+      //   .get(`${apiUrl}/transport/types-engines`)
+        axiosInstance.get(`/transport/types-engines`)
         .then((response) => setTechniques(response.data))
         .catch((error) => console.error(error));
     }
 
     function fetchEngines() {
-      axios
-        .get(`${apiUrl}/transport/types-transport`)
+      // axios
+      //   .get(`${apiUrl}/transport/types-transport`)
+        axiosInstance.get(`/transport/types-transport`)
         .then((response) => setEngines(response.data))
         .catch((error) => console.error(error));
     }
     function fetchOrganizatios() {
-      axios
-        .get(`${apiUrl}/organizations`)
+      // axios
+      //   .get(`${apiUrl}/organizations`)
+        axiosInstance.get(`/organizations`)
         .then((response) => setOrganizations(response.data))
         .catch((error) => console.error(error));
     }
@@ -49,7 +53,8 @@ const CreateTransportPage = () => {
   
   const onFinish = async (values: Car) => {
     try {
-        const response = await axios.post(`${apiUrl}/new-car`, values);
+        // const response = await axios.post(`${apiUrl}/new-car`, values);
+        const response = await axiosInstance.post(`/new-car`, values);
         if (response.status === 201) {
             message.success("Авто добавлено!");
             form.resetFields();
@@ -246,7 +251,6 @@ const CreateTransportPage = () => {
                 options={organizationsOptions}
               />
             </Form.Item>
-
             <Button
               style={{  marginTop: "30px" }}
               type="primary"

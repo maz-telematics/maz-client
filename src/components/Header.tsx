@@ -15,6 +15,11 @@ const Header = () => {
   return (
     <Row
       style={{
+        // position: "fixed",
+        // top: "0",
+        // left: "0",
+        // zIndex:"999",
+        // width:"100%",
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
@@ -24,7 +29,7 @@ const Header = () => {
         backgroundColor: "#3b82f6", // Потемненный цвет фона
         color:"white",
         boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
-        position: "relative", // Позиция для управления вложенными элементами
+        // position: "relative", // Позиция для управления вложенными элементами
       }}
     >
       <Col

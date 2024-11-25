@@ -5,7 +5,10 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import {useUser} from '../../services/auth'
 import SvgIcon from '@mui/material/SvgIcon';
+import axiosInstance from '../../services/axiosInstance';
+
 const apiUrl = import.meta.env.VITE_API_URL;
+
 interface Point {
   x: number;
   y: number;
@@ -28,7 +31,8 @@ const LoginPage: React.FC<LoginProps> = ({ setToken,setIsAuthenticated }) => {
   const { setRole } = useUser(); 
   const login = async (username: string, password: string) => {
     try {
-      const response = await axios.post(`${apiUrl}/login`, {
+      // const response = await axios.post(`${apiUrl}/login`, {
+        const response = await axiosInstance.post(`${apiUrl}/login`,{
         username,
         password,
       });
