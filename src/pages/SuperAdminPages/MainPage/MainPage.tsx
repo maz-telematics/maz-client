@@ -1,14 +1,12 @@
-// src/pages/MainPage/MainPage.tsx
+
 import React from 'react';
-import { Bar } from 'react-chartjs-2'; // Если используете Chart.js
+import { Bar } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 import { Row, Col } from 'antd';
 
-// Регистрируем все компоненты Chart.js
 Chart.register(...registerables);
 
 const MainPage: React.FC = () => {
-  // Данные для графика
   const data = {
     labels: ['Неделя 1', 'Неделя 2', 'Неделя 3', 'Неделя 4'],
     datasets: [
@@ -59,7 +57,6 @@ const MainPage: React.FC = () => {
   );
 };
 
-// Компонент карточки
 const Card: React.FC<{ title: string; value: string }> = ({ title, value }) => {
   return (
     <div style={cardStyle}>

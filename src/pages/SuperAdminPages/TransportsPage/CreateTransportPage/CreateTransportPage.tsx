@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
 import {
   Button,
@@ -15,7 +14,6 @@ import { Common } from "../../../../types/editCarTypes";
 import dayjs from "dayjs";
 import axiosInstance from "../../../../services/axiosInstance";
 
-const apiUrl = import.meta.env.VITE_API_URL;
 const CreateTransportPage = () => {
   const [form] = Form.useForm();
   const [techniques, setTechniques] = useState<Common[]>([]);
@@ -28,23 +26,17 @@ const CreateTransportPage = () => {
     fetchOrganizatios();
 
     function fetchTechniques() {
-      // axios
-      //   .get(`${apiUrl}/transport/types-engines`)
         axiosInstance.get(`/transport/types-engines`)
         .then((response) => setTechniques(response.data))
         .catch((error) => console.error(error));
     }
 
     function fetchEngines() {
-      // axios
-      //   .get(`${apiUrl}/transport/types-transport`)
         axiosInstance.get(`/transport/types-transport`)
         .then((response) => setEngines(response.data))
         .catch((error) => console.error(error));
     }
     function fetchOrganizatios() {
-      // axios
-      //   .get(`${apiUrl}/organizations`)
         axiosInstance.get(`/organizations`)
         .then((response) => setOrganizations(response.data))
         .catch((error) => console.error(error));
@@ -53,7 +45,6 @@ const CreateTransportPage = () => {
   
   const onFinish = async (values: Car) => {
     try {
-        // const response = await axios.post(`${apiUrl}/new-car`, values);
         const response = await axiosInstance.post(`/new-car`, values);
         if (response.status === 201) {
             message.success("Авто добавлено!");
@@ -85,11 +76,10 @@ const CreateTransportPage = () => {
       display: "flex", 
       flexDirection: "column", 
       width: "100%", 
-      height: "100vh", // Установить 100vh, чтобы занять всю высоту
+      height: "100vh", 
       backgroundColor: "#F0F4F8",
-      boxSizing: "border-box", // Чтобы отступы учитывались в общей высоте
+      boxSizing: "border-box", 
       }}>
-      {/* <Header /> */}
       <Row style={{ width: "80%", margin: "30px auto" }}>
         <Col xs={12}>
           <Form form={form} onFinish={onFinish}>

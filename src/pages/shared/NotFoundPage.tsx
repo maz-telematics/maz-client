@@ -10,8 +10,6 @@ const NotFound: React.FC = () => {
       height:'90vh', width:'100%',
       display:'flex',  
       flexDirection: "column",
-      // alignItems: "center",
-      // justifyContent: "center"
     }}
       status="404"
       title="404"

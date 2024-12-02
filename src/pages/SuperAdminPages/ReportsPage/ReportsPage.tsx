@@ -1,8 +1,8 @@
-// src/pages/ReportsPage/ReportsPage.tsx
+
 import React, { useEffect, useState } from 'react';
 import { Table, Card, DatePicker, Row, Col, Select, Button } from 'antd';
-import dayjs, { Dayjs } from 'dayjs';
-import DetailView from './DetailView'; // Импортируем новый компонент
+import { Dayjs } from 'dayjs';
+import DetailView from './DetailView'; 
 
 const ReportsPage: React.FC = () => {
   const [transportReports, setTransportReports] = useState<any[]>([]);
@@ -17,7 +17,6 @@ const ReportsPage: React.FC = () => {
   const [isDetailVisible, setIsDetailVisible] = useState(false);
 
   useEffect(() => {
-    // Заглушка данных
     const fetchTransportReports = () => {
       setTransportReports([
         { id: 1, name: 'Транспорт 1', status: 'Активен', errors: 1, location: 'Москва', route: 'Маршрут 1', speed: 60 },
@@ -44,12 +43,10 @@ const ReportsPage: React.FC = () => {
   };
 
   const handleFilter = () => {
-    // Логика фильтрации
     setFilteredTransportReports(transportReports);
     setFilteredOrganizationReports(organizationReports);
   };
 
-  // Определяем колонки для таблиц
   const organizationColumns = [
     { title: 'ID', dataIndex: 'id', key: 'id' },
     { title: 'Название', dataIndex: 'name', key: 'name' },
@@ -113,7 +110,7 @@ const ReportsPage: React.FC = () => {
               columns={transportColumns}
               rowKey="id"
               onRow={record => ({
-                onClick: () => showDetail(record), // Показать детальный вид при клике
+                onClick: () => showDetail(record),
               })}
             />
           </Card>
@@ -124,7 +121,7 @@ const ReportsPage: React.FC = () => {
               columns={organizationColumns}
               rowKey="id"
               onRow={record => ({
-                onClick: () => showDetail(record), // Показать детальный вид при клике
+                onClick: () => showDetail(record),
               })}
             />
           </Card>

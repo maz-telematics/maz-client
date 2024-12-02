@@ -36,32 +36,28 @@ const EmployeesPage: React.FC = () => {
         fetchEmployees();
     }, []);
 
-    // Загрузка списка сотрудников
     const fetchEmployees = async () => {
         try {
-            const response = await axios.get("/api/employees"); // Замените на ваш API
+            const response = await axios.get("/api/employees");
             setEmployees(response.data);
         } catch (error) {
             message.error("Ошибка загрузки сотрудников");
         }
     };
 
-    // Добавление нового сотрудника
     const handleAdd = () => {
         setEditingEmployee(null);
         setIsModalOpen(true);
     };
 
-    // Редактирование сотрудника
     const handleEdit = (employee: Employee) => {
         setEditingEmployee(employee);
         setIsModalOpen(true);
     };
 
-    // Удаление сотрудника
     const handleDelete = async (id: string) => {
         try {
-            await axios.delete(`/api/employees/${id}`); // Замените на ваш API
+            await axios.delete(`/api/employees/${id}`);
             message.success("Сотрудник удален");
             fetchEmployees();
         } catch (error) {
@@ -69,16 +65,13 @@ const EmployeesPage: React.FC = () => {
         }
     };
 
-    // Сохранение данных (новый сотрудник или обновление)
     const handleSave = async (values: any) => {
         try {
             if (editingEmployee) {
-                // Редактирование сотрудника
-                await axios.put(`/api/employees/${editingEmployee.id}`, values); // Замените на ваш API
+                await axios.put(`/api/employees/${editingEmployee.id}`, values);
                 message.success("Сотрудник обновлен");
             } else {
-                // Добавление нового сотрудника
-                await axios.post("/api/employees", values); // Замените на ваш API
+                await axios.post("/api/employees", values);
                 message.success("Сотрудник добавлен");
             }
             setIsModalOpen(false);
@@ -88,7 +81,6 @@ const EmployeesPage: React.FC = () => {
         }
     };
 
-    // Колонки таблицы
     const columns = [
         {
             title: "Имя",
@@ -153,7 +145,7 @@ const EmployeesPage: React.FC = () => {
             display: "flex",
             flexDirection: "column",
             width: "100%",
-            height:"100vh",
+            height: "100vh",
             backgroundColor: "#F0F4F8",
         }}>
             <Row style={{
@@ -167,6 +159,7 @@ const EmployeesPage: React.FC = () => {
                         </Col>
                         <Col>
                             <Button
+                              disabled={true}
                                 type="primary"
                                 icon={<UserAddOutlined />}
                                 onClick={handleAdd}
@@ -236,7 +229,7 @@ const EmployeesPage: React.FC = () => {
                                 Сохранить
                             </Button>
                         </Form>
-                    </Modal> 
+                    </Modal>
                 </Col>
             </Row>
         </div>

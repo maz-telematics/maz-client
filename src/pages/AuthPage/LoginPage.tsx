@@ -1,42 +1,25 @@
 import React, { useContext } from "react";
-import { Form, Input,notification, Button, Row, Col } from "antd";
+import { Form, Input, notification, Button, Row, Col } from "antd";
 import { message } from "antd";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import {useUser} from '../../services/auth'
-import SvgIcon from '@mui/material/SvgIcon';
+import { useUser } from '../../services/auth'
 import axiosInstance from '../../services/axiosInstance';
 
-const apiUrl = import.meta.env.VITE_API_URL;
-
-interface Point {
-  x: number;
-  y: number;
-}
-
-interface Line {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-}
 interface LoginProps {
   setToken: (token: string) => void;
-  setIsAuthenticated: (isAuth: boolean) => void; 
-  setRole: (role:string) => void; 
+  setIsAuthenticated: (isAuth: boolean) => void;
+  setRole: (role: string) => void;
 }
 
-const LoginPage: React.FC<LoginProps> = ({ setToken,setIsAuthenticated }) => {
+const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
   const navigate = useNavigate()
-  const { setRole } = useUser(); 
+  const { setRole } = useUser();
   const login = async (username: string, password: string) => {
     try {
-      // const response = await axios.post(`${apiUrl}/login`, {
-        const response = await axiosInstance.post(`${apiUrl}/login`,{
+      const response = await axiosInstance.post(`/login`, {
         username,
         password,
       });
-      console.log(response)
       if (response.status === 200) {
         setToken(response.data.token);
         localStorage.setItem(
@@ -70,19 +53,17 @@ const LoginPage: React.FC<LoginProps> = ({ setToken,setIsAuthenticated }) => {
             navigate("/mechanic/main", { replace: true });
             break;
           default:
-            navigate("/", { replace: true }); // начальная страница, если роль не распознана
+            navigate("/", { replace: true });
         }
-        // navigate("/main", { replace: true });
         return Number(200);
       }
-    } catch (error:any) {
-      console.log(error)
-      if(error.response.status==302){
+    } catch (error: any) {
+      if (error.response.status == 302) {
         return 302;
-      }else{
-         return 401;
+      } else {
+        return 401;
       }
-     
+
     }
   };
 
@@ -90,7 +71,6 @@ const LoginPage: React.FC<LoginProps> = ({ setToken,setIsAuthenticated }) => {
     try {
       const { username, password } = values;
       const result = await login(username, password);
-      // console.log(result)
       if (result === null) {
         message.error("Возникли проблемы при авторизации!");
       } else if (result === 200) {
@@ -101,13 +81,13 @@ const LoginPage: React.FC<LoginProps> = ({ setToken,setIsAuthenticated }) => {
         notification.error({
           message: 'Срок подписки истек!',
           description: 'Ваша подписка истекла. Для продолжения подписки, пожалуйста, свяжитесь с нашей службой поддержки по телефону: +375 (44) 44-44-444 или по электронной почте: support@example.com.',
-          duration: 10,  // Продолжительность отображения уведомления (в секундах)
-      });
+          duration: 10,
+        });
       } else {
         console.error("Возникли проблемы при авторизации!");
       }
     } catch (error) {
-      message.error("Ошибка");
+      message.error("Проблема с подключением. Пожалуйста, попробуйте позже.");
     }
   };
 
@@ -125,17 +105,16 @@ const LoginPage: React.FC<LoginProps> = ({ setToken,setIsAuthenticated }) => {
     });
   };
 
-  // Функция для генерации линий (дорог)
   const generateRoadLines = (numLines: number): { x1: number; y1: number; x2: number; y2: number }[] => {
     const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
-    const numSegments = 5; // Количество сегментов на линию
+    const numSegments = 5;
     for (let i = 0; i < numLines; i++) {
       let x = Math.random() * window.innerWidth;
       let y = Math.random() * window.innerHeight;
 
       for (let j = 0; j < numSegments; j++) {
-        const newX = x + (Math.random() * 200 - 100); // Увеличиваем или уменьшаем X
-        const newY = y + (Math.random() * 200 - 100); // Увеличиваем или уменьшаем Y
+        const newX = x + (Math.random() * 200 - 100);
+        const newY = y + (Math.random() * 200 - 100);
         lines.push({ x1: x, y1: y, x2: newX, y2: newY });
         x = newX;
         y = newY;
@@ -144,26 +123,26 @@ const LoginPage: React.FC<LoginProps> = ({ setToken,setIsAuthenticated }) => {
     return lines;
   };
 
-  const numLines =55; // Количество дорожных линий
+  const numLines = 55;
   const roadLines = generateRoadLines(numLines);
   const intersectionPoints = getIntersectionPoints(roadLines);
-  
+
   return (
 
     <div
-    style={{
-      height: "100vh",
-      display: "flex",
-      backgroundColor: "#F0F4F8",
-      justifyContent: "center",
-      alignItems: "center",
-      position: 'relative',
-      overflow: 'hidden',
-    }}
-  >
+      style={{
+        height: "100vh",
+        display: "flex",
+        backgroundColor: "#F0F4F8",
+        justifyContent: "center",
+        alignItems: "center",
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
 
 
-<svg
+      <svg
         style={{
           position: 'absolute',
           top: 0,
@@ -173,7 +152,6 @@ const LoginPage: React.FC<LoginProps> = ({ setToken,setIsAuthenticated }) => {
           zIndex: 1,
         }}
       >
-        {/* Рисуем дороги */}
         {roadLines.map((line, index) => (
           <line
             key={index}
@@ -183,92 +161,101 @@ const LoginPage: React.FC<LoginProps> = ({ setToken,setIsAuthenticated }) => {
             y2={line.y2}
             stroke="#3B82F6"
             strokeWidth="4"
-            strokeDasharray="5,5" // Пунктирные линии для дороги
+            strokeDasharray="5,5"
           />
         ))}
-
-        {/* Рисуем точки на пересечениях линий */}
         {intersectionPoints.map((point, index) => (
           <circle key={index} cx={point.x} cy={point.y} r="6" fill="#FF5722" />
         ))}
-         <defs>
+        <defs>
           <linearGradient id="signalGradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" style={{ stopColor: '#3B82F6', stopOpacity: 1 }} />
             <stop offset="100%" style={{ stopColor: '#A3C1FF', stopOpacity: 1 }} />
           </linearGradient>
         </defs>
-
-    
         {Array.from({ length: 30 }).map((_, index) => (
           <rect key={index} x="-200" y={`${Math.random() * 100}vh`} width="150" height="10" fill="url(#signalGradient)">
             <animate attributeName="x" from="-200" to="100%" dur={`${Math.random() * 20 + 6}s`} repeatCount="indefinite" />
           </rect>
         ))}
       </svg>
-    <Col
-      xs={22}
-      sm={16}
-      md={12}
-      lg={8}
-      xl={6}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        width: "100%",
-        maxWidth: "380px",
-        backgroundColor: "rgb(255, 255, 255)",
-        borderRadius: "10px",
-        padding: "30px",
-        boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
-        position: 'relative',
-        zIndex: 2,
-      }}
-    >
-      <Row style={{ display:'flex',justifyContent:"center", fontSize: "2rem", fontWeight: "bold", marginBottom: "20px", color: "#3B82F6" }}>
-        Войти
-      </Row>
-      
-      <Form onFinish={handleLogin}>
-        <Form.Item
-          label={<label style={{ fontSize: "14px", width:"55px",textAlign:"left", fontWeight: "bold", color: "#333333" }}>Логин</label>}
-          name="username"
-          rules={[{ required: true, message: "Введите логин" }]}
-        >
-          <Input placeholder="Введите ваш логин" style={{ borderRadius: "5px",  backgroundColor: "#f7f7f7", color: "#333" }} />
-        </Form.Item>
-        <Form.Item
-          label={<label style={{ fontSize: "14px",width:"55px", textAlign:"left",fontWeight: "bold", color: "#333333" }}>Пароль</label>}
-          name="password"
-          rules={[{required: true,   message: "Введите пароль" }]}
-          style={{marginTop:"30px", }}
-        >
-          <Input.Password placeholder="Введите ваш пароль" style={{ borderRadius: "5px",  backgroundColor: "#f7f7f7", color: "#333" }} />
-        </Form.Item>
-        <Form.Item style={{ display: "flex", justifyContent: "center", marginTop:"35px" }}>
-          <Button
-            type="primary"
-            htmlType="submit"
-            style={{
-              width: "200px",
-              backgroundColor: "#3B82F6",
-              border: "none",
-              color: "white",
-              fontWeight: "bold",
-              padding: "10px",
-              borderRadius: "5px",
-            }}
+      <Col
+        xs={16}
+        sm={16}
+        md={12}
+        lg={8}
+        xl={6}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+          maxWidth: "380px",
+          backgroundColor: "rgb(255, 255, 255)",
+          borderRadius: "10px",
+          padding: "30px",
+          boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
+          position: 'relative',
+          zIndex: 2,
+        }}
+      >
+        <Row style={{ display: 'flex', justifyContent: "center", fontSize: "2rem", fontWeight: "bold", marginBottom: "20px", color: "#3B82F6" }}>
+          Войти
+        </Row>
+
+        <Form onFinish={handleLogin}>
+          <Form.Item
+            label={
+              <label
+                style={{
+                  fontSize: "14px",
+                  width: "55px",
+                  textAlign: "left",
+                  fontWeight: "bold",
+                  color: "#333333",
+                }}
+              >
+                Логин
+              </label>
+            }
+            name="username"
+            rules={[
+              { required: true, message: "Введите email" },
+              // {
+              //   type: "email",
+              //   message: "Введите корректный email",
+              // },
+            ]}
           >
-            Войти
-          </Button>
-        </Form.Item>
-        <Form.Item style={{ display: "flex", justifyContent: "center" }}>
-          <Button disabled type="link" style={{ color: "#3B82F6" }}>
-            Забыли пароль?
-          </Button>
-        </Form.Item>
-      </Form>
-    </Col>
-  </div>
+            <Input placeholder="Введите ваш логин" style={{ borderRadius: "5px", backgroundColor: "#f7f7f7", color: "#333" }} />
+          </Form.Item>
+          <Form.Item
+            label={<label style={{ fontSize: "14px", width: "55px", textAlign: "left", fontWeight: "bold", color: "#333333" }}>Пароль</label>}
+            name="password"
+            rules={[{ required: true, message: "Введите пароль" }]}
+            style={{ marginTop: "30px", }}
+          >
+            <Input.Password placeholder="Введите ваш пароль" style={{ borderRadius: "5px", backgroundColor: "#f7f7f7", color: "#333" }} />
+          </Form.Item>
+          <Form.Item style={{ display: "flex", justifyContent: "center", marginTop: "35px" }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={{
+                width: "200px",
+                backgroundColor: "#3B82F6",
+                border: "none",
+                color: "white",
+                fontWeight: "bold",
+                padding: "10px",
+                borderRadius: "5px",
+              }}
+            >
+              Войти
+            </Button>
+          </Form.Item>
+        </Form>
+      </Col>
+    </div>
   );
 };
 

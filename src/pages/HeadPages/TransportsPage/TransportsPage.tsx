@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import { Table, Row, Col } from "antd";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import moment from "moment";
 import { Car } from "../../../types/organizationTypes";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axiosInstance from '../../../services/axiosInstance';
 
-const apiUrl = import.meta.env.VITE_API_URL;
 const TransportsPage = () => {
   const [cars, setCars] = useState<Car[]>([]);
   const [message, setMessage] = useState('');
@@ -25,11 +23,7 @@ const TransportsPage = () => {
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        // const response = await axios.get(
-        //   `${apiUrl}/transport/list/${userId}`
-        // );
         const response = await axiosInstance.get('/transport/list/${userId}');
-        // setCars(response.data);
         if (response.data.message) {
           toast.warning(response.data.message, {
             position: 'top-center', // Изменяем на строку
@@ -61,14 +55,12 @@ const TransportsPage = () => {
     <div style={{  display: "flex", 
       flexDirection: "column", 
       width: "100%", 
-      height: "100vh", // Установить 100vh, чтобы занять всю высоту
+      height: "100vh",
       backgroundColor: "#F0F4F8",
       boxSizing: "border-box",
       overflow: "hidden",
       scrollbarWidth: "thin",
       scrollbarColor:"#3b82f6 white"}}>
-      {/* <Header /> */}
-
       <Row style={{ width: "80%", margin: "30px auto" }}>
         <Col xs={24}>
         <ToastContainer />

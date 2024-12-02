@@ -1,13 +1,10 @@
 import { useState, useEffect } from "react";
-import { Table, Tabs, Modal, Button, Row, Col, message } from "antd";
-import { CarOutlined } from "@ant-design/icons";
+import { Table, Modal, Button, Row, Col, message } from "antd";
+import { CarOutlined, EditOutlined  } from "@ant-design/icons";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
 import { Car } from "../../../types/transportListTypes";
 import moment from "moment";
 import axiosInstance from "../../../services/axiosInstance";
-
-const apiUrl = import.meta.env.VITE_API_URL;
 
 const TransportsPage = () => {
   const [cars, setCars] = useState<Car[]>([]);
@@ -39,7 +36,6 @@ const TransportsPage = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      // const response = await axios.delete(`${apiUrl}/transport/${deleteVin}`, {
         const response = await axiosInstance.delete(`/transport/${deleteVin}`, {
         params: {
           organization_id: deleteOrganizationId,
@@ -63,7 +59,6 @@ const TransportsPage = () => {
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        // const response = await axios.get(`${apiUrl}/transport/list-transport`);
         const response = await axiosInstance.get(`/transport/list-transport`);
         setCars(response.data);
       } catch (error) {
@@ -99,6 +94,7 @@ const TransportsPage = () => {
             </Col>
             <Col>
               <Button
+                disabled={true}
                 type="primary"
                 icon={<CarOutlined />}
                 onClick={navigateToNewCar}
@@ -117,7 +113,7 @@ const TransportsPage = () => {
                 render: (text, record) => (
                   <a
                     onClick={() =>
-                      handleRedirectAndSaveId(record.id_transport)
+                      handleRedirectAndSaveId(record.id)
                     }
                     style={{ color: "#1890ff", fontWeight: "500" }}
                   >
@@ -135,7 +131,7 @@ const TransportsPage = () => {
                 dataIndex: "year_release",
                 key: "year_release",
                 render: (text) => (
-                  <span>{moment(text).format("YYYY")}</span> // Упрощенное отображение года
+                  <span>{moment(text).format("YYYY")}</span> 
                 ),
               },
               {
@@ -159,45 +155,46 @@ const TransportsPage = () => {
                 width: 250,
                 align: "center",
                 render: (text, record) => (
-                  <>
+                  <div style={{ display: "flex", gap: "8px" }}>
                     <Button
+                    disabled={true}
                       size="middle"
-                      onClick={() =>
-                        navigateToEditCar(record.id_transport)
-                      }
+                      onClick={() => navigateToEditCar(record.id)}
                       style={{
-                        marginRight: "8px",
-                        backgroundColor: "#4a90e2", // Синий цвет
+                        backgroundColor: "#4a90e2",
                         borderColor: "#4a90e2",
                         color: "#fff",
+                        display: "flex",
+                        alignItems: "center",
                       }}
+                      icon={<EditOutlined />}
                     >
                       Изменить
                     </Button>
                     <Button
+                      disabled={true}
                       size="middle"
                       onClick={() =>
-                        handleDelete(
-                          record.id_transport,
-                          record.organization_id
-                        )
+                        handleDelete(record.id, record.organization_id)
                       }
                       style={{
-                        backgroundColor: "#007bff", // Темно-синий цвет
+                        backgroundColor: "#007bff",
                         borderColor: "#007bff",
                         color: "#fff",
+                        display: "flex",
+                        alignItems: "center",
                       }}
                     >
                       Переместить в архив
                     </Button>
-                  </>
+                  </div>
                 ),
               },
             ]}
             pagination={false}
             dataSource={cars}
             bordered
-            rowKey={(record) => record.id_transport}
+            rowKey={(record) => record.id}
             style={{
               borderRadius: "8px",
               overflow: "hidden",
@@ -217,7 +214,7 @@ const TransportsPage = () => {
         onCancel={handleCancelDelete}
         okText="Переместить в архив"
         cancelText="Отменить"
-        style={{ borderRadius: "8px" }} // Добавим стиль к модальному окну
+        style={{ borderRadius: "8px" }} 
       >
         <p>Вы уверены, что хотите переместить транспорт в архив?</p>
       </Modal>

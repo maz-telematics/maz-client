@@ -6,16 +6,14 @@ import {
   Col,
   Form,
   Select,
-  Spin,
   Input,
   message,
 } from "antd";
-import axios from "axios";
 import { Car } from "../../../../types/transportListTypes";
 import dayjs from "dayjs";
 import { Common } from "../../../../types/editCarTypes";
 import axiosInstance from "../../../../services/axiosInstance";
-const apiUrl = import.meta.env.VITE_API_URL;
+
 const EditTransportPage = () => {
   const [data, setData] = useState<Car>();
   const [techniques, setTechniques] = useState<Common[]>([]);
@@ -42,31 +40,23 @@ const EditTransportPage = () => {
     fetchData();
 
     function fetchTechniques() {
-      // axios
-      //   .get(`${apiUrl}/transport/types-engines`)
        axiosInstance.get(`/transport/types-engines`)
         .then((response) => setTechniques(response.data))
         .catch((error) => console.error(error));
     }
 
     function fetchEngines() {
-      // axios
-      //   .get(`${apiUrl}/transport/types-transport`)
       axiosInstance.get(`/transport/types-transport`)
         .then((response) => setEngines(response.data))
         .catch((error) => console.error(error));
     }
 
     function fetchTransportData() {
-      // axios
-      //   .get(`${apiUrl}/transport/car/${idTransport}`)
       axiosInstance.get(`/transport/car/${idTransport}`)
         .then((response) => setData(response.data[0]))
         .catch((error) => console.error(error));
     }
     function fetchOrganizatios() {
-      // axios
-      //   .get(`${apiUrl}/organizations`)
       axiosInstance.get(`/organizations`)
         .then((response) => setOrganizations(response.data))
         .catch((error) => console.error(error));
@@ -89,15 +79,8 @@ const EditTransportPage = () => {
         return { name: key, value: form.getFieldValue(key) };
       });
 
-      console.log(changedFieldValues);
-
       if (changedFieldValues.length > 0) {
-        // Изменено для проверки на массив
         try {
-          // const response = await axios.patch(
-          //   `${apiUrl}/transport/${idTransport}`,
-          //   changedFieldValues
-          // );
           const response = await axiosInstance.patch(`/transport/${idTransport}`,
             changedFieldValues
           );
@@ -109,14 +92,14 @@ const EditTransportPage = () => {
           const errorMessage =
             error.response?.data?.error ||
             "Произошла ошибка при обновлении данных";
-          message.error(errorMessage); // Отображение ошибки
+          message.error(errorMessage); 
         }
       } else {
         message.warning("Ничего не изменено");
       }
     } catch (error) {
       console.error(error);
-      message.error("Произошла общая ошибка"); // Обрабатываем общую ошибку
+      message.error("Произошла общая ошибка"); 
     }
   };
 
@@ -140,12 +123,11 @@ const EditTransportPage = () => {
         display: "flex", 
       flexDirection: "column", 
       width: "100%", 
-      height: "100vh", // Установить 100vh, чтобы занять всю высоту
+      height: "100vh", 
       backgroundColor: "#F0F4F8",
       boxSizing: "border-box",
       }}
     >
-      {/* <Header /> */}
       <Row style={{ width: "80%", margin: "30px auto" }}>
         <Col xs={24}>
           <Form form={form} onFinish={onFinish}>

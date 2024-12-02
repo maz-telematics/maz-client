@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import { Table, Tabs, Modal, Button, Row, Col, message } from "antd";
+import { Table, Modal, Button, Row, Col, message } from "antd";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
 import { Organization } from "../../../types/transportListTypes";
 import moment from "moment";
 import { HomeOutlined } from "@ant-design/icons";
 import axiosInstance from '../../../services/axiosInstance';
-const apiUrl = import.meta.env.VITE_API_URL;
+
 const OrganizationsPage = () => {
   const [organization, setOrganizations] = useState<Organization[]>([]);
   const user = localStorage.getItem("user");
@@ -18,14 +17,12 @@ const OrganizationsPage = () => {
     role = userData.role;
   }
 
-
   const navigateToNewOrganization = () => {
     navigate("/super-admin/new-organization");
   };
 
   const fetchOrganizatios = async () => {
     try {
-      // const response = await axios.get(`${apiUrl}/organizations/list`);
       const response = await axiosInstance.get('/organizations/list');
       setOrganizations(response.data);
     } catch (error) {
@@ -49,9 +46,6 @@ const OrganizationsPage = () => {
       cancelText: "Отмена",
       onOk: async () => {
         try {
-          // const response = await axios.delete(
-          //   `${apiUrl}/organizations/${idOrganization}`
-          // );
           const response = await axiosInstance.delete('/organizations/${idOrganization}');
           if (response.status === 200) {
             message.success(`Организация перемещена в архив успешно!`);
@@ -85,6 +79,7 @@ const OrganizationsPage = () => {
             </Col>
             <Col>
               <Button
+                disabled={true}
                 type="primary"
                 onClick={navigateToNewOrganization}
                 icon={<HomeOutlined />}
@@ -147,12 +142,13 @@ const OrganizationsPage = () => {
                 align: "center",
                 render: (text, record) => (
                   <Button
+                  disabled={true}
                     size="middle"
                     onClick={() =>
                       handleDeleteOrganization(record.organization_id)
                     }
                     style={{
-                      backgroundColor: "#007bff", // Темно-синий цвет
+                      backgroundColor: "#007bff", 
                       borderColor: "#007bff",
                       color: "#fff",
                     }}

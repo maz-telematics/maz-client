@@ -1,20 +1,4 @@
-// {
-//   "compilerOptions": {
-//     "target": "es5",
-//     "lib": [
-//       "dom",
-//       "dom.iterable",
-//       "esnext"
-//     ],
-//     "allowJs": true,
-//     "allowSyntheticDefaultImports": true,
-//     "noFallthroughCasesInSwitch": true,
-//     "module": "esnext",
-//     "resolveJsonModule": true,
-//     "isolatedModules": true,
-//     "noEmit": true,
-//   },
-// }
+
 {
   "compilerOptions": {
     "target": "esnext",

@@ -16,11 +16,9 @@ import {
 } from "antd";
 import moment from "moment";
 import dayjs, { Dayjs } from 'dayjs';
-import { SubscriptionHistory } from "./subscriptionHistory";
 import { Organization } from "../../../types/transportListTypes";
 import axios from "axios";
 import axiosInstance from '../../../services/axiosInstance';
-const apiUrl = import.meta.env.VITE_API_URL;
 
 const { RangePicker } = DatePicker;
 const { TabPane } = Tabs;
@@ -70,9 +68,6 @@ const OrganizationDetails: React.FC = () => {
 
   const fetchVehicles = async (id: number) => {
     try {
-      // const response = await axios.get(
-      //   `${apiUrl}/transport/manufacturer/${id}`
-      // );
       const response = await axiosInstance.get(`/transport/manufacturer/${id}`);
       setVehicles(response.data);
     } catch (error) {
@@ -82,7 +77,6 @@ const OrganizationDetails: React.FC = () => {
 
   const fetchOrganization = async (id: number) => {
     try {
-      // const response = await axios.get(`${apiUrl}/organizations/${id}`);
       const response = await axiosInstance.get(`/organizations/${id}`);
       setOrganizationData(response.data[0]);
     } catch (error) {
@@ -92,7 +86,6 @@ const OrganizationDetails: React.FC = () => {
 
   const addEmployee = async (employeeData: any) => {
     try {
-      // const response = await axios.post(`${apiUrl}/organizations/${idOrganization}/employees`, employeeData);
       const response = await axiosInstance.post(`/organizations/${idOrganization}/employees`, employeeData);
       setEmployees((prev) => [...prev, response.data]);
       message.success("Сотрудник успешно добавлен!");
@@ -104,7 +97,6 @@ const OrganizationDetails: React.FC = () => {
 
   const editEmployee = async (employeeId: number, updatedData: any) => {
     try {
-      // const response = await axios.patch(`${apiUrl}/organizations/employees/${employeeId}`, updatedData);
       const response = await axiosInstance.post(`/organizations/employees/${employeeId}`, updatedData);
       setEmployees((prev) => prev.map((emp) => (emp.id === employeeId ? response.data : emp)));
       message.success("Сотрудник успешно обновлен!");
@@ -116,7 +108,6 @@ const OrganizationDetails: React.FC = () => {
 
   const deleteEmployee = async (employeeId: number) => {
     try {
-      // await axios.delete(`${apiUrl}/organizations/employees/${employeeId}`);
       await axiosInstance.delete(`/organizations/employees/${employeeId}`);
       setEmployees((prev) => prev.filter((emp) => emp.id !== employeeId));
       message.success("Сотрудник успешно удален!");
@@ -128,10 +119,8 @@ const OrganizationDetails: React.FC = () => {
 
   const fetchSubscriptionHistory = async (id: number) => {
     try {
-      // const response = await axios.get(`${apiUrl}/organizations/subscription/list/${id}`); // Убедитесь, что корректный адрес API
       const response = await axiosInstance.get(`/organizations/subscription/list/${id}`);
       setSubscriptionHistory(response.data);
-      console.log(response)
     } catch (error) {
       console.error("Ошибка при получении истории подписок:", error);
     }
@@ -139,7 +128,6 @@ const OrganizationDetails: React.FC = () => {
 
   const fetchEmployees = async (orgId: number) => {
     try {
-      // const response = await axios.get(`${apiUrl}/organizations/${orgId}/employees`);
       const response = await axiosInstance.get(`/organizations/${orgId}/employees`);
       setEmployees(response.data);
     } catch (error) {
@@ -156,7 +144,6 @@ const OrganizationDetails: React.FC = () => {
       fetchSubscriptionHistory(Number(id));
       fetchOrganization(Number(id));
       fetchEmployees(Number(id))
-      console.log(id);
       setIdOrganization(Number(id));
     }
   }, [id]);
@@ -164,8 +151,6 @@ const OrganizationDetails: React.FC = () => {
 
   const deleteVehicle = async (vehicleId: number) => {
     try {
-      // const response = await axios.delete(
-      //   `${apiUrl}/transport/organization/${vehicleId}`,
         const response = await axiosInstance.delete(`/transport/organization/${vehicleId}`,
         {
           data: {
@@ -190,7 +175,6 @@ const OrganizationDetails: React.FC = () => {
           console.log(
             `Транспортное средство с ID: ${vehicleId} успешно удалено.`
           );
-          // Здесь можно обновить состояние или интерфейс, чтобы отразить изменения
         } catch (error) {
           console.error(`Ошибка при удалении транспортного средства: ${error}`);
         }
@@ -206,7 +190,6 @@ const OrganizationDetails: React.FC = () => {
     dateStrings: [string, string]
   ) => {
     if (dates && dates[0] && dates[1]) {
-      console.log(dates[0].format("YYYY-MM-DD"));
       let start_date = dates[0].format("YYYY-MM-DD");
       let end_date = dates[1].format("YYYY-MM-DD");
       Modal.confirm({
@@ -221,8 +204,6 @@ const OrganizationDetails: React.FC = () => {
           </>
         ),
         onOk: async () => {
-          // const response = await axios.patch(
-          //   `${apiUrl}/organizations/subscription/${idOrganization}`,
             const response = await axiosInstance.patch(`/organizations/subscription/${idOrganization}`,
             {
               requestBody: {
@@ -248,9 +229,6 @@ const OrganizationDetails: React.FC = () => {
       title: `Подтверждение ${action} доступа к мониторингу`,
       content: `Вы уверены, что хотите ${action} доступ к мониторингу транспортных средств?`,
       onOk: async () => {
-        // const response = await axios.patch(
-        //   `${apiUrl}/organizations/status/${idOrganization}`
-        // );
         const response = await axiosInstance.patch(`/organizations/status/${idOrganization}`);
         if (response) {
           fetchOrganization(Number(id));
@@ -299,13 +277,13 @@ const OrganizationDetails: React.FC = () => {
       title: "Дата начала",
       dataIndex: "start_date",
       key: "start_date",
-      render: (text: string) => moment(text).format("YYYY-MM-DD"), // Форматируем дату
+      render: (text: string) => moment(text).format("YYYY-MM-DD"), 
     },
     {
       title: "Дата окончания",
       dataIndex: "end_date",
       key: "end_date",
-      render: (text: string) => moment(text).format("YYYY-MM-DD"), // Форматируем дату
+      render: (text: string) => moment(text).format("YYYY-MM-DD"), 
     },
     {
       title: "Статус",
@@ -315,7 +293,7 @@ const OrganizationDetails: React.FC = () => {
         <span style={{ color: text === "active" ? "blue" : "black" }}>
           {text === "active" ? "Активная" : "Завершенная"}
         </span>
-      ), // Преобразуем статус и добавляем цвет
+      ), 
     },
   ];
   const sortedData = subscriptionHistory.sort((a, b) => (a.status === "active" ? -1 : 1));
@@ -323,27 +301,23 @@ const OrganizationDetails: React.FC = () => {
   const handleAddVehicle = async () => {
     try {
       const response = await axiosInstance.patch(`/transport/add-car/${vin}`, {
-      // const response = await axios.post(`${apiUrl}/transport/add-car/${vin}`, {
+  
         data: {
-          id: idTransport, // Передаем ID организации в теле запроса
+          id: idTransport, 
         },
       });
   
       if (response) {
         setVehicles(response.data);
         message.success("Автомобиль успешно добавлен к организации!");
-        setVisible(false); // Закрываем модальное окно
+        setVisible(false); 
       } else {
         message.error("Произошла ошибка при добавлении автомобиля.");
       }
-    } catch (error: unknown) {  // Указываем тип error как unknown
+    } catch (error: unknown) {  
       console.error("Ошибка при добавлении автомобиля:", error);
-  
-      // Проверка на специфическую ошибку о конфликте VIN
       if (axios.isAxiosError(error) && error.response) {
         const errorMessage = error.response.data.message;
-  
-        // Здесь предполагается, что сервер отправляет сообщение о конфликте VIN
         if (errorMessage.includes("VIN уже принадлежит другой организации")) {
           message.error("Транспорт с таким VIN номером принадлежит другой организации.");
         } else {
@@ -356,11 +330,9 @@ const OrganizationDetails: React.FC = () => {
   };
 
   const disabledDate = (current: Dayjs) => {
-    if (!organizationData) return false; // Если organizationData отсутствует, разрешаем все даты
-    // Разрешаем выбор только с subscription_end
+    if (!organizationData) return false;
     return current.isBefore(dayjs(organizationData.subscription_end), 'day');
   };
-  console.log(organizationData);
   return (
    
     <div style={{
@@ -440,6 +412,7 @@ const OrganizationDetails: React.FC = () => {
                 }}
               />
               <Button
+                disabled={true}
                 style={{ marginTop: "20px", width:"300px", backgroundColor: '#007bff', color: '#fff', borderColor: '#007bff' }}
                 onClick={() => setVisible(true)}
               >
@@ -487,6 +460,7 @@ const OrganizationDetails: React.FC = () => {
           <>
             <Button
               type="link"
+              disabled={true}
               onClick={() => {
                 // setEditingEmployee(employee);
                 setIsEmployeeModalVisible(true);
@@ -495,6 +469,7 @@ const OrganizationDetails: React.FC = () => {
               Редактировать
             </Button>
             <Button
+              disabled={true}
               type="link"
               danger
               onClick={() => deleteEmployee(employee.id)}
@@ -509,6 +484,7 @@ const OrganizationDetails: React.FC = () => {
     style={{ marginTop: "16px", borderRadius: "8px", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)" }}
   />
   <Button
+    disabled={true}
     style={{ marginTop: "20px", backgroundColor: "#007bff", color: "#fff", borderColor: "#007bff" }}
     onClick={() => {
       setEditingEmployee(null);
@@ -528,7 +504,7 @@ const OrganizationDetails: React.FC = () => {
       visible={visible}
       onCancel={() => setVisible(false)}
       footer={null}
-      style={{ borderRadius: '8px' }} // Угол модального окна
+      style={{ borderRadius: '8px' }} 
     >
       <Form onFinish={handleAddVehicle}>
         <Form.Item

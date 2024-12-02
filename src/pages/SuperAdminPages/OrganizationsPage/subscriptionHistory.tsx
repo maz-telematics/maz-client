@@ -3,8 +3,8 @@ import { List, Typography } from 'antd';
 
 export interface SubscriptionHistory {
     id: number;
-    startDate: string; // Дата начала подписки
-    endDate: string; // Дата окончания подписки
+    startDate: string; 
+    endDate: string; 
     status: 'Активна' | 'Заблокирована'| "Планируется";
   }
 interface SubscriptionHistoryListProps {

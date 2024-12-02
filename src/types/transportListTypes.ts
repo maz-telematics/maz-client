@@ -1,6 +1,5 @@
 export interface Car {
-    id_transport: number;
-
+    id: number;
     organization_id:number;
     model?: string;
     vin?: string;

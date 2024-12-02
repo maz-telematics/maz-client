@@ -1,98 +1,61 @@
-import moment from "moment";
 import { Parameters } from "../../../types/carTrackingTypes";
-import { Table, Tabs, Row, Col, Tag, Tooltip, Progress } from "antd";
-import { CheckCircleOutlined, CloseCircleOutlined ,ClockCircleOutlined } from "@ant-design/icons";
+import { Table, Tabs, Row, Carousel, Col, Tag, Tooltip, Progress } from "antd";
+import { CheckCircleOutlined, CloseCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 
 const { TabPane } = Tabs;
 interface ParametersProps {
   parameters: Parameters[];
 }
 
-const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
+const processParameters = (parameters: Parameters[]): Parameters[] => {
+  if (!parameters || parameters.length === 0) {
+    return [{
+      transportLighting: {},
+      transportAirConditioning: {},
+      batteryParameters: {},
+      electricSystemParameters: {},
+      powertrainSystemParameters: {},
+      bzpCommands: {},
+      id: 0,
+      date: "",
+      transportId: "",
+      dbkOutputs: {}
+    }];
+  }
+  return parameters.map(parameter => {
+    const { date } = parameter;
+    return {
+      ...parameter,
+      batteryParameters: {
+        ...parameter.batteryParameters,
+        date,
+      },
+      powertrainSystemParameters: {
+        ...parameter.powertrainSystemParameters,
+        date,
+      },
+      electricSystemParameters: {
+        ...parameter.electricSystemParameters,
+        date,
+      },
+      transportAirConditioning: {
+        ...parameter.transportAirConditioning,
+        date,
+      },
+      transportLighting: {
+        ...parameter.transportLighting,
+        date,
+      },
+      bzpCommands: {
+        ...parameter.bzpCommands,
+        date,
+      },
+    };
+  });
+};
 
-  const transportLighting  = [
-    {
-      key: "1",
-      time:"2024-11-21T15:30:00Z",
-      daytime_running_lights: "Включен",
-      low_beam: "Выключен",
-      high_beam: "Включен",
-      front_fog_lights: "Выключен",
-      right_turn_signal: "Включен",
-      left_turn_signal: "Выключен",
-      side_marker_lights: "Включен",
-      rear_fog_lights: "Выключен",
-      reverse_lights: "Включен",
-      right_brake_lights: 80,
-      left_brake_lights: 60,
-    },
-  ];
-  const transportAirConditioning  = [
-    {
-      key: "1",
-      time:"2024-11-21T15:30:00Z",
-      ac_on: "Включен",
-      frost_sensor_on: "Выключен",
-      pressure_sensor_on: "Включен",
-      outside_air_temp_sensor: 23.5,
-      air_damper_position: "Закрыта",
-    },
-  ];
-  const powertrainSystemParameters  = [
-    {
-      key: "1",
-      time:"2024-11-21T15:30:00Z",
-      throttle_position: 75.5,
-      engine_torque: 320.0,
-      engine_rpm: 1500,
-      gearbox_output_speed: 80,
-      transmission_status: true,
-      vehicle_on: true,
-      dcdc_on: true,
-      battery_on: false,
-      hydraulic_sensor_level: 75.3,
-      coolant_sensor_level: 60.5,
-      power_steering_on: true,
-    },
-  ];
-  const batteryParameters = [
-    {
-      key: "1",
-      time:"2024-11-21T15:30:00Z",
-      battery_min_temp: 15.2,
-      battery_max_temp: 40.5,
-      battery_soc: 80.0,
-      battery_voltage: 48.5,
-      battery_charging: true,
-    },
-  ];
-  const electricSystemParameters = [
-    {
-      key: "1",
-      time:"2024-11-21T15:30:00Z",
-      power_consumption_hydraulic: 10.5,
-      power_consumption_air_compressor: 12.3,
-      power_consumption_dcdc: 8.7,
-      power_consumption_engine: 15.6,
-    },
-  ];
-  const bzpCommands = [
-    {
-      key: "1",
-      time:"2024-11-21T15:30:00Z",
-      bzp_command_1: 1,
-      bzp_command_2: 0,
-      bzp_command_3: 1,
-      bzp_command_4: 0,
-      bzp_command_5: 1,
-      bzp_command_6: 1,
-      bzp_command_7: 0,
-      bzp_command_8: 1,
-      bzp_command_9: 0,
-      bzp_command_10: 1,
-    },
-  ];
- 
+const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
+  const processedParameters = processParameters(parameters);
   const columnsTransportLighting = [
     {
       title: "Время",
@@ -105,7 +68,7 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
           minute: "2-digit",
           second: "2-digit",
         });
-        
+
         return (
           <Tooltip title={`Время события: ${time}`}>
             <Tag icon={<ClockCircleOutlined />} color="processing">
@@ -117,9 +80,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Дневное ходовое освещение",
-      dataIndex: "daytime_running_lights",
-      key: "daytime_running_lights",
-      render: (value:string) => (
+      dataIndex: "daytimeRunningLights",
+      key: "daytimeRunningLights",
+      render: (value: string) => (
         <Tooltip title={value}>
           {value === "Включен" ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -135,9 +98,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Ближний свет",
-      dataIndex: "low_beam",
-      key: "low_beam",
-      render: (value:string) => (
+      dataIndex: "lowBeam",
+      key: "lowBeam",
+      render: (value: string) => (
         <Tooltip title={value}>
           {value === "Включен" ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -153,9 +116,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Дальний свет",
-      dataIndex: "high_beam",
-      key: "high_beam",
-      render: (value:string) => (
+      dataIndex: "highBeam",
+      key: "highBeam",
+      render: (value: string) => (
         <Tooltip title={value}>
           {value === "Включен" ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -171,9 +134,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Передние противотуманные фонари",
-      dataIndex: "front_fog_lights",
-      key: "front_fog_lights",
-      render: (value:string) => (
+      dataIndex: "frontLogLights",
+      key: "frontLogLights",
+      render: (value: string) => (
         <Tooltip title={value}>
           {value === "Включен" ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -189,9 +152,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Правый поворотник",
-      dataIndex: "right_turn_signal",
-      key: "right_turn_signal",
-      render: (value:string) => (
+      dataIndex: "rightTurnSignal",
+      key: "rightTurnSignal",
+      render: (value: string) => (
         <Tooltip title={value}>
           {value === "Включен" ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -207,9 +170,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Левый поворотник",
-      dataIndex: "left_turn_signal",
-      key: "left_turn_signal",
-      render: (value:string) => (
+      dataIndex: "leftTurnSignal",
+      key: "leftTurnSignal",
+      render: (value: string) => (
         <Tooltip title={value}>
           {value === "Включен" ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -225,9 +188,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Габаритные фонари",
-      dataIndex: "side_marker_lights",
-      key: "side_marker_lights",
-      render: (value:string) => (
+      dataIndex: "sideMakerLights",
+      key: "sideMakerLights",
+      render: (value: string) => (
         <Tooltip title={value}>
           {value === "Включен" ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -243,9 +206,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Задние противотуманные фонари",
-      dataIndex: "rear_fog_lights",
-      key: "rear_fog_lights",
-      render: (value:string) => (
+      dataIndex: "rearFogLights",
+      key: "rearFogLights",
+      render: (value: string) => (
         <Tooltip title={value}>
           {value === "Включен" ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -261,9 +224,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Задний ход",
-      dataIndex: "reverse_lights",
-      key: "reverse_lights",
-      render: (value:string) => (
+      dataIndex: "reverseLights",
+      key: "reverseLights",
+      render: (value: string) => (
         <Tooltip title={value}>
           {value === "Включен" ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -279,9 +242,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Стоп сигнал правый",
-      dataIndex: "right_brake_lights",
-      key: "right_brake_lights",
-      render: (value:string) => (
+      dataIndex: "rightBrakeLights",
+      key: "rightBrakeLights",
+      render: (value: string) => (
         <Tooltip title={value}>
           {value === "Включен" ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -297,9 +260,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Стоп сигнал левый",
-      dataIndex: "left_brake_lights",
-      key: "left_brake_lights",
-      render: (value:string) => (
+      dataIndex: "leftBrakeLights",
+      key: "leftBrakeLights",
+      render: (value: string) => (
         <Tooltip title={value}>
           {value === "Включен" ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -326,7 +289,7 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
           minute: "2-digit",
           second: "2-digit",
         });
-        
+
         return (
           <Tooltip title={`Время события: ${time}`}>
             <Tag icon={<ClockCircleOutlined />} color="processing">
@@ -338,9 +301,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Состояние кондиционера",
-      dataIndex: "ac_on",
-      key: "ac_on",
-      render: (value:string) => (
+      dataIndex: "acOn",
+      key: "acOn",
+      render: (value: string) => (
         <Tooltip title={value}>
           {value === "Включен" ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -356,9 +319,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Состояние датчика обморожения кондиционера",
-      dataIndex: "frost_sensor_on",
-      key: "frost_sensor_on",
-      render: (value:string) => (
+      dataIndex: "frostSensor",
+      key: "frostSensor",
+      render: (value: string) => (
         <Tooltip title={value}>
           {value === "Включен" ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -374,9 +337,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Состояние датчика давления кондиционера",
-      dataIndex: "pressure_sensor_on",
-      key: "pressure_sensor_on",
-      render: (value:string) => (
+      dataIndex: "pressureSensorOn",
+      key: "pressureSensorOn",
+      render: (value: string) => (
         <Tooltip title={value}>
           {value === "Включен" ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -392,9 +355,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Температура наружного воздуха",
-      dataIndex: "outside_air_temp_sensor",
-      key: "outside_air_temp_sensor",
-      render: (value:number) => (
+      dataIndex: "outsideAirTempSensor",
+      key: "outsideAirTempSensor",
+      render: (value: number) => (
         <Tooltip title={`Температура: ${value}°C`}>
           <Tag color={value < 0 ? "blue" : value < 25 ? "green" : "red"}>
             {value}°C
@@ -404,9 +367,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Положение воздушной заслонки",
-      dataIndex: "air_damper_position",
-      key: "air_damper_position",
-      render: (value:string) => (
+      dataIndex: "airDamperPosition",
+      key: "airDamperPosition",
+      render: (value: string) => (
         <Tooltip title={value}>
           <Tag color={value === "Закрыта" ? "error" : "success"}>{value}</Tag>
         </Tooltip>
@@ -419,13 +382,12 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
       dataIndex: "time",
       key: "time",
       render: (value: string) => {
-        // Предположим, что `value` — это строка формата ISO, например, "2024-11-21T15:30:00Z"
         const time = new Date(value).toLocaleTimeString("ru-RU", {
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
         });
-        
+
         return (
           <Tooltip title={`Время события: ${time}`}>
             <Tag icon={<ClockCircleOutlined />} color="processing">
@@ -437,9 +399,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Положение дросселя (%)",
-      dataIndex: "throttle_position",
-      key: "throttle_position",
-      render: (value:number) => (
+      dataIndex: "throttlePosition",
+      key: "throttlePosition",
+      render: (value: number) => (
         <Tooltip title={`Положение дросселя: ${value}%`}>
           <Tag color="blue">{value}%</Tag>
         </Tooltip>
@@ -447,9 +409,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Момент двигателя (Nm)",
-      dataIndex: "engine_torque",
-      key: "engine_torque",
-      render: (value:number) => (
+      dataIndex: "engineTorque",
+      key: "engineTorque",
+      render: (value: number) => (
         <Tooltip title={`Момент двигателя: ${value} Nm`}>
           <Tag color="green">{value} Nm</Tag>
         </Tooltip>
@@ -457,9 +419,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Обороты двигателя (RPM)",
-      dataIndex: "engine_rpm",
-      key: "engine_rpm",
-      render: (value:number) => (
+      dataIndex: "engineRpm",
+      key: "engineRpm",
+      render: (value: number) => (
         <Tooltip title={`Обороты двигателя: ${value} RPM`}>
           <Tag color="purple">{value} RPM</Tag>
         </Tooltip>
@@ -467,9 +429,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Скорость на выходе КПП (км/ч)",
-      dataIndex: "gearbox_output_speed",
-      key: "gearbox_output_speed",
-      render: (value:number) => (
+      dataIndex: "gearboxOutputSpeed",
+      key: "gearboxOutputSpeed",
+      render: (value: number) => (
         <Tooltip title={`Скорость КПП: ${value} км/ч`}>
           <Tag color="orange">{value} км/ч</Tag>
         </Tooltip>
@@ -477,9 +439,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Состояние трансмиссии",
-      dataIndex: "transmission_status",
-      key: "transmission_status",
-      render: (value:string) => (
+      dataIndex: "transmissionStatus",
+      key: "transmissionStatus",
+      render: (value: string) => (
         <Tooltip title={value ? "Трансмиссия включена" : "Трансмиссия выключена"}>
           {value ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -495,9 +457,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Состояние транспорта",
-      dataIndex: "vehicle_on",
-      key: "vehicle_on",
-      render: (value:string) => (
+      dataIndex: "vehicleOn",
+      key: "vehicleOn",
+      render: (value: string) => (
         <Tooltip title={value ? "Транспорт включен" : "Транспорт выключен"}>
           {value ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -513,9 +475,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Состояние DC-DC преобразователя",
-      dataIndex: "dcdc_on",
-      key: "dcdc_on",
-      render: (value:string) => (
+      dataIndex: "dcdcOn",
+      key: "dcdcOn",
+      render: (value: string) => (
         <Tooltip title={value ? "Преобразователь включен" : "Преобразователь выключен"}>
           {value ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -531,9 +493,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Состояние батареи",
-      dataIndex: "battery_on",
-      key: "battery_on",
-      render: (value:string) => (
+      dataIndex: "batteryOn",
+      key: "batteryOn",
+      render: (value: string) => (
         <Tooltip title={value ? "Батарея включена" : "Батарея выключена"}>
           {value ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -549,9 +511,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Уровень гидравлики (%)",
-      dataIndex: "hydraulic_sensor_level",
-      key: "hydraulic_sensor_level",
-      render: (value:number) => (
+      dataIndex: "hydraulicSensorLevel",
+      key: "hydraulicSensorLevel",
+      render: (value: number) => (
         <Tooltip title={`Уровень гидравлики: ${value}%`}>
           <Tag color="blue">{value}%</Tag>
         </Tooltip>
@@ -559,9 +521,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Уровень охлаждающей жидкости (%)",
-      dataIndex: "coolant_sensor_level",
-      key: "coolant_sensor_level",
-      render: (value:number) => (
+      dataIndex: "coolantSensorLevel",
+      key: "coolantSensorLevel",
+      render: (value: number) => (
         <Tooltip title={`Уровень охлаждающей жидкости: ${value}%`}>
           <Tag color="cyan">{value}%</Tag>
         </Tooltip>
@@ -569,9 +531,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Состояние гидроусилителя руля",
-      dataIndex: "power_steering_on",
-      key: "power_steering_on",
-      render: (value:string) => (
+      dataIndex: "powerSteeringOn",
+      key: "powerSteeringOn",
+      render: (value: string) => (
         <Tooltip title={value ? "Гидроусилитель включен" : "Гидроусилитель выключен"}>
           {value ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -592,13 +554,12 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
       dataIndex: "time",
       key: "time",
       render: (value: string) => {
-        // Предположим, что `value` — это строка формата ISO, например, "2024-11-21T15:30:00Z"
         const time = new Date(value).toLocaleTimeString("ru-RU", {
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
         });
-        
+
         return (
           <Tooltip title={`Время события: ${time}`}>
             <Tag icon={<ClockCircleOutlined />} color="processing">
@@ -610,9 +571,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Минимальная критическая температура батареи (°C)",
-      dataIndex: "battery_min_temp",
-      key: "battery_min_temp",
-      render: (value:number) => (
+      dataIndex: "batteryMinTemp",
+      key: "batteryMinTemp",
+      render: (value: number) => (
         <Tooltip title={`Минимальная температура: ${value}°C`}>
           <Tag color={value < 10 ? "error" : "green"}>{value}°C</Tag>
         </Tooltip>
@@ -620,9 +581,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Максимальная критическая температура батареи (°C)",
-      dataIndex: "battery_max_temp",
-      key: "battery_max_temp",
-      render: (value:number) => (
+      dataIndex: "batteryMaxTemp",
+      key: "batteryMaxTemp",
+      render: (value: number) => (
         <Tooltip title={`Максимальная температура: ${value}°C`}>
           <Tag color={value > 35 ? "error" : "green"}>{value}°C</Tag>
         </Tooltip>
@@ -630,9 +591,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Уровень заряда батареи (%)",
-      dataIndex: "battery_soc",
-      key: "battery_soc",
-      render: (value:number) => (
+      dataIndex: "batterySoc",
+      key: "batterySoc",
+      render: (value: number) => (
         <Tooltip title={`Уровень заряда: ${value}%`}>
           <Progress percent={value} status={value < 20 ? "exception" : "active"} />
         </Tooltip>
@@ -640,9 +601,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Напряжение батареи (V)",
-      dataIndex: "battery_voltage",
-      key: "battery_voltage",
-      render: (value:number) => (
+      dataIndex: "batteryVoltage",
+      key: "batteryVoltage",
+      render: (value: number) => (
         <Tooltip title={`Напряжение батареи: ${value} V`}>
           <Tag color={value < 45 ? "error" : "green"}>{value} V</Tag>
         </Tooltip>
@@ -650,9 +611,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Состояние зарядки",
-      dataIndex: "battery_charging",
-      key: "battery_charging",
-      render: (value:string) => (
+      dataIndex: "batteryCharging",
+      key: "batteryCharging",
+      render: (value: string) => (
         <Tooltip title={value ? "Батарея заряжается" : "Батарея не заряжается"}>
           {value ? (
             <Tag icon={<CheckCircleOutlined />} color="success">
@@ -673,13 +634,12 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
       dataIndex: "time",
       key: "time",
       render: (value: string) => {
-        // Предположим, что `value` — это строка формата ISO, например, "2024-11-21T15:30:00Z"
         const time = new Date(value).toLocaleTimeString("ru-RU", {
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
         });
-        
+
         return (
           <Tooltip title={`Время события: ${time}`}>
             <Tag icon={<ClockCircleOutlined />} color="processing">
@@ -691,9 +651,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Расход энергии гидроусилителем руля (кВт)",
-      dataIndex: "power_consumption_hydraulic",
-      key: "power_consumption_hydraulic",
-      render: (value:number) => (
+      dataIndex: "powerConsumptionHydraulic",
+      key: "powerConsumptionHydraulic",
+      render: (value: number) => (
         <Tooltip title={`Расход энергии: ${value} кВт`}>
           <Progress
             percent={value}
@@ -705,9 +665,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Расход энергии воздушным компрессором (кВт)",
-      dataIndex: "power_consumption_air_compressor",
-      key: "power_consumption_air_compressor",
-      render: (value:number) => (
+      dataIndex: "powerConsumptionAirCompressor",
+      key: "powerConsumptionAirCompressor",
+      render: (value: number) => (
         <Tooltip title={`Расход энергии: ${value} кВт`}>
           <Progress
             percent={value}
@@ -719,9 +679,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Расход энергии DC-DC преобразователем (кВт)",
-      dataIndex: "power_consumption_dcdc",
-      key: "power_consumption_dcdc",
-      render: (value:number) => (
+      dataIndex: "powerConsumptionDcdc",
+      key: "powerConsumptionDcdc",
+      render: (value: number) => (
         <Tooltip title={`Расход энергии: ${value} кВт`}>
           <Progress
             percent={value}
@@ -733,9 +693,9 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
     },
     {
       title: "Расход энергии двигателем (кВт)",
-      dataIndex: "power_consumption_engine",
-      key: "power_consumption_engine",
-      render: (value:number) => (
+      dataIndex: "powerConsumptionEngine",
+      key: "powerConsumptionEngine",
+      render: (value: number) => (
         <Tooltip title={`Расход энергии: ${value} кВт`}>
           <Progress
             percent={value}
@@ -752,13 +712,12 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
       dataIndex: "time",
       key: "time",
       render: (value: string) => {
-        // Предположим, что `value` — это строка формата ISO, например, "2024-11-21T15:30:00Z"
         const time = new Date(value).toLocaleTimeString("ru-RU", {
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
         });
-        
+
         return (
           <Tooltip title={`Время события: ${time}`}>
             <Tag icon={<ClockCircleOutlined />} color="processing">
@@ -769,10 +728,10 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
       },
     },
     {
-      title: "Команда 1",
-      dataIndex: "bzp_command_1",
-      key: "bzp_command_1",
-      render: (value:number) => (
+      title: " Клемма 15 ЦКБ К ЭБУ",
+      dataIndex: "terminal15CcsToEcu",
+      key: "terminal15CcsToEcu",
+      render: (value: number) => (
         <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
           <Tag color={value === 1 ? "green" : "red"}>
             {value === 1 ? "Активно" : "Неактивно"}
@@ -781,10 +740,10 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
       ),
     },
     {
-      title: "Команда 2",
-      dataIndex: "bzp_command_2",
-      key: "bzp_command_2",
-      render: (value:number) => (
+      title: "Включить питание кабины (Кл. 15)",
+      dataIndex: "turnOnCabinPower",
+      key: "turnOnCabinPower",
+      render: (value: number) => (
         <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
           <Tag color={value === 1 ? "green" : "red"}>
             {value === 1 ? "Активно" : "Неактивно"}
@@ -793,10 +752,10 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
       ),
     },
     {
-      title: "Команда 3",
-      dataIndex: "bzp_command_3",
-      key: "bzp_command_3",
-      render: (value:number) => (
+      title: "Включить питание фар",
+      dataIndex: "turnOnHeadlightsPower",
+      key: "turnOnHeadlightsPower",
+      render: (value: number) => (
         <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
           <Tag color={value === 1 ? "green" : "red"}>
             {value === 1 ? "Активно" : "Неактивно"}
@@ -805,10 +764,10 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
       ),
     },
     {
-      title: "Команда 4",
-      dataIndex: "bzp_command_4",
-      key: "bzp_command_4",
-      render: (value:number) => (
+      title: "Включить питание задних фонарей",
+      dataIndex: "turnOnRearLightsPower",
+      key: "turnOnRearLightsPower",
+      render: (value: number) => (
         <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
           <Tag color={value === 1 ? "green" : "red"}>
             {value === 1 ? "Активно" : "Неактивно"}
@@ -817,10 +776,10 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
       ),
     },
     {
-      title: "Команда 5",
-      dataIndex: "bzp_command_5",
-      key: "bzp_command_5",
-      render: (value:number) => (
+      title: "Включить питание осушителя воздуха",
+      dataIndex: "turnOnAirDryerPower",
+      key: "turnOnAirDryerPower",
+      render: (value: number) => (
         <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
           <Tag color={value === 1 ? "green" : "red"}>
             {value === 1 ? "Активно" : "Неактивно"}
@@ -829,10 +788,10 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
       ),
     },
     {
-      title: "Команда 6",
-      dataIndex: "bzp_command_6",
-      key: "bzp_command_6",
-      render: (value:number) => (
+      title: "Включить питание жидкостного подогревателя",
+      dataIndex: "turnOnLiquidHeaterPower",
+      key: "turnOnLiquidHeaterPower",
+      render: (value: number) => (
         <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
           <Tag color={value === 1 ? "green" : "red"}>
             {value === 1 ? "Активно" : "Неактивно"}
@@ -841,10 +800,10 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
       ),
     },
     {
-      title: "Команда 7",
-      dataIndex: "bzp_command_7",
-      key: "bzp_command_7",
-      render: (value:number) => (
+      title: "Включить подогрев топливных фильтров грубой очистки",
+      dataIndex: "turnOnFuelFilterPreheaterCoarseFilter",
+      key: "turnOnFuelFilterPreheaterCoarseFilter",
+      render: (value: number) => (
         <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
           <Tag color={value === 1 ? "green" : "red"}>
             {value === 1 ? "Активно" : "Неактивно"}
@@ -853,10 +812,10 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
       ),
     },
     {
-      title: "Команда 8",
-      dataIndex: "bzp_command_8",
-      key: "bzp_command_8",
-      render: (value:number) => (
+      title: "Включить подогрев топливных фильтров тонкой очистки",
+      dataIndex: "turnOnFuelFilterPreheaterFineFilter",
+      key: "turnOnFuelFilterPreheaterFineFilter",
+      render: (value: number) => (
         <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
           <Tag color={value === 1 ? "green" : "red"}>
             {value === 1 ? "Активно" : "Неактивно"}
@@ -865,10 +824,10 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
       ),
     },
     {
-      title: "Команда 9",
-      dataIndex: "bzp_command_9",
-      key: "bzp_command_9",
-      render: (value:number) => (
+      title: "Включить питание прицепа",
+      dataIndex: "turnOnTrailerPower",
+      key: "turnOnTrailerPower",
+      render: (value: number) => (
         <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
           <Tag color={value === 1 ? "green" : "red"}>
             {value === 1 ? "Активно" : "Неактивно"}
@@ -877,10 +836,10 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
       ),
     },
     {
-      title: "Команда 10",
-      dataIndex: "bzp_command_10",
-      key: "bzp_command_10",
-      render: (value:number) => (
+      title: "Включить питание прицепа (ABC)",
+      dataIndex: "turnOnTrailerPowerAbs",
+      key: "turnOnTrailerPowerAbs",
+      render: (value: number) => (
         <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
           <Tag color={value === 1 ? "green" : "red"}>
             {value === 1 ? "Активно" : "Неактивно"}
@@ -889,325 +848,331 @@ const ParametersTable: React.FC<ParametersProps> = ({ parameters }) => {
       ),
     },
   ];
-  // const  columnsBzpCommands = [
-    // {
-    //   title: "Время",
-    //   dataIndex: "time",
-    //   key: "time",
-    //   render: (value: string) => {
-    //     // Предположим, что `value` — это строка формата ISO, например, "2024-11-21T15:30:00Z"
-    //     const time = new Date(value).toLocaleTimeString("ru-RU", {
-    //       hour: "2-digit",
-    //       minute: "2-digit",
-    //       second: "2-digit",
-    //     });
-        
-    //     return (
-    //       <Tooltip title={`Время события: ${time}`}>
-    //         <Tag icon={<ClockCircleOutlined />} color="processing">
-    //           {time}
-    //         </Tag>
-    //       </Tooltip>
-    //     );
-    //   },
-    // },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "bzp_command_1",
-  //     key: "bzp_command_1",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "bzp_command_2",
-  //     key: "bzp_command_2",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "bzp_command_3",
-  //     key: "bzp_command_3",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "bzp_command_4",
-  //     key: "bzp_command_4",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "bzp_command_5",
-  //     key: "bzp_command_5",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "bzp_command_6",
-  //     key: "bzp_command_6",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "bzp_command_7",
-  //     key: "bzp_command_7",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "bzp_command_8",
-  //     key: "bzp_command_8",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "bzp_command_9",
-  //     key: "bzp_command_9",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "bzp_command_10",
-  //     key: "bzp_command_10",
-  //   }
-  // ]
-  // const columnsBrkOutputs = [
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "brk_output_1",
-  //     key: "brk_output_1",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "brk_output_2",
-  //     key: "brk_output_2",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "brk_output_3",
-  //     key: "brk_output_3",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "brk_output_4",
-  //     key: "brk_output_4",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "brk_output_5",
-  //     key: "brk_output_5",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "brk_output_6",
-  //     key: "brk_output_6",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "brk_output_7",
-  //     key: "brk_output_7",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "brk_output_8",
-  //     key: "brk_output_8",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "brk_output_9",
-  //     key: "brk_output_9",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "brk_output_10",
-  //     key: "brk_output_10",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "brk_output_11",
-  //     key: "brk_output_11",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "brk_output_12",
-  //     key: "brk_output_12",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "brk_output_13",
-  //     key: "brk_output_13b"
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "brk_output_14",
-  //     key: "brk_output_14",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "brk_output_15",
-  //     key: "brk_output_15",
-  //   },
-  //   {
-  //     title: "Состояние батареи",
-  //     dataIndex: "brk_output_16",
-  //     key: "brk_output_16",
-  //   }
-  // ]
+  const columnsDbkOutputs = [
+    {
+      title: "Время",
+      dataIndex: "time",
+      key: "time",
+      render: (value: string) => {
+        const time = new Date(value).toLocaleTimeString("ru-RU", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+
+        return (
+          <Tooltip title={`Время события: ${time}`}>
+            <Tag icon={<ClockCircleOutlined />} color="processing">
+              {time}
+            </Tag>
+          </Tooltip>
+        );
+      },
+    },
+    {
+      title: "Команда габаритных огней",
+      dataIndex: "runningLightCommand",
+      key: "runningLightCommand ",
+      render: (value: number) => (
+        <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
+          <Tag color={value === 1 ? "green" : "red"}>
+            {value === 1 ? "Активно" : "Неактивно"}
+          </Tag>
+        </Tooltip>
+      ),
+    },
+    {
+      title: "Команда альтернативного пучка фар",
+      dataIndex: "alternateBeamHeadLightCommand",
+      key: "alternateBeamHeadLightCommand ",
+      render: (value: number) => (
+        <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
+          <Tag color={value === 1 ? "green" : "red"}>
+            {value === 1 ? "Активно" : "Неактивно"}
+          </Tag>
+        </Tooltip>
+      ),
+    },
+    {
+      title: " Команда ближнего света фар",
+      dataIndex: "lowBeamHeadLightCommand",
+      key: "lowBeamHeadLightCommand ",
+      render: (value: number) => (
+        <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
+          <Tag color={value === 1 ? "green" : "red"}>
+            {value === 1 ? "Активно" : "Неактивно"}
+          </Tag>
+        </Tooltip>
+      ),
+    },
+    {
+      title: "Команда дальнего света фар",
+      dataIndex: "highBeamHeadLightCommand",
+      key: "highBeamHeadLightCommand ",
+      render: (value: number) => (
+        <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
+          <Tag color={value === 1 ? "green" : "red"}>
+            {value === 1 ? "Активно" : "Неактивно"}
+          </Tag>
+        </Tooltip>
+      ),
+    },
+    {
+      title: "Команда передних противотуманных фар трактора",
+      dataIndex: "tractorFrontFogLightsCommand",
+      key: "tractorFrontFogLightsCommand ",
+      render: (value: number) => (
+        <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
+          <Tag color={value === 1 ? "green" : "red"}>
+            {value === 1 ? "Активно" : "Неактивно"}
+          </Tag>
+        </Tooltip>
+      ),
+    },
+    {
+      title: "Команда вращающегося маяка",
+      dataIndex: "rotatingBeaconLightCommand",
+      key: "rotatingBeaconLightCommand ",
+      render: (value: number) => (
+        <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
+          <Tag color={value === 1 ? "green" : "red"}>
+            {value === 1 ? "Активно" : "Неактивно"}
+          </Tag>
+        </Tooltip>
+      ),
+    },
+    {
+      title: "Команда правого указателя поворота",
+      dataIndex: "rightTurnSignalLightsCommand",
+      key: "rightTurnSignalLightsCommand ",
+      render: (value: number) => (
+        <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
+          <Tag color={value === 1 ? "green" : "red"}>
+            {value === 1 ? "Активно" : "Неактивно"}
+          </Tag>
+        </Tooltip>
+      ),
+    },
+    {
+      title: "Команда левого указателя поворота",
+      dataIndex: "leftTurnSignalLightsCommand",
+      key: "leftTurnSignalLightsCommand ",
+      render: (value: number) => (
+        <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
+          <Tag color={value === 1 ? "green" : "red"}>
+            {value === 1 ? "Активно" : "Неактивно"}
+          </Tag>
+        </Tooltip>
+      ),
+    },
+    {
+      title: "Команда центрального стоп-сигнала",
+      dataIndex: "centerStopLightCommand",
+      key: "centerStopLightCommand ",
+      render: (value: number) => (
+        <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
+          <Tag color={value === 1 ? "green" : "red"}>
+            {value === 1 ? "Активно" : "Неактивно"}
+          </Tag>
+        </Tooltip>
+      ),
+    },
+    {
+      title: "Команда правого стоп-сигнала",
+      dataIndex: "rightStopLightCommand",
+      key: "rightStopLightCommand ",
+      render: (value: number) => (
+        <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
+          <Tag color={value === 1 ? "green" : "red"}>
+            {value === 1 ? "Активно" : "Неактивно"}
+          </Tag>
+        </Tooltip>
+      ),
+    },
+
+    {
+      title: "Команда левого стоп-сигнала",
+      dataIndex: "leftStopLightCommand",
+      key: "leftStopLightCommand  ",
+      render: (value: number) => (
+        <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
+          <Tag color={value === 1 ? "green" : "red"}>
+            {value === 1 ? "Активно" : "Неактивно"}
+          </Tag>
+        </Tooltip>
+      ),
+    },
+    {
+      title: "Команда огня для обозначения габаритов оборудования",
+      dataIndex: "implementClearanceLightCommand",
+      key: "implementClearanceLightCommand",
+      render: (value: number) => (
+        <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
+          <Tag color={value === 1 ? "green" : "red"}>
+            {value === 1 ? "Активно" : "Неактивно"}
+          </Tag>
+        </Tooltip>
+      ),
+    },
+    {
+      title: "Команда боковых низко размещенных рабочих огней",
+      dataIndex: "tractorSideLowMountedWorkLightsCommand",
+      key: "tractorSideLowMountedWorkLightsCommand",
+      render: (value: number) => (
+        <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
+          <Tag color={value === 1 ? "green" : "red"}>
+            {value === 1 ? "Активно" : "Неактивно"}
+          </Tag>
+        </Tooltip>
+      ),
+    },
+    {
+      title: "Команда рабочего освещения, направленного вправо",
+      dataIndex: "implementRightFacingWorkLightCommand",
+      key: "implementRightFacingWorkLightCommand",
+      render: (value: number) => (
+        <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
+          <Tag color={value === 1 ? "green" : "red"}>
+            {value === 1 ? "Активно" : "Неактивно"}
+          </Tag>
+        </Tooltip>
+      ),
+    },
+    {
+      title: "Команда рабочего освещения, направленного влево",
+      dataIndex: "implementLeftFacingWorkLightCommand",
+      key: "implementLeftFacingWorkLightCommand",
+      render: (value: number) => (
+        <Tooltip title={`Состояние: ${value === 1 ? "Активно" : "Неактивно"}`}>
+          <Tag color={value === 1 ? "green" : "red"}>
+            {value === 1 ? "Активно" : "Неактивно"}
+          </Tag>
+        </Tooltip>
+      ),
+    },
+  ];
 
   return (
-    <Tabs 
-    defaultActiveKey="Transport_Status"
-    tabPosition="top"
-    type="card"
-    style={{
-      width: "100%", // Общая ширина для Tabs
-    }}
-    tabBarStyle={{
-      display: "flex", // Flex-контейнер для выравнивания табов
-      justifyContent: "space-between", // Распределение табов по ширине
-    }}
-    // defaultActiveKey="Transport_Status" tabPosition="top" type="card"  style={{ width: "100%" }} // Растягиваем Tabs
-    // tabBarStyle={{ display: "flex", justifyContent: "space-evenly" }}
-    >
-      <TabPane key="transport_lighting " tab="Освещение транспорта">
-        <Row gutter={[16, 16]}>
-          <Col span={24}>
-            <Table
-              bordered
-              pagination={false}
-              columns={columnsTransportLighting}
-              dataSource={transportLighting}
-            />
-          </Col>
-        </Row>
-      </TabPane>
-      <TabPane key="transport_air_conditioning "
-      //  tab="Система кондиционирования транспорта">
-        tab={
-      <div
-        style={{
-          flexGrow: 1, // Таб растягивается
-          textAlign: "center", // Выравниваем текст в центре
-          width: "100%", // Устанавливаем одинаковую ширину
-        }}
-      >
-       Система кондиционирования транспорта
-      </div>
-    }>
-        <Row gutter={[16, 16]}>
-          <Col span={24}>
-            <Table
-              bordered
-              pagination={false}
-              columns={columnsTransportAirConditioning}
-              dataSource={transportAirConditioning}
-            />
-          </Col>
-        </Row>
-      </TabPane>
-      <TabPane key="battery_parameters "
-      //  tab="Параметры батареи">
-          tab={
-      <div
-        style={{
-          flexGrow: 1, // Таб растягивается
-          textAlign: "center", // Выравниваем текст в центре
-          width: "100%", // Устанавливаем одинаковую ширину
-        }}
-      >
-      Параметры батареи
-      </div>
-    }>
-        <Row gutter={[16, 16]}>
-          <Col span={24}>
-            <Table
-              bordered
-              pagination={false}
-              columns={columnsBatteryParameters}
-              dataSource={batteryParameters}
-            />
-          </Col>
-        </Row>
-      </TabPane>
-      <TabPane key="electric_system_parameters" 
-      // tab="Параметры электрической системы">
-               tab={
-      <div
-        style={{
-          flexGrow: 1, // Таб растягивается
-          textAlign: "center", // Выравниваем текст в центре
-          width: "100%", // Устанавливаем одинаковую ширину
-        }}
-      >
-     Параметры электрической системы
-      </div>
-    }>
-        <Row gutter={[16, 16]}>
-          <Col span={24}>
-            <Table
-              bordered
-              pagination={false}
-              columns={columnsElectricSystemParameters}
-              dataSource={electricSystemParameters}
-            />
-          </Col>
-        </Row>
-      </TabPane>
-      <TabPane key="powertrain_system_parameters "
-      //  tab="Параметры силовой установки">
-      tab={
-        <div
+    <>
+      {processedParameters.map((parameter: Parameters) => (
+        <Tabs
+          defaultActiveKey="Transport_Status"
+          tabPosition="top"
+          type="card"
           style={{
-            flexGrow: 1, // Таб растягивается
-            textAlign: "center", // Выравниваем текст в центре
-            width: "100%", // Устанавливаем одинаковую ширину
+            width: "100%",
+          }}
+          tabBarStyle={{
+            display: "flex",
+            justifyContent: "space-between",
           }}
         >
-     Параметры силовой установки
-        </div>
-      }>
-        <Row gutter={[16, 16]}>
-          <Col span={24}>
-            <Table
-              bordered
-              pagination={false}
-              columns={columnsPowertrainSystemParameters}
-              dataSource={powertrainSystemParameters}
-            />
-          </Col>
-        </Row>
-      </TabPane>
-      <TabPane key="bzp_commands " 
-      // tab="Команды блока защиты питания">
-      tab={
-        <div
-          style={{
-            flexGrow: 1, // Таб растягивается
-            textAlign: "center", // Выравниваем текст в центре
-            width: "100%", // Устанавливаем одинаковую ширину
-          }}
-        >
-    Команды блока защиты питания
-        </div>
-      }>
-        <Row gutter={[16, 16]}>
-          <Col span={24}>
-            <Table
-              bordered
-              pagination={false}
-              columns={columnsBzpCommands}
-              dataSource={bzpCommands}
-            />
-          </Col>
-        </Row>
-      </TabPane>
-      {/* <TabPane
-        key="brk_outputs"
-        tab="Выходы блока рулевой колонки "
-      >
-        <Row gutter={[16, 16]}>
-          <Col span={24}>
-            <Table
-              bordered
-              pagination={false}
-              columns={columnsBrkOutputs}
-              dataSource={parameters}
-            />
-          </Col>
-        </Row>
-      </TabPane> */}
-    </Tabs>
+          <TabPane key="transport_lighting" tab="Освещение транспорта">
+            <Row gutter={[16, 16]}>
+              <Col span={24}>
+                <Table
+                  bordered
+                  pagination={false}
+                  columns={columnsTransportLighting}
+                  dataSource={[{ ...parameter.transportLighting, date: parameter.date }]}
+                  scroll={{ x: 'max-content' }}
+                  style={{ maxWidth: '100%', overflowX: 'auto' }} 
+                />
+              </Col>
+            </Row>
+          </TabPane>
+
+          <TabPane key="transport_air_conditioning" tab="Система кондиционирования транспорта">
+            <Row gutter={[16, 16]}>
+              <Col span={24}>
+                <Table
+                  bordered
+                  pagination={false}
+                  columns={columnsTransportAirConditioning}
+                  dataSource={[{ ...parameter.transportAirConditioning, date: parameter.date }]}
+                  scroll={{ x: 'max-content' }} 
+                  style={{ maxWidth: '100%', overflowX: 'auto' }} 
+                />
+              </Col>
+            </Row>
+          </TabPane>
+
+          <TabPane key="battery_parameters" tab="Параметры батареи">
+            <Row gutter={[16, 16]}>
+              <Col span={24}>
+                <Table
+                  bordered
+                  pagination={false}
+                  columns={columnsBatteryParameters}
+                  dataSource={[{ ...parameter.batteryParameters, date: parameter.date }]}
+                  scroll={{ x: 'max-content' }} 
+                  style={{ maxWidth: '100%', overflowX: 'auto' }} 
+                />
+              </Col>
+            </Row>
+          </TabPane>
+
+          <TabPane key="electric_system_parameters" tab="Параметры электрической системы">
+            <Row gutter={[16, 16]}>
+              <Col span={24}>
+                <Table
+                  bordered
+                  pagination={false}
+                  columns={columnsElectricSystemParameters}
+                  dataSource={[{ ...parameter.electricSystemParameters, date: parameter.date }]}
+                  scroll={{ x: 'max-content' }} 
+                  style={{ maxWidth: '100%', overflowX: 'auto' }} 
+                />
+              </Col>
+            </Row>
+          </TabPane>
+
+          <TabPane key="powertrain_system_parameters" tab="Параметры силовой установки">
+            <Row gutter={[16, 16]}>
+              <Col span={24}>
+                <Table
+                  bordered
+                  pagination={false}
+                  columns={columnsPowertrainSystemParameters}
+                  dataSource={[{ ...parameter.powertrainSystemParameters, date: parameter.date }]}
+                  scroll={{ x: 'max-content' }} 
+                  style={{ maxWidth: '100%', overflowX: 'auto' }} 
+                />
+              </Col>
+            </Row>
+          </TabPane>
+
+          <TabPane key="bzp_commands" tab="Команды блока защиты питания">
+            <Row gutter={[16, 16]}>
+              <Col span={24}>
+                <Table
+                  bordered
+                  pagination={false}
+                  columns={columnsBzpCommands}
+                  dataSource={[{ ...parameter.bzpCommands, date: parameter.date }]}
+                  scroll={{ x: 'max-content' }} 
+                  style={{ maxWidth: '100%', overflowX: 'auto' }} 
+                />
+              </Col>
+            </Row>
+          </TabPane>
+
+          <TabPane key="dbk_outputs" tab="Блок рулевой колонки">
+            <Row gutter={[16, 16]}>
+              <Col span={24}>
+                <Table
+                  bordered
+                  pagination={false}
+                  columns={columnsDbkOutputs}
+                  dataSource={[{ ...parameter.dbkOutputs, date: parameter.date }]}
+                  scroll={{ x: 'max-content' }}
+                  style={{ maxWidth: '100%', overflowX: 'auto' }} 
+                />
+              </Col>
+            </Row>
+          </TabPane>
+        </Tabs>))}
+    </>
   );
 };
 

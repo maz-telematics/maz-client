@@ -1,11 +1,10 @@
-// src/components/DetailView.tsx
+
 import React from 'react';
-import { Card } from 'antd';
 
 interface DetailViewProps {
   title: string;
   data: any;
-  onClose: () => void; // Callback to close the detail view
+  onClose: () => void; 
 }
 
 const DetailView: React.FC<DetailViewProps> = ({ title, data, onClose }) => {
@@ -20,7 +19,6 @@ const DetailView: React.FC<DetailViewProps> = ({ title, data, onClose }) => {
   );
 };
 
-// Styles for overlay and modal
 const overlayStyle: React.CSSProperties = {
   position: 'fixed',
   top: 0,

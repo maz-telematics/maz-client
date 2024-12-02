@@ -12,18 +12,14 @@ interface MapProps {
 const Map: React.FC<MapProps> = ({ locations }) => {
   useEffect(() => {
     const map = L.map("map").setView([53.9, 27.5667], 13);
-
-    // Добавление тайлов
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "© OpenStreetMap contributors",
     }).addTo(map);
-
-    // Отображение точек маршрута
     locations.forEach((location) => {
-      const { lantitude, longitude, data } = location;
+      const { latitude, longitude, date,speed } = location;
 
-      if (lantitude !== undefined && longitude !== undefined) {
-        const formattedDate = new Date(data).toLocaleString("ru-RU", {
+      if (latitude !== undefined && longitude !== undefined) {
+        const formattedDate = new Date(date).toLocaleString("ru-RU", {
           year: "numeric",
           month: "2-digit",
           day: "2-digit",
@@ -32,17 +28,17 @@ const Map: React.FC<MapProps> = ({ locations }) => {
           second: "2-digit",
         });
 
-        L.circle([lantitude, longitude], {
+        L.circle([latitude, longitude], {
           color: "blue",
           fillColor: "#30f",
           fillOpacity: 1,
           radius: 5,
         })
           .addTo(map)
-          .bindPopup(`Широта: ${lantitude}, Долгота: ${longitude}, Дата: ${formattedDate}`);
+          .bindPopup(`Скорость: ${speed} Широта: ${latitude}, Долгота: ${longitude}, Дата: ${formattedDate}`);
       } else {
         console.error(
-          `Invalid location data: Latitude: ${lantitude}, Longitude: ${longitude}`
+          `Invalid location data: Latitude: ${latitude}, Longitude: ${longitude}`
         );
       }
     });
@@ -51,10 +47,10 @@ const Map: React.FC<MapProps> = ({ locations }) => {
     const waypoints = locations
       .map((location) => {
         if (
-          location.lantitude !== undefined &&
+          location.latitude !== undefined &&
           location.longitude !== undefined
         ) {
-          return L.latLng(location.lantitude, location.longitude);
+          return L.latLng(location.latitude, location.longitude);
         } else {
           console.error(`Invalid LatLng data for location: ${location}`);
           return null;
@@ -65,10 +61,10 @@ const Map: React.FC<MapProps> = ({ locations }) => {
     if (waypoints.length > 0) {
       const routingControl = (L.Routing.control as any)({
         waypoints: waypoints,
-        routeWhileDragging: false, // Отключить перетаскивание
-        draggableWaypoints: false, // Отключить редактирование маршрута
-        addWaypoints: false, // Отключить добавление новых точек
-        show: false, // Скрыть панель маршрута
+        routeWhileDragging: false, 
+        draggableWaypoints: false,
+        addWaypoints: false, 
+        show: false, 
         lineOptions: {
           styles: [
             {
@@ -79,7 +75,6 @@ const Map: React.FC<MapProps> = ({ locations }) => {
           ],
         },
         createMarker: (i: number, waypoint: any, n: number) => {
-          // Добавление маркеров только для начальной и конечной точек
           if (i === 0) {
             return L.marker(waypoint.latLng, { icon: L.icon({
               iconUrl: "/start-icon.png",
@@ -98,14 +93,13 @@ const Map: React.FC<MapProps> = ({ locations }) => {
         },
       }).addTo(map);
 
-      // Установить масштаб карты так, чтобы весь маршрут был виден
       map.fitBounds(routingControl.getPlan().getWaypoints().map((wp: any) => wp.latLng));
     } else {
       console.error("No valid waypoints for the routing control.");
     }
 
     return () => {
-      map.remove(); // Удаление экземпляра карты при размонтировании компонента
+      map.remove(); 
     };
   }, [locations]);
 

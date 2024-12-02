@@ -1,13 +1,12 @@
 import { Spin } from 'antd';
 import React from 'react';
 
-// Inline стили
 const spinnerStyles: React.CSSProperties = {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   height: '100vh',
-  width:"100%",
+  width: "100%",
   backgroundColor: '#f0f2f5',
 };
 

@@ -1,7 +1,7 @@
-// src/pages/Archive/ArchivePage.tsx
+
 import React, { useState, useEffect } from 'react';
 import { Row, Col } from 'antd';
-// Типы данных
+
 interface Transport {
   id: number;
   name: string;
@@ -15,13 +15,10 @@ interface Organization {
 }
 
 const ArchivePage: React.FC = () => {
-  // Состояния для архивированных транспортных средств и организаций
   const [archivedTransports, setArchivedTransports] = useState<Transport[]>([]);
   const [archivedOrganizations, setArchivedOrganizations] = useState<Organization[]>([]);
 
-  // Загрузка данных из архива (могут быть получены с сервера)
   useEffect(() => {
-    // Пример данных
     const fetchArchivedData = async () => {
       const transports: Transport[] = [
         { id: 1, name: 'Bus #23', archivedDate: '2024-09-12' },
@@ -38,25 +35,20 @@ const ArchivePage: React.FC = () => {
     fetchArchivedData();
   }, []);
 
-  // Функции для восстановления или удаления из архива
   const restoreTransport = (id: number) => {
     setArchivedTransports((prev) => prev.filter((transport) => transport.id !== id));
-    // Восстановление транспорта на сервере
   };
 
   const deleteTransport = (id: number) => {
     setArchivedTransports((prev) => prev.filter((transport) => transport.id !== id));
-    // Удаление транспорта на сервере
   };
 
   const restoreOrganization = (id: number) => {
     setArchivedOrganizations((prev) => prev.filter((org) => org.id !== id));
-    // Восстановление организации на сервере
   };
 
   const deleteOrganization = (id: number) => {
     setArchivedOrganizations((prev) => prev.filter((org) => org.id !== id));
-    // Удаление организации на сервере
   };
 
   return (

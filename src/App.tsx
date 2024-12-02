@@ -33,10 +33,8 @@ const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const location = useLocation(); // Получаем текущий путь
+  const location = useLocation();
 
-  
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     if (user.token) {
@@ -44,8 +42,7 @@ const App = () => {
       setIsAuthenticated(true);
       setRole(user.role);
     }
-    setIsLoading(false); // Завершаем загрузку
-    console.log("xtht")
+
   }, []);
 
   const logout = () => {
@@ -53,6 +50,7 @@ const App = () => {
     setIsAuthenticated(false);
     setRole(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("activeTab");
   };
 
   return (
@@ -145,7 +143,7 @@ const App = () => {
             element={
               <LoginPage
                 setRole={setRole}
-                setToken={setToken} // Исправлено: передаем setToken правильно
+                setToken={setToken} 
                 setIsAuthenticated={setIsAuthenticated}
               />
             }
