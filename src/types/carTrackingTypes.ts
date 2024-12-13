@@ -5,17 +5,18 @@ export interface Location {
   speed: number;
   date: string;
 }
+
 export type Parameters = {
   id: number;
   date: string;
   transportId: string;
-  batteryParameters: BatteryParameters|{};
-  powertrainSystemParameters: PowertrainSystemParameters|{};
-  electricSystemParameters: ElectricSystemParameters|{};
-  transportAirConditioning: TransportAirConditioning|{};
-  transportLighting: TransportLighting|{};
-  bzpCommands: BzpCommands|{};
-  dbkOutputs: DbkOutputs|{};
+  batteryParameters: BatteryParameters | {};
+  powertrainSystemParameters: PowertrainSystemParameters | {};
+  electricSystemParameters: ElectricSystemParameters | {};
+  transportAirConditioning: TransportAirConditioning | {};
+  transportLighting: TransportLighting | {};
+  bzpCommands: BzpCommands | {};
+  dbkOutputs: DbkOutputs | {};
 };
 
 type BzpCommands = {
@@ -32,7 +33,7 @@ type BzpCommands = {
   turnOnTrailerPowerAbs: string,
 };
 
- type DbkOutputs= {
+type DbkOutputs = {
   id: number,
   runningLightCommand: string,
   alternateBeamHeadLightCommand: string,
@@ -43,7 +44,7 @@ type BzpCommands = {
   rightTurnSignalLightsCommand: string,
   leftTurnSignalLightsCommand: string,
   centerStopLightCommand: string,
-  rightStopLightCommand:string,
+  rightStopLightCommand: string,
   leftStopLightCommand: string,
   implementClearanceLightCommand: string,
   tractorSideLowMountedWorkLightsCommand: string,

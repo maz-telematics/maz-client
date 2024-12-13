@@ -22,8 +22,10 @@ interface Route {
       { path: '/operator/transports', label: 'Транспорт' },
     ],
     ROLE_DIRECTOR: [
-        { path: '/director/dashboard', label: 'Главная' },
+        { path: '/director/main', label: 'Главная' },
         { path: '/director/transports', label: 'Транспорт' },
+        { path: '/director/employees', label: 'Сотрудники' },
+        { path: '/director/reports', label: 'Отчеты' },
     ],
     ROLE_MANAGER: [
         { path: '/manager/dashboard', label: 'Главная' },

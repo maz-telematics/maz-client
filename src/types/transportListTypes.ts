@@ -4,9 +4,9 @@ export interface Car {
     model?: string;
     vin?: string;
     year_release?: string;
-    engine_type?: string;
-    vehicle_type?: string;
-    organization?: string;
+    engineType?: string;
+    vehicleType?: string;
+    organizationName?: string;
   }
   
   export interface Organization {

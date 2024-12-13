@@ -44,7 +44,7 @@ const TransportsPage = () => {
     fetchCars();
   }, []);
 
-  const handleRedirectAndSaveId = async (id: number) => {
+  const handleRedirectAndSaveId = async (id: string) => {
     await sessionStorage.setItem("id", String(id));
     navigate("/parameters");
   };
@@ -72,7 +72,7 @@ const TransportsPage = () => {
                 key: "model",
                 render: (text, record) => (
                   <a
-                    onClick={() => handleRedirectAndSaveId(record.id_transport)}
+                    onClick={() => handleRedirectAndSaveId(record.id)}
                   >
                     {text}
                   </a>
@@ -80,8 +80,8 @@ const TransportsPage = () => {
               },
               {
                 title: "VIN номер",
-                dataIndex: "vin",
-                key: "vin",
+                dataIndex: "id",
+                key: "id",
               },
 
               {
@@ -94,24 +94,24 @@ const TransportsPage = () => {
               },
               {
                 title: "Организация",
-                dataIndex: "organization",
-                key: "year_release",
+                dataIndex: "organizationName",
+                key: "organizationName",
               },
               {
                 title: "Тип транспорта",
-                dataIndex: "vehicle_type",
-                key: "vehicle_type",
+                dataIndex: "vehicleType",
+                key: "vehicleType",
               },
               {
                 title: "Тип двигателя",
-                dataIndex: "engine_type",
-                key: "engine_type",
+                dataIndex: "engineType",
+                key: "engineType",
               },
             ]}
             pagination={false}
             dataSource={cars}
             bordered
-            rowKey={(record) => record.vin}
+            rowKey={(record) => record.id}
           /> 
         </Col>
       </Row>

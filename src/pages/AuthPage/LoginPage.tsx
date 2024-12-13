@@ -44,7 +44,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
             navigate("/operator/main", { replace: true });
             break;
           case "ROLE_DIRECTOR":
-            navigate("/head/main", { replace: true });
+            navigate("/director/main", { replace: true });
             break;
           case "ROLE_MANAGER":
             navigate("/manager/main", { replace: true });
@@ -74,7 +74,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
       if (result === null) {
         message.error("Возникли проблемы при авторизации!");
       } else if (result === 200) {
-        message.success("Автоизация успешна!");
+        message.success("Авторизация успешна!");
       } else if (result === 401) {
         message.error("Не верный пароль или логин!");
       } else if (result === 302) {
@@ -175,7 +175,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
         </defs>
         {Array.from({ length: 30 }).map((_, index) => (
           <rect key={index} x="-200" y={`${Math.random() * 100}vh`} width="150" height="10" fill="url(#signalGradient)">
-            <animate attributeName="x" from="-200" to="100%" dur={`${Math.random() * 20 + 6}s`} repeatCount="indefinite" />
+            <animate attributeName="x" from="-200" to="100%" dur={`${Math.random() *          20 + 6}s`} repeatCount="indefinite" />
           </rect>
         ))}
       </svg>
@@ -220,10 +220,10 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
             name="username"
             rules={[
               { required: true, message: "Введите email" },
-              // {
-              //   type: "email",
-              //   message: "Введите корректный email",
-              // },
+              {
+                type: "email",
+                message: "Введите корректный email",
+              },
             ]}
           >
             <Input placeholder="Введите ваш логин" style={{ borderRadius: "5px", backgroundColor: "#f7f7f7", color: "#333" }} />

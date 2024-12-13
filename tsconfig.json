@@ -1,4 +1,3 @@
-
 {
   "compilerOptions": {
     "target": "esnext",
@@ -10,5 +9,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src", "vite-env.d.ts", "env.d.ts"]
+  "include": [
+    "src",
+    "vite-env.d.ts",
+    "env.d.ts"
+  ]
 }

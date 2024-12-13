@@ -123,8 +123,8 @@ const TransportsPage = () => {
               },
               {
                 title: "VIN номер",
-                dataIndex: "vin",
-                key: "vin",
+                dataIndex: "id",
+                key: "id",
               },
               {
                 title: "Год выпуска",
@@ -136,18 +136,18 @@ const TransportsPage = () => {
               },
               {
                 title: "Организация",
-                dataIndex: "organization",
-                key: "organization",
+                dataIndex: "organizationName",
+                key: "organizationName",
               },
               {
                 title: "Тип транспорта",
-                dataIndex: "vehicle_type",
-                key: "vehicle_type",
+                dataIndex: "vehicleType",
+                key: "vehicleType",
               },
               {
                 title: "Тип двигателя",
-                dataIndex: "engine_type",
-                key: "engine_type",
+                dataIndex: "engineType",
+                key: "engineType",
               },
               {
                 dataIndex: "",
