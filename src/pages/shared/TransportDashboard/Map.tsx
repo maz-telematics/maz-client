@@ -1,114 +1,196 @@
-import { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
-import "leaflet-routing-machine";
-import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet/dist/leaflet.css";
 import { Location } from "../../../types/carTrackingTypes";
+import dayjs, { Dayjs } from "dayjs";
+import axiosInstance from "../../../services/axiosInstance";
 
 interface MapProps {
-  locations: Location[];
+  selectedDate: Dayjs | null;
 }
 
-const Map: React.FC<MapProps> = ({ locations }) => {
-  useEffect(() => {
-    const map = L.map("map").setView([53.9, 27.5667], 13);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap contributors",
-    }).addTo(map);
-    locations.forEach((location) => {
-      const { latitude, longitude, date,speed } = location;
+const Map: React.FC<MapProps> = ({ selectedDate }) => {
+  const [locations, setLocations] = useState<Location[]>([]);
+  const mapRef = useRef<L.Map | null>(null);
+  const polylineRef = useRef<L.Polyline | null>(null); // Указан тип L.Polyline или null
+  const markersRef = useRef<L.Marker[]>([]); // Ссылка на маркеры
+  const [mapCenter, setMapCenter] = useState<[number, number] | null>(null); // Состояние для центра карты
+  const [mapZoom, setMapZoom] = useState<number>(10); // Состояние для зума карты
+  const id = sessionStorage.getItem("id");
+  const isCurrentDay = (date: Dayjs | null): boolean => {
+    return date ? date.isSame(dayjs(), "day") : false;
+  };
+  const websocketRef = useRef<WebSocket | null>(null);
+  const apiUrl = import.meta.env.VITE_API_URL;
 
-      if (latitude !== undefined && longitude !== undefined) {
-        const formattedDate = new Date(date).toLocaleString("ru-RU", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        });
-
-        L.circle([latitude, longitude], {
-          color: "blue",
-          fillColor: "#30f",
-          fillOpacity: 1,
-          radius: 5,
-        })
-          .addTo(map)
-          .bindPopup(`Скорость: ${speed} Широта: ${latitude}, Долгота: ${longitude}, Дата: ${formattedDate}`);
-      } else {
-        console.error(
-          `Invalid location data: Latitude: ${latitude}, Longitude: ${longitude}`
-        );
+  const getLocations = async (id: string, date: Dayjs | null): Promise<Location[]> => {
+    try {
+      if (!date) {
+        console.warn("Дата не указана, запрос не будет выполнен.");
+        return [];
       }
-    });
+      const dateStr = date.format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+      const response = await axiosInstance.get(`/transport/locations/${id}`, {
+        params: { date: dateStr },
+      });
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
 
-    // Формирование маршрута
-    const waypoints = locations
-      .map((location) => {
-        if (
-          location.latitude !== undefined &&
-          location.longitude !== undefined
-        ) {
-          return L.latLng(location.latitude, location.longitude);
-        } else {
-          console.error(`Invalid LatLng data for location: ${location}`);
-          return null;
-        }
-      })
-      .filter((latLng) => latLng !== null);
+  const initializeWebSocket = (id: string) => {
+    if (!id || websocketRef.current) return; // Предотвращаем повторное открытие
 
-    if (waypoints.length > 0) {
-      const routingControl = (L.Routing.control as any)({
-        waypoints: waypoints,
-        routeWhileDragging: false, 
-        draggableWaypoints: false,
-        addWaypoints: false, 
-        show: false, 
-        lineOptions: {
-          styles: [
-            {
-              color: "blue",
-              opacity: 0.9,
-              weight: 6,
-            },
-          ],
-        },
-        createMarker: (i: number, waypoint: any, n: number) => {
-          if (i === 0) {
-            return L.marker(waypoint.latLng, { icon: L.icon({
-              iconUrl: "/start-icon.png",
-              iconSize: [25, 41],
-              iconAnchor: [12, 41],
-            }) }).bindPopup("Начальная точка");
-          }
-          if (i === n - 1) {
-            return L.marker(waypoint.latLng, { icon: L.icon({
-              iconUrl: "/end-icon.png",
-              iconSize: [25, 41],
-              iconAnchor: [12, 41],
-            }) }).bindPopup("Конечная точка");
-          }
-          return null;
-        },
-      }).addTo(map);
+    websocketRef.current = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
+    websocketRef.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("Полученные данные:", data);
+      if (data) {
+        setLocations((prev) => [...prev, ...data]);
+      }
+    };
 
-      map.fitBounds(routingControl.getPlan().getWaypoints().map((wp: any) => wp.latLng));
+    websocketRef.current.onerror = (error) => console.error("WebSocket Error:", error);
+
+    websocketRef.current.onclose = () => {
+      console.log("WebSocket connection closed");
+      websocketRef.current = null;
+    };
+
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    if (!user.token) {
+      console.error("Токен отсутствует");
+      return;
+    }
+
+    const message = `${user.token}, ${id}`;
+    websocketRef.current.onopen = () => {
+      console.log("WebSocket подключен", message);
+      websocketRef.current?.send(message);
+    };
+  };
+
+  const closeWebSocket = () => {
+    if (websocketRef.current) {
+      websocketRef.current.close();
+      websocketRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    const id = sessionStorage.getItem("id");
+    if (!id) return;
+
+    if (isCurrentDay(selectedDate)) {
+      if (!websocketRef.current) {
+        initializeWebSocket(id);
+      }
     } else {
-      console.error("No valid waypoints for the routing control.");
+      closeWebSocket();
+      getLocations(id, selectedDate).then((locationsData) => {
+        setLocations(locationsData);
+      });
     }
 
     return () => {
-      map.remove(); 
+      closeWebSocket();
     };
-  }, [locations]);
+  }, [id, selectedDate]);
+
+  useEffect(() => {
+    if (!mapRef.current) {
+      const initialCenter = mapCenter || [53.9, 27.5667]; 
+      mapRef.current = L.map("map", {
+        center: initialCenter,
+        zoom: mapZoom,
+        attributionControl: false,
+      });
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "",
+      }).addTo(mapRef.current);
+
+      mapRef.current.on("moveend", () => {
+        if (mapRef.current) {
+          const center = mapRef.current.getCenter();
+          setMapCenter([center.lat, center.lng]);
+        }
+      });
+
+      mapRef.current.on("zoomend", () => {
+        if (mapRef.current) {
+          const zoom = mapRef.current.getZoom();
+          setMapZoom(zoom);
+        }
+      });
+    }
+
+    if (!mapRef.current) return;
+
+    // Очистить старые маркеры и полилинию при изменении данных
+    markersRef.current.forEach((marker) => marker.remove());
+    markersRef.current = [];
+
+    if (polylineRef.current) {
+      polylineRef.current.remove(); // Удаление старой полилинии
+      polylineRef.current = null;
+    }
+
+    // Фильтрация и подготовка точек маршрута
+    const waypoints = locations
+      .filter((loc) => loc.latitude !== undefined && loc.longitude !== undefined)
+      .map((loc) => L.latLng(loc.latitude, loc.longitude));
+
+    // Если полилиния ещё не создана, создаём её
+    if (!polylineRef.current) {
+      polylineRef.current = L.polyline(waypoints, {
+        color: "blue",
+        weight: 6,
+        opacity: 0.9,
+        interactive: false,
+      }).addTo(mapRef.current);
+    } 
+    // Добавляем маркеры на карту
+    waypoints.forEach((point, index) => {
+      const popupContent = `
+        <div>
+          <strong>Точка ${index + 1}</strong><br />
+          Широта: ${locations[index].latitude}<br />
+          Долгота: ${locations[index].longitude}<br />
+          Скорость: ${locations[index].speed ?? "N/A"} км/ч<br />
+          Дата: ${locations[index].date ? new Date(locations[index].date).toLocaleString() : "N/A"}<br />
+        </div>
+      `;
+
+      const iconUrl =
+        index === 0
+          ? "../start.png"
+          : index === waypoints.length - 1
+            ? "../end.png"
+            : "../default.png";
+
+      const icon = L.icon({
+        iconUrl,
+        iconSize: [25, 35],
+        iconAnchor: [12, 41],
+      });
+
+      const marker = L.marker(point, { icon }).bindPopup(popupContent);
+      marker.addTo(mapRef.current);
+      markersRef.current.push(marker);
+    });
+
+    return () => {
+      markersRef.current.forEach((marker) => marker.remove());
+      markersRef.current = [];
+    };
+  }, [locations, selectedDate]);
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
-      <div
-        id="map"
-        style={{ display: "flex", width: "100%", height: "100%" }}
-      ></div>
+      <div id="map" style={{ display: "flex", width: "100%", height: "100%" }}></div>
     </div>
   );
 };
