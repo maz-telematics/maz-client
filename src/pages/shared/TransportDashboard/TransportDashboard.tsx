@@ -32,8 +32,7 @@ const TransportDashboard = () => {
   const initializeWebSocket = (id: string) => {
     if (!id || websocketRef.current) return; // Предотвращаем повторное открытие
 
-    // websocketRef.current = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
-    websocketRef.current = new WebSocket("http://134.17.17.15:8080/ws");
+    websocketRef.current = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
     websocketRef.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
       console.log("Полученные данные:", data); // Проверьте формат данных
