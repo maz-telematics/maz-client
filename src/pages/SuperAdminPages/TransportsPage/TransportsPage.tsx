@@ -26,7 +26,7 @@ const TransportsPage = () => {
 
   const navigateToEditCar = async (id: number) => {
     await sessionStorage.setItem("id", String(id));
-    navigate("/edit-car");
+    navigate("/super-admin/transport/edit-car");
   };
   const handleDelete = (vin: number, organization_id: number) => {
     setDeleteVin(vin);
@@ -157,7 +157,7 @@ const TransportsPage = () => {
                 render: (text, record) => (
                   <div style={{ display: "flex", gap: "8px" }}>
                     <Button
-                    disabled={true}
+                    // disabled={true}
                       size="middle"
                       onClick={() => navigateToEditCar(record.id)}
                       style={{

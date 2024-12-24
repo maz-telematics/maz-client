@@ -81,7 +81,7 @@ const App = () => {
                 <Route path="/super-admin/parameters" element={<SuperAdminCarTracking />} />
                 <Route path="/super-admin/organizations" element={<OrganizationsPage />} />
                 <Route path="/super-admin/transports" element={<TransportsPage />} />
-                <Route path="/super-admin/transport/edit/:id" element={<EditTransportPage />} />
+                <Route path="/super-admin/transport/edit-car" element={<EditTransportPage />} />
                 <Route path="/super-admin/transport/new-car" element={<CreateTransportPage />} />
                 <Route path="/super-admin/organization" element={<OrganizationDetails />} />
                 <Route path="/super-admin/new-organization" element={<CreateOrganizationPage />} />
@@ -136,7 +136,7 @@ const App = () => {
             path="/"
             element={
               <LoginPage
-                setRole={setRole}
+                // setRole={setRole}
                 setToken={setToken}
                 setIsAuthenticated={setIsAuthenticated}
               />

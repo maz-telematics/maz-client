@@ -11,7 +11,7 @@ export interface Car {
   
   export interface Organization {
     registration_date: number;
-    organization_id: number;
+    id: number;
     contact_person: string;
     organization_address: string;
     organization_name: string;

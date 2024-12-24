@@ -92,13 +92,13 @@ const OrganizationsPage = () => {
             columns={[
               {
                 title: "Название организации",
-                dataIndex: "organization_name",
-                key: "organization_name",
+                dataIndex: "organizationName",
+                key: "organizationName",
                 render: (text, record) => (
                   <a
                     onClick={() =>
                       handleRedirectAndSaveOrganizationId(
-                        record.organization_id
+                        record.id
                       )
                     }
                     style={{ color: "#1890ff", fontWeight: "500" }}
@@ -109,28 +109,28 @@ const OrganizationsPage = () => {
               },
               {
                 title: "Номер телефона",
-                dataIndex: "contact_info",
-                key: "contact_info",
+                dataIndex: "contactInfo",
+                key: "contactInfo",
               },
               {
                 title: "Контактное лицо",
-                dataIndex: "contact_person",
-                key: "contact_person",
+                dataIndex: "contactPerson",
+                key: "contactPerson",
               },
               {
                 title: "Адрес",
-                dataIndex: "organization_address",
-                key: "organization_address",
+                dataIndex: "organizationAddress",
+                key: "organizationAddress",
               },
               {
                 title: "Электронная почта",
-                dataIndex: "email",
-                key: "email",
+                dataIndex: "emailContactPerson",
+                key: "emailContactPerson",
               },
               {
                 title: "Дата регистрации",
-                dataIndex: "registration_date",
-                key: "registration_date",
+                dataIndex: "registrationDate",
+                key: "registrationDate",
                 render: (text) => (
                   <span>{moment(text).format("YYYY-MM-DD")}</span>
                 ),
@@ -145,7 +145,7 @@ const OrganizationsPage = () => {
                   disabled={true}
                     size="middle"
                     onClick={() =>
-                      handleDeleteOrganization(record.organization_id)
+                      handleDeleteOrganization(record.id)
                     }
                     style={{
                       backgroundColor: "#007bff", 
@@ -161,7 +161,7 @@ const OrganizationsPage = () => {
             pagination={false}
             dataSource={organization}
             bordered
-            rowKey={(record) => record.organization_id}
+            rowKey={(record) => record.id}
             style={{
 
               borderRadius: "8px",

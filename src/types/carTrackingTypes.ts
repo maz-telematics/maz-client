@@ -21,6 +21,7 @@ export type Parameters = {
 
 type BzpCommands = {
   id: number,
+  time:string,
   terminal15CcsToEcu: string,
   turnOnCabinPower: string,
   turnOnHeadlightsPower: string,
@@ -54,13 +55,14 @@ type DbkOutputs = {
 }
 
 
-type BatteryParameters = {
+export type BatteryParameters = {
   id: number;
+  time:string,
   batteryMinTemp: number;
   batteryMaxTemp: number;
   batterySoc: number;
   batteryVoltage: number;
-  batteryCharging: boolean;
+  batteryCharging: string;
   transportDataId: number;
 };
 

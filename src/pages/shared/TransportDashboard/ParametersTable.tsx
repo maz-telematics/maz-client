@@ -1,10 +1,18 @@
-import { Parameters } from "../../../types/carTrackingTypes";
+import { BatteryParameters, Parameters } from "../../../types/carTrackingTypes";
 import { Table, Tabs, Row, Col } from "antd";
-import { columnsBatteryParameters, columnsBzpCommands, columnsDbkOutputs, columnsElectricSystemParameters, columnsPowertrainSystemParameters, columnsTransportAirConditioning, columnsTransportLighting } from "./TransportColumns";
+import { 
+  // columnsBatteryParameters,
+   columnsBzpCommands
+  , columnsDbkOutputs, 
+  columnsElectricSystemParameters, columnsPowertrainSystemParameters, columnsTransportAirConditioning, 
+  columnsTransportLighting } from "./TransportColumns";
 const { TabPane } = Tabs;
 import { useEffect, useState } from "react";
 import axiosInstance from "../../../services/axiosInstance";
 import { Dayjs } from "dayjs";
+import BatteryStateChart from "./TransportColumns";
+import ElectricSystemParametersChart from "./ElectricSystemParametersChart";
+import PowertrainParametersChart from "./SystemParametersGraph";
 
 interface ParametersProps {
   selectedDate: Dayjs | null;
@@ -15,7 +23,7 @@ const processParameters = (parameters: Parameters[]): Parameters[] => {
     return [{
       transportLighting: {},
       transportAirConditioning: {},
-      batteryParameters: {},
+      batteryParameters: {}, 
       electricSystemParameters: {},
       powertrainSystemParameters: {},
       bzpCommands: {},
@@ -39,10 +47,54 @@ const processParameters = (parameters: Parameters[]): Parameters[] => {
   });
 };
 
+// const filterParametersByGroup = (
+//   parameters: Parameters[],
+//   groupKey: keyof Parameters
+// ): Record<string, any>[] => {
+//   return parameters.map((parameter) => {
+//     const groupData = parameter[groupKey];
+//     return typeof groupData === "object" && groupData !== null
+//       ? { ...groupData }
+//       : {};
+//   });
+// };
+
+// const filterParametersByGroup = (
+//   parameters: Parameters[],
+//   groupKey: keyof Parameters
+// ): Record<string, any>[] => {
+//   return parameters.map((parameter) => {
+//     const groupData = parameter[groupKey];
+//     // Проверяем, является ли groupData объектом, и возвращаем его без изменений, если это так
+//     if (typeof groupData === "object" && groupData !== null) {
+//       return { ...groupData }; // Возвращаем копию объекта для указанной группы параметров
+//     }
+//     return {}; // Возвращаем пустой объект, если данных нет
+//   });
+// };
+const filterParametersByGroup = <T extends Record<string, any>>(
+  parameters: Parameters[],
+  groupKey: keyof Parameters
+): T[] => {
+  return parameters.map((parameter) => {
+    const groupData = parameter[groupKey];
+    
+    // Проверяем, является ли groupData объектом, и возвращаем его без изменений, если это так
+    if (typeof groupData === "object" && groupData !== null) {
+      return { ...groupData } as T; // Возвращаем копию объекта для указанной группы параметров
+    }
+
+    // Возвращаем пустой объект с типом T, если данных нет
+    return {} as T;
+  });
+};
+
+
 const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
   const [processedParameters, setProcessedParameters] = useState<any[]>([]);
   const id = sessionStorage.getItem("id");
 
+  
   const getParameters = async (id: string, date: string): Promise<[]> => {
     try {
       if (!id || !date) return [];
@@ -56,7 +108,6 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
     }
   };
 
-  // useEffect для перезапроса параметров при изменении selectedDate
   useEffect(() => {
     const fetchAndProcessParameters = async () => {
       if (!id || !selectedDate) return;
@@ -65,6 +116,11 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
         const dateStr = selectedDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ");
         const data = await getParameters(id, dateStr);
         const processed = processParameters(data);
+        const powertrainData = filterParametersByGroup(processed, "batteryParameters");
+
+        console.log("data",data)
+        console.log("processed",processed)
+        console.log("filter",powertrainData);
         setProcessedParameters(processed);
       } catch (error) {
         console.error("Error fetching or processing parameters:", error);
@@ -99,6 +155,7 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
           <TabPane key="transport_air_conditioning" tab="Система кондиционирования транспорта">
             <Row gutter={[16, 16]}>
               <Col span={24}>
+             
                 <Table
                   bordered
                   pagination={false}
@@ -117,17 +174,7 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
           <TabPane key="battery_parameters" tab="Параметры батареи">
             <Row gutter={[16, 16]}>
               <Col span={24}>
-                <Table
-                  bordered
-                  pagination={false}
-                  columns={columnsBatteryParameters}
-                  dataSource={processedParameters.map(parameter => ({
-                    ...parameter.batteryParameters,
-                    date: parameter.date,
-                  }))}
-                  scroll={{ x: "max-content" }}
-                  style={{ maxWidth: "100%", overflowX: "auto" }}
-                />
+                 <BatteryStateChart processedParameters={filterParametersByGroup<BatteryParameters>(processedParameters, "batteryParameters")} />
               </Col>
             </Row>
           </TabPane>
@@ -135,17 +182,18 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
           <TabPane key="electric_system_parameters" tab="Параметры электрической системы">
             <Row gutter={[16, 16]}>
               <Col span={24}>
-                <Table
+                {/* <Table
                   bordered
                   pagination={false}
                   columns={columnsElectricSystemParameters}
                   dataSource={processedParameters.map(parameter => ({
                     ...parameter.electricSystemParameters,
                     date: parameter.date,
-                  }))}
+                  }))} 
                   scroll={{ x: "max-content" }}
                   style={{ maxWidth: "100%", overflowX: "auto" }}
-                />
+                /> */}
+                <ElectricSystemParametersChart processedParameters={processedParameters}/>
               </Col>
             </Row>
           </TabPane>
@@ -153,6 +201,7 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
           <TabPane key="powertrain_system_parameters" tab="Параметры силовой установки">
             <Row gutter={[16, 16]}>
               <Col span={24}>
+              {/* <PowertrainParam etersChart processedParameters={processedParameters}/> */}
                 <Table
                   bordered
                   pagination={false}
@@ -160,7 +209,7 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
                   dataSource={processedParameters.map(parameter => ({
                     ...parameter.powertrainSystemParameters,
                     date: parameter.date,
-                  }))}
+                  }))} 
                   scroll={{ x: "max-content" }}
                   style={{ maxWidth: "100%", overflowX: "auto" }}
                 />
@@ -178,7 +227,7 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
                   dataSource={processedParameters.map(parameter => ({
                     ...parameter.bzpCommands,
                     date: parameter.date,
-                  }))}
+                  }))} 
                   scroll={{ x: "max-content" }}
                   style={{ maxWidth: "100%", overflowX: "auto" }}
                 />
@@ -196,7 +245,7 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
                   dataSource={processedParameters.map(parameter => ({
                     ...parameter.dbkOutputs,
                     date: parameter.date,
-                  }))}
+                  }))} 
                   scroll={{ x: "max-content" }}
                   style={{ maxWidth: "100%", overflowX: "auto" }}
                 />

@@ -320,6 +320,7 @@ export const columnsTransportLighting = [
       ),
     },
   ];
+
   export const columnsPowertrainSystemParameters = [
     {
       title: "Время",
@@ -650,6 +651,7 @@ export const columnsTransportLighting = [
       ),
     },
   ];
+  
   export const columnsBzpCommands = [
     {
       title: "Время",
@@ -995,3 +997,189 @@ export const columnsTransportLighting = [
       ),
     },
   ];
+
+import React from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  ReferenceArea,
+  ReferenceLine,
+  BarChart,
+  Bar,
+  LabelList,
+  Dot
+} from "recharts";
+import { Card, Tabs } from "antd";
+import { BatteryParameters } from "../../../types/carTrackingTypes";
+const { TabPane } = Tabs;
+
+interface BatteryParametersChartProps {
+  processedParameters: BatteryParameters[];
+}
+
+const BatteryParametersChart: React.FC<BatteryParametersChartProps> = ({ processedParameters }) => {
+  console.log('props', processedParameters);
+
+  const prepareData = (key: keyof BatteryParameters) => {
+    return processedParameters.map((parameter) => ({
+      time: new Date(parameter.time),
+      value: parameter[key],
+    }));
+  };
+
+
+  const prepareChargingData = () =>
+    processedParameters.map((parameter) => {
+      let statusValue =1;
+      if (String(parameter.batteryCharging) === "yes") {
+        statusValue = 2; // Заряжается
+      } else if (String(parameter.batteryCharging) === "false") {
+        statusValue = 1; // Не заряжается
+      } else if (String(parameter.batteryCharging) === "done") {
+        statusValue = 4; // Зарядка завершена
+      }
+      return {
+        time: new Date(parameter.time),
+        statusValue, // Числовое значение для высоты столбика
+        status: parameter.batteryCharging === "false"
+          ? "Не заряжается"
+          : parameter.batteryCharging === "yes"
+          ? "Заряжается"
+          : "Зарядка завершена",
+      };
+    });
+
+  return (
+    <Card title="Графики параметров батареи">
+      <Tabs type="card">
+        <TabPane tab="Температура батареи" key="temperature">
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={prepareData("batteryMinTemp")}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="time" />
+              <YAxis domain={[-50, 125]} />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke="#8884d8"
+                activeDot={{ r: 8 }}
+                name="Минимальная температура"
+                dot={{ r: 5 }}
+              />
+              {/* Выделение аномальных значений */}
+              <ReferenceArea x1="2024-12-12T00:00:00Z" x2="2024-12-15T00:00:00Z" stroke="red" fill="red" fillOpacity={0.3} />
+            </LineChart>
+          </ResponsiveContainer>
+
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={prepareData("batteryMaxTemp")}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="time" />
+              <YAxis domain={[-50, 125]} />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke="#82ca9d"
+                activeDot={{ r: 8 }}
+                name="Максимальная температура"
+                dot={{ r: 5 }}
+              />
+              {/* Выделение аномальных значений */}
+              <ReferenceArea x1="2024-12-12T00:00:00Z" x2="2024-12-15T00:00:00Z" stroke="red" fill="red" fillOpacity={0.3} />
+            </LineChart>
+          </ResponsiveContainer>
+        </TabPane>
+
+        <TabPane tab="Уровень заряда" key="soc">
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={prepareData("batterySoc")}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="time" />
+              <YAxis domain={[0, 100]} />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke="#8884d8"
+                activeDot={{ r: 8 }}
+                name="Уровень заряда"
+                dot={{ r: 5 }}
+              />
+              <ReferenceLine y={20} label="Низкий" stroke="red" strokeDasharray="3 3" />
+              <ReferenceLine y={80} label="Высокий" stroke="green" strokeDasharray="3 3" />
+            </LineChart>
+          </ResponsiveContainer>
+        </TabPane>
+
+        <TabPane tab="Напряжение батареи" key="voltage">
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={prepareData("batteryVoltage")}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="time" />
+              <YAxis domain={[0, 15]} />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke="#82ca9d"
+                activeDot={{ r: 8 }}
+                name="Напряжение"
+                dot={{ r: 5 }}
+              />
+              {/* Выделение аномальных значений */}
+              <ReferenceArea x1="2024-12-12T00:00:00Z" x2="2024-12-15T00:00:00Z" stroke="red" fill="red" fillOpacity={0.3} />
+            </LineChart>
+          </ResponsiveContainer>
+        </TabPane>
+
+        <TabPane tab="Состояние зарядки" key="charging">
+  <ResponsiveContainer width="100%" height={300}>
+    <BarChart data={prepareChargingData()}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis
+        dataKey="time"
+        tickFormatter={(time) => new Date(time).toLocaleTimeString()}
+      />
+      <YAxis
+        type="number"
+        domain={[0, 2]} // Диапазон от 0 до 2
+        label={{ value: "Состояние", angle: -90, position: "insideLeft" }}
+        tickFormatter={(value) => {
+          switch (value) {
+            case 0:
+              return "Не заряжается";
+            case 1:
+              return "Заряжается";
+            case 2:
+              return "Зарядка завершена";
+            default:
+              return "";
+          }
+        }}
+      />
+      <Tooltip />
+      <Legend />
+      <Bar dataKey="statusValue" fill="#4e73df"> {/* Синий цвет столбиков */}
+        <LabelList dataKey="status" position="top" />
+      </Bar>
+    </BarChart>
+  </ResponsiveContainer>
+</TabPane>
+      </Tabs>
+    </Card>
+  );
+};
+
+export default BatteryParametersChart;
+

@@ -156,7 +156,7 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
     waypoints.forEach((point, index) => {
       const popupContent = `
         <div>
-          <strong>Точка ${index + 1}</strong><br />
+          // <strong>Точка ${index + 1}</strong><br />
           Широта: ${locations[index].latitude}<br />
           Долгота: ${locations[index].longitude}<br />
           Скорость: ${locations[index].speed ?? "N/A"} км/ч<br />
