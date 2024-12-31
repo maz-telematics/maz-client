@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Button, Form, Input, Table, message, Popconfirm, Col, Row, DatePicker, Select } from "antd";
-import { Common } from "../../../../types/editCarTypes";
-import { Car } from "../../../../types/transportListTypes";
+import { Common } from "../../../../Types/editCarTypes";
+import { Car } from "../../../../Types/transportListTypes";
 import dayjs from "dayjs";
 import axiosInstance from "../../../../services/axiosInstance";
+import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
+import SaveAltOutlinedIcon from '@mui/icons-material/SaveAltOutlined';
+import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
 
-interface Parameter {
+export interface Parameter {
   key: number; // Уникальный ключ для рендера
   c: number; // CAN номер
   i: number; // Message ID
@@ -262,129 +265,170 @@ const EditTransportPage = () => {
             </Button>
           </>
         ) : (
-          <Popconfirm
-            title="Удалить этот параметр?"
-            onConfirm={() => handleDelete(record.key)}>
-            <Button type="link" danger>
-              Удалить
-            </Button>
-          </Popconfirm>
+          <>
+        {/* Возможность редактирования параметра */}
+        <Button type="link" onClick={() => handleEdit(record)}>
+          Редактировать
+        </Button>
+
+        <Popconfirm
+          title="Удалить этот параметр?"
+          onConfirm={() => handleDelete(record.key)}
+        >
+          <Button type="link" danger>
+            Удалить
+          </Button>
+        </Popconfirm>
+      </>
         );
       },
     },
   ];
-
+  const isMobile = window.innerWidth < 768;
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
         width: "100%",
-        height: "100vh",
-        backgroundColor: "#F0F4F8",
-        boxSizing: "border-box",
+        backgroundColor: "#E1E1E1",
       }}
     >
-      <Row style={{ width: "80%", margin: "40px" }}>
+      <Row style={{ width: "100%", padding: isMobile ? "0 16px" : "0 40px" }}>
         <Col xs={24}>
-          <Form form={form} onFinish={onFinish}>
-            <h2>Основные параметры транспорта</h2>
-            <Form.Item
-              label="Модель"
-              name="model"
-            >
-              <Input placeholder={data?.model} style={{ width: "200px" }} />
-            </Form.Item>
-
-            <Form.Item
-              label="VIN номер"
-              name="vin"
-              rules={[
-                { len: 17, message: "VIN номер должен быть 17 символов" },
-                {
-                  pattern: /^[A-HJ-NPR-Z0-9]{17}$/,
-                  message:
-                    "VIN номер должен содержать только буквы A-H, J-N, P-R и цифры",
-                },
-              ]}
-            >
-              <Input placeholder={data?.vin} style={{ width: "200px" }} />
-            </Form.Item>
-
-            <Form.Item
-              label="Дата"
-              name="year_release"
-            >
-              <DatePicker
-                style={{ width: "200px" }}
-                value={dateValue}
-                format="YYYY"
-                placeholder="Выберите год"
-              />
-            </Form.Item>
-
-            <Form.Item
-              label="Выбор двигателя"
-              name="engine_type_id"
-            >
-              <Select
-                placeholder={data?.engineType}
-                style={{ width: "200px" }}
-                options={techniqueOptions}
-              />
-            </Form.Item>
-
-            <Form.Item
-              label="Тип автомобиля"
-              name="vehicle_type_id"
-            >
-              <Select
-                placeholder={data?.vehicleType}
-                style={{ width: "200px" }}
-                options={engineOptions}
-              />
-            </Form.Item>
-
-            <Form.Item
-              label="Организация"
-              name="organization_id"
-            >
-              <Select
-                placeholder={data?.organizationName}
-                style={{ width: "200px" }}
-                options={organizationsOptions}
-              />
-            </Form.Item>
-
-            <Button type="primary" htmlType="submit">
-              Изменить данные автомобиля
-            </Button>
-          </Form>
-
-          <h2 style={{ marginTop: "40px" }}>Редактирование параметров</h2>
-          <Form form={form} component={false}>
-            <Table
-              dataSource={parameters}
-              columns={columns}
-              rowClassName="editable-row"
-              pagination={{ pageSize: 5 }}
-            />
-          </Form>
-          <Row gutter={16}>
+          <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
             <Col>
-              <Button
+              <h1 style={{ margin: 0, fontSize: isMobile ? '24px' : '32px', }}>Настройки транспорта</h1>
+            </Col>
+          </Row>
+          <Form
+  form={form}
+  onFinish={onFinish}
+  layout="horizontal"
+  style={{ maxWidth: "600px"}} // Центрируем форму и задаем ширину
+>
+  {[
+    { label: "Модель", name: "model", placeholder: data?.model },
+    { label: "VIN номер", name: "vin", placeholder: data?.vin },
+    {
+      label: "Дата выпуска",
+      name: "year_release",
+      component: (
+        <DatePicker
+          value={dateValue}
+          format="YYYY"
+          placeholder="Выберите год"
+          style={{ width: "100%" }}
+        />
+      ),
+    },
+    {
+      label: "Выбор двигателя",
+      name: "engine_type_id",
+      component: (
+        <Select
+          placeholder={data?.engineType}
+          options={techniqueOptions}
+          style={{ width: "100%" }}
+        />
+      ),
+    },
+    {
+      label: "Тип автомобиля",
+      name: "vehicle_type_id",
+      component: (
+        <Select
+          placeholder={data?.vehicleType}
+          options={engineOptions}
+          style={{ width: "100%" }}
+        />
+      ),
+    },
+    {
+      label: "Организация",
+      name: "organization_id",
+      component: (
+        <Select
+          placeholder={data?.organizationName}
+          options={organizationsOptions}
+          style={{ width: "100%" }}
+        />
+      ),
+    },
+  ].map((field, index) => (
+    <Form.Item
+      key={index}
+      label={field.label}
+      name={field.name}
+      labelCol={{ span: 5 }} // Сетку для лейблов
+      wrapperCol={{ span: 12 }} // Сетку для полей ввода
+      style={{ marginBottom: "16px" }}
+    >
+      {field.component || (
+        <Input
+          placeholder={field.placeholder}
+          style={{ width: "100%" }}
+        />
+      )}
+    </Form.Item>
+  ))}
+  
+  {/* <Form.Item style={{ textAlign: "center", marginTop: "20px" }}>
+    <Button
+      type="primary"
+      htmlType="submit"
+      style={{ backgroundColor: "#3A5F73" }}
+      icon={<ModeEditOutlinedIcon />}
+    >
+      Изменить данные автомобиля
+    </Button>
+  </Form.Item> */}
+</Form>
+          <Row justify="space-between" style={{ marginBottom: "15px", marginTop:"30px", alignItems: 'flex-end' }}>
+            <h2 style={{margin:0, fontSize: isMobile ? '18px' : '24px'}}>Редактирование параметров</h2>
+            <Button
                 type="primary"
                 onClick={handleAdd}
                 disabled={!!editingKey}
+                style={{ backgroundColor: "#3A5F73" }}
+                icon={<LibraryAddOutlinedIcon />}
               >
-                Добавить параметр
+               {!isMobile && 'Добавить параметр'}
               </Button>
-            </Col>
+          </Row>
+          <Form form={form} component={false}>
+            <Table
+              components={{
+                header: {
+                  cell: (props: any) => (
+                    <th
+                      {...props}
+                      style={{
+                        backgroundColor: "#1B232A",
+                        color: "#fff",
+                        border: "none",
+                      }}
+                    >
+                      {props.children}
+                    </th>
+                  ),
+                },
+              }}
+              dataSource={parameters}
+              columns={columns}
+              rowClassName="editable-row"
+              pagination={false}
+              scroll={{ x: 'max-content' }}
+            />
+          </Form>
+          <Row gutter={16} style={{ marginTop: "20px", justifyContent: "flex-end" }}>
             <Col>
               <Button
                 type="primary"
                 onClick={saveAllChanges}
                 disabled={!parameters.length}
+                style={{ backgroundColor: "#3A5F73" }}
+                icon={<SaveAltOutlinedIcon />}
               >
                 Сохранить все изменения
               </Button>

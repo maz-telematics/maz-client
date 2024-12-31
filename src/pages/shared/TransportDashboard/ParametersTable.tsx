@@ -1,4 +1,4 @@
-import { BatteryParameters, Parameters } from "../../../types/carTrackingTypes";
+import { BatteryParameters, Parameters } from "../../../Types/carTrackingTypes";
 import { Table, Tabs, Row, Col } from "antd";
 import { 
   // columnsBatteryParameters,
@@ -47,31 +47,6 @@ const processParameters = (parameters: Parameters[]): Parameters[] => {
   });
 };
 
-// const filterParametersByGroup = (
-//   parameters: Parameters[],
-//   groupKey: keyof Parameters
-// ): Record<string, any>[] => {
-//   return parameters.map((parameter) => {
-//     const groupData = parameter[groupKey];
-//     return typeof groupData === "object" && groupData !== null
-//       ? { ...groupData }
-//       : {};
-//   });
-// };
-
-// const filterParametersByGroup = (
-//   parameters: Parameters[],
-//   groupKey: keyof Parameters
-// ): Record<string, any>[] => {
-//   return parameters.map((parameter) => {
-//     const groupData = parameter[groupKey];
-//     // Проверяем, является ли groupData объектом, и возвращаем его без изменений, если это так
-//     if (typeof groupData === "object" && groupData !== null) {
-//       return { ...groupData }; // Возвращаем копию объекта для указанной группы параметров
-//     }
-//     return {}; // Возвращаем пустой объект, если данных нет
-//   });
-// };
 const filterParametersByGroup = <T extends Record<string, any>>(
   parameters: Parameters[],
   groupKey: keyof Parameters
@@ -128,7 +103,7 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
     };
 
     fetchAndProcessParameters();
-  }, [id, selectedDate]); // Зависимости - обновление при изменении selectedDate
+  }, [id, selectedDate]); 
 
   return (
     <>
@@ -147,6 +122,15 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
                   }))}
                   scroll={{ x: "max-content" }}
                   style={{ maxWidth: "100%", overflowX: "auto" }}
+                  components={{
+                    header: {
+                      cell: (props:any) => (
+                        <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff",  border: "none", }}>
+                          {props.children}
+                        </th>
+                      ),
+                    },
+                  }}
                 />
               </Col>
             </Row>
@@ -166,6 +150,15 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
                   }))}
                   scroll={{ x: "max-content" }}
                   style={{ maxWidth: "100%", overflowX: "auto" }}
+                  components={{
+                    header: {
+                      cell: (props:any) => (
+                        <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff",  border: "none", }}>
+                          {props.children}
+                        </th>
+                      ),
+                    },
+                  }}
                 />
               </Col>
             </Row>
@@ -212,6 +205,15 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
                   }))} 
                   scroll={{ x: "max-content" }}
                   style={{ maxWidth: "100%", overflowX: "auto" }}
+                  components={{
+                    header: {
+                      cell: (props:any) => (
+                        <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff",  border: "none", }}>
+                          {props.children}
+                        </th>
+                      ),
+                    },
+                  }}
                 />
               </Col>
             </Row>
@@ -230,6 +232,15 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
                   }))} 
                   scroll={{ x: "max-content" }}
                   style={{ maxWidth: "100%", overflowX: "auto" }}
+                  components={{
+                    header: {
+                      cell: (props:any) => (
+                        <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff",  border: "none", }}>
+                          {props.children}
+                        </th>
+                      ),
+                    },
+                  }}
                 />
               </Col>
             </Row>
@@ -248,6 +259,15 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
                   }))} 
                   scroll={{ x: "max-content" }}
                   style={{ maxWidth: "100%", overflowX: "auto" }}
+                  components={{
+                    header: {
+                      cell: (props:any) => (
+                        <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff",  border: "none", }}>
+                          {props.children}
+                        </th>
+                      ),
+                    },
+                  }}
                 />
               </Col>
             </Row>

@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { Table, Modal, Button, Row, Col, message } from "antd";
 import { useNavigate, Link } from "react-router-dom";
-import { Organization } from "../../../types/transportListTypes";
+import { Organization } from "../../../Types/transportListTypes";
 import moment from "moment";
-import { HomeOutlined } from "@ant-design/icons";
+import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
+import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import axiosInstance from '../../../services/axiosInstance';
 
 const OrganizationsPage = () => {
@@ -18,7 +19,7 @@ const OrganizationsPage = () => {
   }
 
   const navigateToNewOrganization = () => {
-    navigate("/super-admin/new-organization");
+    navigate("/master/create-organization");
   };
 
   const fetchOrganizatios = async () => {
@@ -35,7 +36,7 @@ const OrganizationsPage = () => {
 
   const handleRedirectAndSaveOrganizationId = async (id: number) => {
     await sessionStorage.setItem("organization_id", String(id));
-    navigate("/super-admin/organization");
+    navigate("/master/organization");
   };
   const handleDeleteOrganization = async (idOrganization: number) => {
     Modal.confirm({
@@ -58,37 +59,51 @@ const OrganizationsPage = () => {
       },
     });
   };
-
+  const isMobile = window.innerWidth < 768;
   const navigate = useNavigate();
   return (
     <div style={{
       display: "flex",
       flexDirection: "column",
       width: "100%",
-      height: '100vh',
-      backgroundColor: "#F0F4F8",
+      // minHeight: '100vh',
+      backgroundColor: "#E1E1E1",
     }}>
       <Row style={{
-        margin: "30px 40px 30px 40px",
-        flex: "1",
+        padding: "0 40px",
       }}>
         <Col xs={24} >
-          <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
+          <Row justify="space-between" style={{ marginBottom: 16,alignItems: 'flex-end' }}>
             <Col>
-              <h1 style={{ margin: 0, color: '#1e40af' }}>Организации</h1>
+              <h1
+          style={{
+            margin: 0,
+            fontSize: isMobile ? '24px' : '32px', 
+          }}
+        >Организации</h1>
             </Col>
             <Col>
               <Button
-                disabled={true}
+                // disabled={true}
                 type="primary"
                 onClick={navigateToNewOrganization}
-                icon={<HomeOutlined />}
+                icon={<LibraryAddOutlinedIcon />}
+                style={{backgroundColor: "#3A5F73",}}
               >
-                Создать организацию
+                {!isMobile && 'Создать организацию'}
               </Button>
             </Col>
           </Row>
           <Table
+             components={{
+              header: {
+                cell: (props:any) => (
+                  <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff",  border: "none", }}>
+                    {props.children}
+                  </th>
+                ),
+              },
+            }}
             columns={[
               {
                 title: "Название организации",
@@ -147,11 +162,13 @@ const OrganizationsPage = () => {
                     onClick={() =>
                       handleDeleteOrganization(record.id)
                     }
-                    style={{
-                      backgroundColor: "#007bff", 
-                      borderColor: "#007bff",
-                      color: "#fff",
-                    }}
+                   style={{
+                        backgroundColor: "#3A5F73",
+                        color: "#fff",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    icon={<ArchiveOutlinedIcon/>}
                   >
                     Переместить в архив
                   </Button>
@@ -163,12 +180,12 @@ const OrganizationsPage = () => {
             bordered
             rowKey={(record) => record.id}
             style={{
-
               borderRadius: "8px",
               overflow: "hidden",
               boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
               backgroundColor: "#F7F9FB",
             }}
+            scroll={{ x: 'max-content' }}  
           />
         </Col>
       </Row>

@@ -1,12 +1,12 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useUser } from "../services/auth";
-import LoadingSpinner from "../components/LoadingSpinner";
+import LoadingSpinner from "../Components/LoadingSpinner";
 const ProtectedRouteManager = () => {
-  const { roleUser, isLoading } = useUser();
+  const { user, isLoading } = useUser();
   if (isLoading) {
     return <LoadingSpinner />;
   }
-  if (roleUser !== "ROLE_MANAGER") {
+  if (user?.role !== "ROLE_MANAGER") {
     return <Navigate to="/" />;
   }
 

@@ -1,12 +1,13 @@
-
 import React from 'react';
-import { Bar } from 'react-chartjs-2';
+
 import { Chart, registerables } from 'chart.js';
-import { Row, Col } from 'antd';
+import { Row, Col, Card as AntCard, Divider } from 'antd';
+
 
 Chart.register(...registerables);
 
 const MainPage: React.FC = () => {
+  // Пример данных для графика
   const data = {
     labels: ['Неделя 1', 'Неделя 2', 'Неделя 3', 'Неделя 4'],
     datasets: [
@@ -16,6 +17,24 @@ const MainPage: React.FC = () => {
         backgroundColor: 'rgba(56, 162, 255, 0.6)',
       },
     ],
+  };
+
+  // Пример данных для отображения критической информации
+  const criticalInfo = [
+    "Обнаружены проблемы с транспортом #23: ошибка датчика температуры.",
+    "Проблемы с маршрутом #12: задержка на 30 минут.",
+  ];
+
+  // Пример данных о транспорте
+  const transportData = {
+    active: 50,
+    inactive: 10,
+    users: "100 (Администраторы: 5, Операторы: 20)",
+    totalRoutes: 25, // Общее количество маршрутов
+    delayedRoutes: 3, // Задержанные маршруты
+    faultyRoutes: 2, // Маршруты с неисправностями
+    fuelStatus: "80% топлива", // Статус топлива
+    maintenanceRequired: 5, // Транспортные средства, требующие обслуживания
   };
 
   return (
@@ -30,25 +49,27 @@ const MainPage: React.FC = () => {
         margin: "30px 40px 30px 40px",
         flex: "1",
       }}>
-        <Col xs={24} >
-          <h1 style={{ margin: 0, color: '#1e40af' }}>Главная страница</h1>
-
+        <Col xs={24}>
+          {/* Карточки с общей информацией */}
           <div style={cardsContainerStyle}>
-            <Card title="Активные транспортные средства" value="50" />
-            <Card title="Неактивные транспортные средства" value="10" />
-            <Card title="Пользователи" value="100 (Администраторы: 5, Операторы: 20)" />
+            <Card title="Активные транспортные средства" value={transportData.active.toString()} />
+            <Card title="Неактивные транспортные средства" value={transportData.inactive.toString()} />
+            <Card title="Пользователи" value={transportData.users} />
+            <Card title="Маршруты" value={`${transportData.totalRoutes} (Задержанные: ${transportData.delayedRoutes}, Неисправные: ${transportData.faultyRoutes})`} />
+            <Card title="Топливо" value={transportData.fuelStatus} />
+            <Card title="Транспортные средства на обслуживании" value={transportData.maintenanceRequired.toString()} />
           </div>
 
+          {/* Секция критической информации */}
           <section style={sectionStyle}>
             <h2 style={sectionTitleStyle}>Критическая информация</h2>
-            <p style={infoTextStyle}>Обнаружены проблемы с транспортом #23: ошибка датчика температуры.</p>
-            <p style={infoTextStyle}>Проблемы с маршрутом #12: задержка на 30 минут.</p>
+            {criticalInfo.map((info, index) => (
+              <p key={index} style={infoTextStyle}>{info}</p>
+            ))}
           </section>
 
-          <div style={chartContainerStyle}>
-            <h2 style={chartTitleStyle}>График активности транспорта</h2>
-            <Bar data={data} options={chartOptions} />
-          </div>
+      
+        
         </Col>
       </Row>
     </div>
@@ -64,13 +85,13 @@ const Card: React.FC<{ title: string; value: string }> = ({ title, value }) => {
   );
 };
 
-
 const cardsContainerStyle: React.CSSProperties = {
   display: 'flex',
   justifyContent: 'space-around',
   width: '100%',
   marginBottom: '20px',
   marginTop: '20px',
+  flexWrap: 'wrap',
 };
 
 const cardStyle: React.CSSProperties = {
@@ -81,6 +102,8 @@ const cardStyle: React.CSSProperties = {
   boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
   flex: '1',
   margin: '0 10px',
+  minWidth: '200px',
+  maxWidth: '250px',
 };
 
 const cardTitleStyle: React.CSSProperties = {
@@ -111,23 +134,5 @@ const infoTextStyle: React.CSSProperties = {
   color: '#e74c3c',
 };
 
-const chartContainerStyle: React.CSSProperties = {
-  width: '100%',
-  maxWidth: '600px',
-  margin: '20px auto',
-};
-
-const chartTitleStyle: React.CSSProperties = {
-  fontSize: '1.5rem',
-  textAlign: 'center',
-};
-
-const chartOptions = {
-  scales: {
-    y: {
-      beginAtZero: true,
-    },
-  },
-};
 
 export default MainPage;

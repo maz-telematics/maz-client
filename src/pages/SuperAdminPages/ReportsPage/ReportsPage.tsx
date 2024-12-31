@@ -64,67 +64,115 @@ const ReportsPage: React.FC = () => {
     { title: 'Маршрут', dataIndex: 'route', key: 'route' },
     { title: 'Скорость (км/ч)', dataIndex: 'speed', key: 'speed' },
   ];
-
+  const isMobile = window.innerWidth < 768;
   return (
     <div style={{
       display: "flex",
       flexDirection: "column",
       width: "100%",
       minHeight: '100vh',
-      backgroundColor: "#F0F4F8",
+      backgroundColor: "#E1E1E1",
     }}>
       <Row style={{
-        margin: "30px 40px 30px 40px",
+       padding: "0 40px",
         flex: "1",
       }}>
         <Col xs={24} >
           <Row justify="start" align="middle" style={{ marginBottom: 16 }}>
             <Col>
-              <h1 style={{ margin: 0, color: '#1e40af' }}>Отчеты</h1>
+              <h1
+          style={{
+            margin: 0,
+            fontSize: isMobile ? '24px' : '32px', 
+          }}
+        >Отчеты</h1>
             </Col>
           </Row>
           <div style={filterContainerStyle}>
+      <DatePicker
+        onChange={date => setSelectedDate(date)}
+        style={{ width: '200px', minWidth: '150px' }} // Ширина с минимальным значением
+      />
+      <Select
+        placeholder="Выберите транспорт"
+        style={{ width: '200px', minWidth: '150px' }}
+        onChange={value => setSelectedTransport(value)}
+      >
+        {transportReports.map(report => (
+          <Select.Option key={report.id} value={report.id}>
+            {report.name}
+          </Select.Option>
+        ))}
+      </Select>
+      <Select
+        placeholder="Выберите организацию"
+        style={{ width: '200px', minWidth: '150px' }}
+        onChange={value => setSelectedOrganization(value)}
+      >
+        {organizationReports.map(report => (
+          <Select.Option key={report.id} value={report.id}>
+            {report.name}
+          </Select.Option>
+        ))}
+      </Select>
+    </div>
+    <div style={{ marginBottom: '20px' }}>
+  <h3 style={{  marginBottom: "15px",fontSize: isMobile ? '18px' : '24px' }}>Отчеты по транспорту</h3>
+  <Table
+    dataSource={filteredTransportReports.length > 0 ? filteredTransportReports : transportReports}
+    columns={transportColumns}
+    rowKey="id"
+    onRow={record => ({
+      onClick: () => showDetail(record),
+    })}
+    components={{
+      header: {
+        cell: (props: any) => (
+          <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff", border: "none" }}>
+            {props.children}
+          </th>
+        ),
+      },
+    }}
+    style={{
+      borderRadius: "8px",
+      overflow: "hidden",
+      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+      backgroundColor: "#F7F9FB",
+    }}
+    scroll={{ x: 'max-content' }}
+    pagination={false}
+  />
+</div>
 
-
-            <DatePicker onChange={date => setSelectedDate(date)} />
-            <Select placeholder="Выберите транспорт" style={{ width: 200, margin: '0 10px' }} onChange={value => setSelectedTransport(value)}>
-              {transportReports.map(report => (
-                <Select.Option key={report.id} value={report.id}>
-                  {report.name}
-                </Select.Option>
-              ))}
-            </Select>
-            <Select placeholder="Выберите организацию" style={{ width: 200, margin: '0 10px' }} onChange={value => setSelectedOrganization(value)}>
-              {organizationReports.map(report => (
-                <Select.Option key={report.id} value={report.id}>
-                  {report.name}
-                </Select.Option>
-              ))}
-            </Select>
-            <Button type="primary" onClick={handleFilter}>Фильтровать</Button>
-          </div>
-
-          <Card title="Отчеты по транспорту" style={cardStyle}>
-            <Table
-              dataSource={filteredTransportReports.length > 0 ? filteredTransportReports : transportReports}
-              columns={transportColumns}
-              rowKey="id"
-              onRow={record => ({
-                onClick: () => showDetail(record),
-              })}
-            />
-          </Card>
-
-          <Card title="Отчеты по организациям" style={cardStyle}>
-            <Table
-              dataSource={filteredOrganizationReports.length > 0 ? filteredOrganizationReports : organizationReports}
-              columns={organizationColumns}
-              rowKey="id"
-              onRow={record => ({
-                onClick: () => showDetail(record),
-              })}
-            />
-          </Card>
+<div >
+  <h3 style={{ marginBottom: "15px",fontSize: isMobile ? '18px' : '24px' }}>Отчеты по организациям</h3>
+  <Table
+    dataSource={filteredOrganizationReports.length > 0 ? filteredOrganizationReports : organizationReports}
+    columns={organizationColumns}
+    rowKey="id"
+    onRow={record => ({
+      onClick: () => showDetail(record),
+    })}
+    components={{
+      header: {
+        cell: (props: any) => (
+          <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff", border: "none" }}>
+            {props.children}
+          </th>
+        ),
+      },
+    }}
+    style={{
+      borderRadius: "8px",
+      overflow: "hidden",
+      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+      backgroundColor: "#F7F9FB",
+    }}
+    scroll={{ x: 'max-content' }}
+    pagination={false}
+  />
+</div>
 
           {isDetailVisible && (
             <DetailView
@@ -139,13 +187,10 @@ const ReportsPage: React.FC = () => {
   );
 };
 
-const cardStyle: React.CSSProperties = {
-  width: '100%',
-  marginBottom: '20px',
-};
-
 const filterContainerStyle: React.CSSProperties = {
   display: 'flex',
+  flexWrap: 'wrap', // Чтобы элементы переносились на мобильных экранах
+  gap: '10px', // Пробел между элементами
   marginBottom: '20px',
 };
 

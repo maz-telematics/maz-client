@@ -1,14 +1,15 @@
 import { createContext, useContext } from 'react';
-import {AuthContextIntarface} from '../types/authTypes'
+import {AuthContextIntarface,User} from '../Types/authTypes'
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 const apiUrl = import.meta.env.VITE_API_URL;
 export const AuthContext = createContext<AuthContextIntarface | null>(null);
 
 interface UserContextType {
+  user:User |null
   roleUser: string | null;
   isLoading: boolean | null;
-  setRole: React.Dispatch<React.SetStateAction<string | null>>;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>; 
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -16,6 +17,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [roleUser, setRole] = useState<string | null>(null); 
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [user, setUser] = useState<User | null>(null); 
     const fetchRoleData = async () => {
       try {
         const token = (JSON.parse(localStorage.getItem('user') || '{}') || {}).token;
@@ -29,7 +31,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
             'Content-Type': 'application/json'
           }
         });
-        setRole(response.data.role);
+        setUser(response.data)
       } catch (error) {
         if (error) {
           console.error('Ошибка при получении данных:', error);
@@ -47,7 +49,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     return (
-        <UserContext.Provider value={{ roleUser,setRole ,isLoading  }}>
+        <UserContext.Provider value={{ roleUser,setUser ,isLoading, user  }}>
             {children}
         </UserContext.Provider>
     );

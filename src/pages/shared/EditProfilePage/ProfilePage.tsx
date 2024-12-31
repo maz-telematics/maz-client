@@ -12,7 +12,7 @@ export interface Organization {
   registration_date: string
 }
 
-const EditProfile = () => {
+const ProfilePage = () => {
   const [form] = Form.useForm();
   const [editableFields, setEditableFields] = useState<Organization>();
   const [visible, setVisible] = useState(false);
@@ -92,88 +92,107 @@ const EditProfile = () => {
 
 
   const formatDate = (date: any) => dayjs(date).format('YYYY');
+  const isMobile = window.innerWidth < 768;
   return (
-    <div style={{
+    <div  style={{
       display: "flex",
       flexDirection: "column",
       width: "100%",
-      height: "100vh",
-      backgroundColor: "#F0F4F8",
-      boxSizing: "border-box",
+      backgroundColor: "#E1E1E1",
     }}>
-      <Row style={{ display: 'flex', flexDirection: "column", marginTop: "40px", width: "100%" }}>
-        <Col offset={1} xs={10} sm={10} md={10} lg={10} xl={10} >
+      <Row style={{ padding: "0 40px", flex: "1" }}>
+        <Col xs={24} >
+        <Row justify="space-between" style={{ marginBottom: 16, alignItems: 'flex-end' }}>
+            <Col>
+              <h1
+                style={{
+                  margin: 0,
+                  fontSize: isMobile ? '24px' : '32px',
+                }}
+              >Настройки профиля</h1>
+            </Col>
 
+          </Row>
           <Form form={form} onFinish={onFinish}>
             <Form.Item
-              label={<label style={{ width: '160px', fontSize: "14px", fontWeight: 'bold', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
+              label={<label style={{ width: '160px', padding:0, margin:0, fontSize: "14px", fontWeight: 'bold', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
               >Название организации</label>}
               name="organization_name"
             >
               <Input
                 placeholder={editableFields?.organization_name}
-                style={{ fontSize: '14px', width: '200px' }}
+                style={{ fontSize: '14px', width: '240px' }}
               />
             </Form.Item>
             <Form.Item
-              label={<label style={{ width: '160px', fontSize: "14px", fontWeight: 'bold', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
+              label={<label style={{ width: '160px', padding:0, margin:0, fontSize: "14px", fontWeight: 'bold', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
               >Номер телефона</label>}
               name="contact_info"
             >
               <Input
                 placeholder={editableFields?.contact_info}
-                style={{ width: '200px' }}
+                style={{ width: '240px' }}
               />
             </Form.Item>
             <Form.Item
-              label={<label style={{ width: '160px', fontSize: "14px", fontWeight: 'bold', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
+              label={<label style={{ width: '160px', padding:0, margin:0, fontSize: "14px", fontWeight: 'bold', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
               >Контактное лицо</label>}
               name="contact_person"
             >
               <Input
                 placeholder={editableFields?.contact_person}
-                style={{ width: '200px' }}
+                style={{ width: '240px' }}
               />
             </Form.Item>
             <Form.Item
-              label={<label style={{ width: '160px', fontSize: "14px", fontWeight: 'bold', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
+              label={<label style={{ width: '160px', padding:0, margin:0, fontSize: "14px", fontWeight: 'bold', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
               >Электронная почта</label>}
               name="email_contact_person"
             >
               <Input
                 placeholder={editableFields?.email_contact_person}
-                style={{ width: '200px' }}
+                style={{ width: '240px' }}
               />
             </Form.Item>
             <Form.Item
-              label={<label style={{ width: '160px', fontSize: "14px", fontWeight: 'bold', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
+              label={<label style={{ width: '160px', padding:0, margin:0, fontSize: "14px", fontWeight: 'bold', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
               >Адрес</label>}
               name="organization_address"
             >
               <Input
                 placeholder={editableFields?.organization_address}
-                style={{ width: '200px' }}
+                style={{ width: '240px' }}
               />
             </Form.Item>
-            <Row style={{ display: 'flex', flexDirection: "row", justifyContent: 'space-between', marginTop: '50px', marginBottom: '30px' }}>
-              <Button type="primary" htmlType="submit" >
-                Сохранить изменения
-              </Button>
-              <Button type="primary" onClick={handleDeleteAccount}>
+            <Row style={{ marginTop: "20px", display: "flex", justifyContent: "flex-start" }}>
+                              <Button
+                                disabled={true}
+                                style={{ fontSize: isMobile ? '12px' : '16px',   width: isMobile ? '100%' : '200px', backgroundColor: "#3A5F73", color: "#fff",
+                                }}
+                                htmlType="submit" 
+                              >
+                                 Сохранить изменения
+                              </Button>
+
+              {/* <Button type="primary"    style={{
+                  backgroundColor: "#3A5F73",
+                }} onClick={handleDeleteAccount}>
                 Удалить
-              </Button>
-              <Button type="primary" onClick={handleOpenModal}>
+              </Button> */}
+              {/* <Button type="primary"    style={{
+                  backgroundColor: "#3A5F73",
+                }} onClick={handleOpenModal}>
                 Изменить Пароль
-              </Button>
-              <Button type="primary" onClick={handleRenewSubscription}>
+              </Button> */}
+              {/* <Button type="primary" onClick={handleRenewSubscription}>
                 Продлить подписку
-              </Button>
+              </Button> */}
             </Row>
 
           </Form>
-          <p style={{ fontSize: '18px' }}>
+          {/* <p style={{ fontSize: '18px' }}>
             Дата окончания срока действия подписки: {"15.08.2024"}, {"23"} дней до истечения срока подписки
-          </p>
+          </p> */}
         </Col>
       </Row>
       <Modal
@@ -203,4 +222,4 @@ const EditProfile = () => {
   );
 };
 
-export default EditProfile;
+export default ProfilePage;

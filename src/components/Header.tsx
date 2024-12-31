@@ -1,155 +1,27 @@
-// import React, { useState, useContext } from "react";
-// import { Row, Menu, Col, Button } from "antd";
-// import { Link } from "react-router-dom";
-// import { AuthContext } from "../services/auth";
-// import { AuthContextIntarface } from "../types/authTypes";
-// import { CarOutlined } from "@ant-design/icons";
-
-// const Header = () => {
-//   const { logout } = useContext(AuthContext) as AuthContextIntarface;
-//   const [visible, setVisible] = useState(false);
-
-//   const handleLogout = async () => {
-//     logout();
-//   };
-//   return (
-//     <Row
-//       style={{
-//         display: "flex",
-//         flexDirection: "row",
-//         justifyContent: "space-between",
-//         height: "10vh",
-//         alignItems: "center",
-//         padding: "20px 40px",
-//         backgroundColor: "#3b82f6",
-//         color: "white",
-//         boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
-//       }}
-//     >
-//       <Col
-//         xs={6}
-//         sm={6}
-//         md={6}
-//         lg={6}
-//         xl={6}
-//         style={{
-//           textAlign: "left",
-//           fontWeight: "bold",
-//           fontSize: "24px",
-//           display: "flex",
-//           alignItems: "center",
-//           color: "white"
-//         }}
-//       >
-//         <CarOutlined style={{ fontSize: "30px", marginRight: "10px" }} />{" "}
-//         МАЗ Телематика
-//       </Col>
-
-//       <Col
-//         xs={3}
-//         sm={3}
-//         md={3}
-//         lg={3}
-//         xl={3}
-//         style={{
-//           textAlign: "center",
-//           position: "relative",
-//           zIndex: 999,
-//         }}
-//       >
-//         <Button
-//           type="primary"
-//           onClick={() => setVisible(!visible)}
-//           style={{
-//             padding: "10px 15px",
-//             fontSize: "18px",
-//             backgroundColor: "#2196F3",
-//             borderColor: "#2196F3",
-//             transition: "background-color 0.3s, transform 0.3s, color 0.3s",
-//             borderRadius: "5",
-//           }}
-//           onMouseEnter={(e) => {
-//             const target = e.target as HTMLElement;
-//             target.style.color = "#FFFFFF";
-//             target.style.transform = "scale(1.05)";
-//           }}
-//           onMouseLeave={(e) => {
-//             const target = e.target as HTMLElement;
-//             target.style.color = "#FFFFFF";
-//             target.style.transform = "scale(1)";
-//           }}
-//         >
-//           Профиль
-//         </Button>
-
-//         {visible && (
-//           <Menu
-//             style={{
-//               display: "block",
-//               width: "150px",
-//               position: "absolute",
-//               top: "100%",
-//               left: "13%",
-//               marginTop: "5px",
-//               borderRadius: "10px",
-//               border: "0.01px solid #2196F3",
-//               boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
-//               backgroundColor: "#FFFFFF",
-//               height: '90px'
-//             }}
-//             items={[
-//               {
-//                 key: "1",
-//                 label: (
-//                   <Link
-//                     to="/edit-profile"
-//                     style={{
-
-//                       display: "block",
-//                       color: "#333",
-//                     }}
-//                   >
-//                     Профиль
-//                   </Link>
-//                 ),
-//               },
-//               {
-//                 key: "2",
-//                 label: (
-//                   <a
-//                     href="/"
-//                     onClick={handleLogout}
-//                     style={{
-
-//                       display: "block",
-//                       color: "#333",
-//                     }}
-//                   >
-//                     Выйти
-//                   </a>
-//                 ),
-//               },
-//             ]}
-//           />
-//         )}
-//       </Col>
-//     </Row>
-//   );
-// };
-
-// export default Header;
-
-
 import React, { useState, useContext } from "react";
 import { Row, Menu, Col, Button } from "antd";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../services/auth";
-import { AuthContextIntarface } from "../types/authTypes";
+import { AuthContextIntarface } from "../Types/authTypes";
 import { CarOutlined } from "@ant-design/icons";
 
-const Header = () => {
+const Header: React.FC<{ style?: React.CSSProperties }> = ({ style }) => {
   const { logout } = useContext(AuthContext) as AuthContextIntarface;
   const [visible, setVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Проверка ширины экрана для определения мобильного устройства
+  React.useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    setIsMobile(mediaQuery.matches);
+
+    const handleResize = (event: MediaQueryListEvent) => {
+      setIsMobile(event.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleResize);
+    return () => mediaQuery.removeEventListener("change", handleResize);
+  }, []);
 
   const handleLogout = async () => {
     logout();
@@ -164,43 +36,47 @@ const Header = () => {
     <Row
       style={{
         display: "flex",
-        flexDirection: "row",
+        flexWrap: "wrap", // Позволяет перенос элементов
         justifyContent: "space-between",
-        height: "10vh",
         alignItems: "center",
-        padding: "20px 40px",
+        height: "10vh",
+        width: "100%",
+        padding: isMobile ? "10px 15px" : "10px 20px", // Адаптивный padding
         backgroundColor: "#3b82f6",
         color: "white",
         boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
       }}
     >
       <Col
-        xs={6}
-        sm={6}
-        md={6}
-        lg={6}
-        xl={6}
         style={{
-          textAlign: "left",
-          fontWeight: "bold",
-          fontSize: "24px",
           display: "flex",
           alignItems: "center",
-          color: "white",
+          flex: "1 1 auto",
+          textAlign: isMobile ? "center" : "left", // Центрируем текст на мобильных
         }}
       >
-        <CarOutlined style={{ fontSize: "30px", marginRight: "10px" }} /> МАЗ
-        Телематика
+        <CarOutlined
+          style={{
+            fontSize: isMobile ? "24px" : "30px", // Уменьшаем размер иконки на мобильных
+            marginRight: "10px",
+          }}
+        />
+        <span
+          style={{
+            fontWeight: "bold",
+            fontSize: isMobile ? "16px" : "18px", // Уменьшаем размер текста на мобильных
+            color: "white",
+            whiteSpace: "nowrap", // Предотвращает перенос текста
+          }}
+        >
+          МАЗ Телематика
+        </span>
       </Col>
 
       <Col
-        xs={3}
-        sm={3}
-        md={3}
-        lg={3}
-        xl={3}
         style={{
-          textAlign: "center",
+          flex: "0 1 auto",
+          textAlign: "right",
           position: "relative",
           zIndex: 999,
         }}
@@ -209,12 +85,11 @@ const Header = () => {
           type="primary"
           onClick={() => setVisible(!visible)}
           style={{
-            padding: "10px 15px",
-            fontSize: "18px",
+            padding: "8px 12px",
+            fontSize: isMobile ? "14px" : "16px", // Уменьшаем размер кнопки на мобильных
             backgroundColor: "#2196F3",
             borderColor: "#2196F3",
-            transition: "background-color 0.3s, transform 0.3s, color 0.3s",
-            borderRadius: "5",
+            borderRadius: "5px",
           }}
         >
           Профиль
@@ -227,7 +102,7 @@ const Header = () => {
               width: "150px",
               position: "absolute",
               top: "100%",
-              left: "13%",
+              right: "0",
               marginTop: "5px",
               borderRadius: "10px",
               border: "0.01px solid #2196F3",

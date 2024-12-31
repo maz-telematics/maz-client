@@ -1,273 +1,9 @@
-// import React, { useContext } from "react";
-// import { Form, Input, notification, Button, Row, Col } from "antd";
-// import { message } from "antd";
-// import { useNavigate } from "react-router-dom";
-// import { useUser } from '../../services/auth'
-// import axiosInstance from '../../services/axiosInstance';
-
-// interface LoginProps {
-//   setToken: (token: string) => void;
-//   setIsAuthenticated: (isAuth: boolean) => void;
-//   setRole: (role: string) => void;
-// }
-
-// const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
-//   const navigate = useNavigate()
-//   const { setRole } = useUser();
-//   const login = async (username: string, password: string) => {
-//     try {
-//       const response = await axiosInstance.post(`/login`, {
-//         username,
-//         password,
-//       });
-//       if (response.status === 200) {
-//         setToken(response.data.token);
-//         localStorage.setItem(
-//           "user",
-//           JSON.stringify({
-//             id: response.data.id,
-//             role: response.data.role,
-//             name: response.data.name,
-//             token: response.data.token,
-//           })
-//         );
-//         setIsAuthenticated(true);
-//         setRole(response.data.role);
-//         switch (response.data.role) {
-//           case "ROLE_SUPERADMIN":
-//             navigate("super-admin/main", { replace: true });
-//             break;
-//           case "ROLE_ADMIN":
-//             navigate("admin/main", { replace: true });
-//             break;
-//           case "ROLE_OPERATOR":
-//             navigate("/operator/main", { replace: true });
-//             break;
-//           case "ROLE_DIRECTOR":
-//             navigate("/director/main", { replace: true });
-//             break;
-//           case "ROLE_MANAGER":
-//             navigate("/manager/main", { replace: true });
-//             break;
-//           case "ROLE_MANUFACTURER":
-//             navigate("/mechanic/main", { replace: true });
-//             break;
-//           default:
-//             navigate("/", { replace: true });
-//         }
-//         return Number(200);
-//       }
-//     } catch (error: any) {
-//       if (error.response.status == 302) {
-//         return 302;
-//       } else {
-//         return 401;
-//       }
-
-//     }
-//   };
-
-//   const handleLogin = async (values: any) => {
-//     try {
-//       const { username, password } = values;
-//       const result = await login(username, password);
-//       if (result === null) {
-//         message.error("Возникли проблемы при авторизации!");
-//       } else if (result === 200) {
-//         message.success("Авторизация успешна!");
-//       } else if (result === 401) {
-//         message.error("Не верный пароль или логин!");
-//       } else if (result === 302) {
-//         notification.error({
-//           message: 'Срок подписки истек!',
-//           description: 'Ваша подписка истекла. Для продолжения подписки, пожалуйста, свяжитесь с нашей службой поддержки по телефону: +375 (44) 44-44-444 или по электронной почте: support@example.com.',
-//           duration: 10,
-//         });
-//       } else {
-//         console.error("Возникли проблемы при авторизации!");
-//       }
-//     } catch (error) {
-//       message.error("Проблема с подключением. Пожалуйста, попробуйте позже.");
-//     }
-//   };
-
-
-//   const getIntersectionPoints = (lines: { x1: number; y1: number; x2: number; y2: number }[]) => {
-//     const points: Set<string> = new Set();
-//     lines.forEach(line => {
-//       points.add(`${line.x1},${line.y1}`);
-//       points.add(`${line.x2},${line.y2}`);
-//     });
-
-//     return Array.from(points).map(point => {
-//       const [x, y] = point.split(',').map(Number);
-//       return { x, y };
-//     });
-//   };
-
-//   const generateRoadLines = (numLines: number): { x1: number; y1: number; x2: number; y2: number }[] => {
-//     const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
-//     const numSegments = 5;
-//     for (let i = 0; i < numLines; i++) {
-//       let x = Math.random() * window.innerWidth;
-//       let y = Math.random() * window.innerHeight;
-
-//       for (let j = 0; j < numSegments; j++) {
-//         const newX = x + (Math.random() * 200 - 100);
-//         const newY = y + (Math.random() * 200 - 100);
-//         lines.push({ x1: x, y1: y, x2: newX, y2: newY });
-//         x = newX;
-//         y = newY;
-//       }
-//     }
-//     return lines;
-//   };
-
-//   const numLines = 55;
-//   const roadLines = generateRoadLines(numLines);
-//   const intersectionPoints = getIntersectionPoints(roadLines);
-
-//   return (
-
-//     <div
-//       style={{
-//         height: "100vh",
-//         display: "flex",
-//         backgroundColor: "#F0F4F8",
-//         justifyContent: "center",
-//         alignItems: "center",
-//         position: 'relative',
-//         overflow: 'hidden',
-//       }}
-//     >
-
-
-//       <svg
-//         style={{
-//           position: 'absolute',
-//           top: 0,
-//           left: 0,
-//           width: '100%',
-//           height: '100%',
-//           zIndex: 1,
-//         }}
-//       >
-//         {roadLines.map((line, index) => (
-//           <line
-//             key={index}
-//             x1={line.x1}
-//             y1={line.y1}
-//             x2={line.x2}
-//             y2={line.y2}
-//             stroke="#3B82F6"
-//             strokeWidth="4"
-//             strokeDasharray="5,5"
-//           />
-//         ))}
-//         {intersectionPoints.map((point, index) => (
-//           <circle key={index} cx={point.x} cy={point.y} r="6" fill="#FF5722" />
-//         ))}
-//         <defs>
-//           <linearGradient id="signalGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-//             <stop offset="0%" style={{ stopColor: '#3B82F6', stopOpacity: 1 }} />
-//             <stop offset="100%" style={{ stopColor: '#A3C1FF', stopOpacity: 1 }} />
-//           </linearGradient>
-//         </defs>
-//         {Array.from({ length: 30 }).map((_, index) => (
-//           <rect key={index} x="-200" y={`${Math.random() * 100}vh`} width="150" height="10" fill="url(#signalGradient)">
-//             <animate attributeName="x" from="-200" to="100%" dur={`${Math.random() *          20 + 6}s`} repeatCount="indefinite" />
-//           </rect>
-//         ))}
-//       </svg>
-//       <Col
-//         xs={16}
-//         sm={16}
-//         md={12}
-//         lg={8}
-//         xl={6}
-//         style={{
-//           display: "flex",
-//           flexDirection: "column",
-//           width: "100%",
-//           maxWidth: "380px",
-//           backgroundColor: "rgb(255, 255, 255)",
-//           borderRadius: "10px",
-//           padding: "30px",
-//           boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
-//           position: 'relative',
-//           zIndex: 2,
-//         }}
-//       >
-//         <Row style={{ display: 'flex', justifyContent: "center", fontSize: "2rem", fontWeight: "bold", marginBottom: "20px", color: "#3B82F6" }}>
-//           Войти
-//         </Row>
-
-//         <Form onFinish={handleLogin}>
-//           <Form.Item
-//             label={
-//               <label
-//                 style={{
-//                   fontSize: "14px",
-//                   width: "55px",
-//                   textAlign: "left",
-//                   fontWeight: "bold",
-//                   color: "#333333",
-//                 }}
-//               >
-//                 Логин
-//               </label>
-//             }
-//             name="username"
-//             rules={[
-//               { required: true, message: "Введите email" },
-//               {
-//                 type: "email",
-//                 message: "Введите корректный email",
-//               },
-//             ]}
-//           >
-//             <Input placeholder="Введите ваш логин" style={{ borderRadius: "5px", backgroundColor: "#f7f7f7", color: "#333" }} />
-//           </Form.Item>
-//           <Form.Item
-//             label={<label style={{ fontSize: "14px", width: "55px", textAlign: "left", fontWeight: "bold", color: "#333333" }}>Пароль</label>}
-//             name="password"
-//             rules={[{ required: true, message: "Введите пароль" }]}
-//             style={{ marginTop: "30px", }}
-//           >
-//             <Input.Password placeholder="Введите ваш пароль" style={{ borderRadius: "5px", backgroundColor: "#f7f7f7", color: "#333" }} />
-//           </Form.Item>
-//           <Form.Item style={{ display: "flex", justifyContent: "center", marginTop: "35px" }}>
-//             <Button
-//               type="primary"
-//               htmlType="submit"
-//               style={{
-//                 width: "200px",
-//                 backgroundColor: "#3B82F6",
-//                 border: "none",
-//                 color: "white",
-//                 fontWeight: "bold",
-//                 padding: "10px",
-//                 borderRadius: "5px",
-//               }}
-//             >
-//               Войти
-//             </Button>
-//           </Form.Item>
-//         </Form>
-//       </Col>
-//     </div>
-//   );
-// };
-
-// export default LoginPage;
-
 import React, { useEffect, useState } from "react";
-import { Form, Input, notification, Button, Row, Col, message } from "antd";
+import { Form, Input, notification, Button, Row, Col, message, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../services/auth";
 import axiosInstance from "../../services/axiosInstance";
 
-// Импортируем изображения из папки public
 import Outputs1 from "../../../public/gruzovik_reverse.png";
 import Outputs2 from "../../../public/mazx.png";
 import Outputs3 from "../../../public/gruzovik.png";
@@ -276,7 +12,7 @@ import Outputs5 from "../../../public/tyagach.png";
 import Outputs6 from "../../../public/avtub_reverse.png";
 import Outputs7 from "../../../public/avtub.png";
 import Outputs8 from "../../../public/chinarik.png";
-import LogoImage from "../../../public/МАЗ_Логотип_без_рамки.png";
+import LogoImage from "../../../public/mazIcon.png";
 
 interface LoginProps {
   setToken: (token: string) => void;
@@ -285,9 +21,10 @@ interface LoginProps {
 
 const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
   const navigate = useNavigate();
-  const { setRole } = useUser();
+  const { setUser } = useUser();
 
   const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [loading, setLoading] = useState(false); 
 
   const images = [Outputs1, Outputs2, Outputs3, Outputs4, Outputs5, Outputs6, Outputs7, Outputs8];
 
@@ -310,6 +47,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
   }, []);
 
   const login = async (username: string, password: string) => {
+    setLoading(true); 
     try {
       const response = await axiosInstance.post(`/login`, {
         username,
@@ -327,7 +65,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
           })
         );
         setIsAuthenticated(true);
-        setRole(response.data.role);
+        setUser(response.data);
         navigateBasedOnRole(response.data.role);
         return Number(200);
       }
@@ -337,13 +75,15 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
       } else {
         return 401;
       }
+    } finally {
+      setLoading(false); 
     }
   };
 
   const navigateBasedOnRole = (role: string) => {
     switch (role) {
       case "ROLE_SUPERADMIN":
-        navigate("super-admin/main", { replace: true });
+        navigate("master/main", { replace: true });
         break;
       case "ROLE_ADMIN":
         navigate("admin/main", { replace: true });
@@ -413,9 +153,35 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
         alignItems: "center",
         position: "relative",
         overflow: "hidden",
-        fontFamily: "'FontRegular', Arial, sans-serif", // Применяем шрифт здесь
+        fontFamily: "'FontRegular', Arial, sans-serif",
       }}
     >
+
+      {!imagesLoaded && (
+        <Spin
+          size="large"
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        />
+      )}
+      
+
+      {loading && !imagesLoaded && (
+        <Spin
+          size="large"
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        />
+      )}
+
       <div
         style={{
           position: "absolute",
@@ -428,7 +194,9 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
       >
         {imagesLoaded &&
           imageSources.map((image, index) => {
-            const duration = Math.random() * 15 + 5;
+            const duration = Math.random() * 15 + 5; 
+            const gap = 14; 
+            const topPosition = `${index * gap + 10}vh`; 
 
             return (
               <img
@@ -439,7 +207,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
                   width: image.size.width,
                   height: image.size.height,
                   left: image.direction === "right" ? "100%" : "-200px",
-                  top: `${(index + 1) * (100 / (imageSources.length + 1)) - 5}vh`,
+                  top: `calc(${topPosition} - ${image.size.height} / 2)`,
                   animation: `moving-${image.direction} ${duration}s linear infinite`,
                 }}
               />
@@ -449,140 +217,135 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
 
       <Col
         xs={16}
-        sm={16}
-        md={12}
-        lg={8}
-        xl={6}
+        sm={12}
+        md={8}
+        lg={5}
+        xl={5}
         style={{
           display: "flex",
           flexDirection: "column",
-          width: "100%",
-          maxWidth: "380px",
-          height: "500px",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "auto",  // Высота будет автоматически подстраиваться
+          minHeight: "500px",  // Минимальная высота, чтобы не растягивалось сильно
           backgroundColor: "#CDCDCD",
-          opacity:"90%",
+          opacity: "90%",
           borderRadius: "10px",
           padding: "20px",
           boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
-          position: "relative",
           zIndex: 2,
         }}
       >
         <div
-          style={{ display: "flex", justifyContent: "center", marginTop: "auto", paddingTop: "20px" }}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+          }}
         >
           <img
             src={LogoImage}
             alt="Logo"
             style={{
-              width: "132px",
-              height: "84px",
+              width: "144px",
+              height: "96px",
             }}
           />
         </div>
-        <div>
-          <Row
+        <div
+          style={{
+            fontSize: "2rem",
+            fontWeight: "bold",
+            color: "#1B232A",
+            marginBottom: "24px",
+            textAlign: "center",
+          }}
+        >
+          Авторизация
+        </div>
+        <Form
+          onFinish={handleLogin}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            width: "100%",
+            maxWidth: "300px",
+          }}
+        >
+          <div
             style={{
-              display: "flex",
-              justifyContent: "center",
-              fontSize: "2rem",
+              fontSize: "14px",
               fontWeight: "bold",
-              marginBottom: "40px",
-              color: "#1B232A",
+              color: "#333333",
+              marginBottom: "10px",
             }}
           >
-            Авторизация
-          </Row>
-
-          <Form onFinish={handleLogin}>
-            <div
+            Логин
+          </div>
+          <Form.Item
+            name="username"
+            rules={[
+              { required: true, message: "Введите email" },
+              { type: "email", message: "Введите корректный email" },
+            ]}
+          >
+            <Input
+              placeholder="Введите ваш логин"
               style={{
-                fontSize: "14px",
+                borderRadius: "15px",
+                backgroundColor: "#f7f7f7",
+                color: "#333",
+              }}
+            />
+          </Form.Item>
+          <div
+            style={{
+              fontSize: "14px",
+              fontWeight: "bold",
+              color: "#333333",
+              marginBottom: "10px",
+            }}
+          >
+            Пароль
+          </div>
+          <Form.Item
+            name="password"
+            rules={[{ required: true, message: "Введите пароль" }]}
+          >
+            <Input.Password
+              placeholder="Введите ваш пароль"
+              style={{
+                borderRadius: "15px",
+                backgroundColor: "#f7f7f7",
+                color: "#333",
+              }}
+            />
+          </Form.Item>
+
+      
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={{
+                width: "100%",
+                backgroundColor: "#FE0201",
+                border: "none",
+                color: "white",
                 fontWeight: "bold",
-                color: "#333333",
-                marginBottom: "10px",
-                marginLeft: "50px", // Сдвигаем заголовки на 10px влево
+                borderRadius: "15px",
+                height: "50px",
+                marginTop: "20px",
               }}
             >
-              Логин
-            </div>
-            <Form.Item
-              name="username"
-              rules={[{ message: "Введите email" }, { type: "email", message: "Введите корректный email" }]}
-            >
-              <Input
-                placeholder="Введите ваш логин"
-                style={{
-                  borderRadius: "15px",
-                  backgroundColor: "#f7f7f7",
-                  color: "#333",
-                  marginLeft: "44px",
-                  marginRight: "auto",
-                  width: "250px", // Поле по центру
-                }}
-              />
-            </Form.Item>
-
-            <div
-              style={{
-                fontSize: "14px",
-                fontWeight: "bold",
-                color: "#333333",
-                marginBottom: "5px",
-                marginTop: "10px",
-                marginLeft: "50px", // Сдвигаем заголовки на 10px влево
-              }}
-            >
-              Пароль
-            </div>
-            <Form.Item name="password" rules={[{ message: "Введите пароль" }]}>
-              <Input.Password
-                placeholder="Введите ваш пароль"
-                style={{
-                  borderRadius: "15px",
-                  backgroundColor: "#f7f7f7",
-                  color: "#333",
-                  marginLeft: "44px",
-                  marginRight: "auto",
-                  width: "250px", // Поле по центру
-                }}
-              />
-            </Form.Item>
-
-            <Form.Item
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginTop: "75px",
-              }}
-            >
-              <Button
-                type="primary"
-                htmlType="submit"
-                style={{
-                  margin: "-10px",
-                  width: "250px",
-                  justifyContent: "center",
-                  backgroundColor: "#FE0201",
-                  border: "none",
-                  color: "white",
-                  fontWeight: "bold",
-                  padding: "10px",
-                  borderRadius: "15px",
-                  height: "50px",
-                }}
-              >
-                Войти
-              </Button>
-            </Form.Item>
-          </Form>
-        </div>
-
-        
+              Войти
+            </Button>
+          </Form.Item>
+        </Form>
       </Col>
 
       <style>
         {`
+        
           @keyframes moving-right {
             0% { left: 100%; }
             100% { left: -200px; } 

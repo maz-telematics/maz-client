@@ -1,24 +1,29 @@
 import React from 'react';
+
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { IntlProvider } from "react-intl";
 import { BrowserRouter } from 'react-router-dom';
 import { UserProvider } from './services/auth';
+import { Provider } from "react-redux";
+import { store } from './Store/store';
 
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+const messages = {
+  "driverProfile.inviteDriver": "Invite driver",
+  "driverProfile.logOut": "Log out",
+};
 
-root.render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <BrowserRouter> 
-     <UserProvider>
-      <App />
-    </UserProvider>
-    </BrowserRouter>
+    <Provider store={store}>
+    <IntlProvider locale="ru" messages={messages}>
+    <UserProvider>
+        <BrowserRouter >
+          <App />
+        </BrowserRouter>
+        </UserProvider>
+        </IntlProvider>
+    </Provider>
   </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

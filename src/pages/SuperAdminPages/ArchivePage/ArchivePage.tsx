@@ -1,6 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
-import { Row, Col } from 'antd';
+import { Row, Col, Button } from 'antd';
+import RestoreOutlinedIcon from '@mui/icons-material/RestoreOutlined';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 
 interface Transport {
   id: number;
@@ -50,23 +51,32 @@ const ArchivePage: React.FC = () => {
   const deleteOrganization = (id: number) => {
     setArchivedOrganizations((prev) => prev.filter((org) => org.id !== id));
   };
-
+  const isMobile = window.innerWidth < 768;
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      width: "100%",
-      backgroundColor: "#F0F4F8",
-      height: "100vh"
-    }}>
-      <Row style={{
-        margin: "30px 40px 30px 40px",
-        flex: "1",
-      }}>
-        <Col xs={24} >
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        backgroundColor: '#E1E1E1',
+        height: '100vh',
+      }}
+    >
+      <Row
+        style={{
+          padding: '0 40px',
+          flex: '1',
+        }}
+      >
+        <Col xs={24}>
           <Row justify="start" align="middle" style={{ marginBottom: 16 }}>
             <Col>
-              <h1 style={{ margin: 0, color: '#1e40af' }}>Архив</h1>
+              <h1
+                style={{
+                  margin: 0,
+                  fontSize: isMobile ? '24px' : '32px',
+                }}
+              >Архив</h1>
             </Col>
           </Row>
           <section style={sectionStyle}>
@@ -74,37 +84,60 @@ const ArchivePage: React.FC = () => {
             <ul style={listStyle}>
               {archivedTransports.map((transport) => (
                 <li key={transport.id} style={listItemStyle}>
-                  <div>
-                    <strong>{transport.name}</strong> (архивировано: {transport.archivedDate})
-                  </div>
-                  <div>
-                    <button onClick={() => restoreTransport(transport.id)} style={buttonStyle}>
-                      Восстановить
-                    </button>
-                    <button onClick={() => deleteTransport(transport.id)} style={deleteButtonStyle}>
-                      Удалить
-                    </button>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <div style={{ ...itemTextStyle, marginRight: '1rem' }}> {/* Added marginRight */}
+                      <strong>{transport.name}</strong> <br />
+                      <span style={{ fontSize: '0.9rem', color: '#555' }}>
+                        (архивировано: {transport.archivedDate})
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <Button
+                        icon={<RestoreOutlinedIcon />}
+                        onClick={() => restoreTransport(transport.id)}
+                        style={responsiveButtonStyle}
+                      >
+                          {!isMobile && 'Востановить транспорт'}
+                      </Button>
+                      <Button
+                        icon={<DeleteOutlineOutlinedIcon />}
+                        onClick={() => deleteTransport(transport.id)}
+                        style={responsiveButtonStyle}
+                      >  {!isMobile && 'Удалить транспорт'}</Button>
+                    </div>
                   </div>
                 </li>
               ))}
             </ul>
           </section>
 
+
           <section style={sectionStyle}>
             <h2 style={sectionTitleStyle}>Архивированные организации</h2>
             <ul style={listStyle}>
               {archivedOrganizations.map((organization) => (
                 <li key={organization.id} style={listItemStyle}>
-                  <div>
-                    <strong>{organization.name}</strong> (архивировано: {organization.archivedDate})
-                  </div>
-                  <div>
-                    <button onClick={() => restoreOrganization(organization.id)} style={buttonStyle}>
-                      Восстановить
-                    </button>
-                    <button onClick={() => deleteOrganization(organization.id)} style={deleteButtonStyle}>
-                      Удалить
-                    </button>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <div style={{ ...itemTextStyle, marginRight: '1rem' }}> {/* Added marginRight */}
+                      <strong>{organization.name}</strong> <br />
+                      <span style={{ fontSize: '0.9rem', color: '#555' }}>
+                        (архивировано: {organization.archivedDate})
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <Button
+                        icon={<RestoreOutlinedIcon />}
+                        onClick={() => restoreOrganization(organization.id)}
+                        style={responsiveButtonStyle}
+                      >
+                            {!isMobile && 'Востановить организацию'}
+                      </Button>
+                      <Button
+                        icon={<DeleteOutlineOutlinedIcon />}
+                        onClick={() => deleteOrganization(organization.id)}
+                        style={responsiveButtonStyle}
+                      >  {!isMobile && 'Удалить организацию'}</Button>
+                    </div>
                   </div>
                 </li>
               ))}
@@ -115,14 +148,14 @@ const ArchivePage: React.FC = () => {
     </div>
   );
 };
-
+const isMobile = window.innerWidth < 768;
 const sectionStyle = {
   marginBottom: '2rem',
 };
 
 const sectionTitleStyle = {
-  fontSize: '1.5rem',
-  color: '#374151',
+ fontSize: isMobile ? '18px' : '24px',
+  // color: '#374151',
   marginBottom: '1rem',
 };
 
@@ -136,25 +169,27 @@ const listItemStyle = {
   justifyContent: 'space-between',
   alignItems: 'center',
   padding: '0.75rem 1rem',
+  margin: 0,
   backgroundColor: '#fff',
   borderRadius: '8px',
   boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
   marginBottom: '1rem',
+  flexWrap: 'wrap' as const,
 };
 
-const buttonStyle = {
-  padding: '0.5rem 1rem',
-  backgroundColor: '#3b82f6',
+const itemTextStyle = {
+  flex: '1 1 auto',
+  marginBottom: '0.5rem',
+};
+
+const responsiveButtonStyle = {
+  padding: '0.5rem',
+  backgroundColor: '#3A5F73',
   color: '#fff',
   border: 'none',
   borderRadius: '4px',
   cursor: 'pointer',
   marginRight: '0.5rem',
-};
-
-const deleteButtonStyle = {
-  ...buttonStyle,
-  backgroundColor: '#e11d48',
 };
 
 export default ArchivePage;

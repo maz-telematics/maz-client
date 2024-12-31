@@ -1,7 +1,7 @@
 import { Table, TableProps } from "antd";
 import moment from "moment";
 import { useState, useEffect } from "react";
-import { ErrorData } from "../../../types/carTrackingTypes";
+import { ErrorData } from "../../../Types/carTrackingTypes";
 import { Dayjs } from "dayjs";
 import axiosInstance from "../../../services/axiosInstance";
 
@@ -73,8 +73,19 @@ const ErrorTable: React.FC<ErrorsProps> = ({ selectedDate }) => {
       dataSource={errors}
       rowKey="id" // Уникальный ключ для каждой строки
       pagination={false}
+      components={{
+        header: {
+          cell: (props:any) => (
+            <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff",  border: "none", }}>
+              {props.children}
+            </th>
+          ),
+        },
+      }}
+      scroll={{ x: 'max-content' }}
     />
   );
 };
 
 export default ErrorTable;
+

@@ -139,38 +139,58 @@ const EmployeesPage: React.FC = () => {
             ),
         },
     ];
-
+    const isMobile = window.innerWidth < 768;
     return (
         <div style={{
             display: "flex",
             flexDirection: "column",
             width: "100%",
-            height: "100vh",
-            backgroundColor: "#F0F4F8",
+            // minHeight: '100vh',
+            backgroundColor: "#E1E1E1",
         }}>
             <Row style={{
-                margin: "30px 40px 30px 40px",
-                flex: "1",
+                padding: "0 40px",
             }}>
                 <Col xs={24} >
                     <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
                         <Col>
-                            <h1 style={{ margin: 0, color: '#1e40af' }}>Сотрудники</h1>
+                            <h1
+                                style={{
+                                    margin: 0,
+                                    fontSize: isMobile ? '24px' : '32px',
+                                }}
+                            >Сотрудники</h1>
                         </Col>
                         <Col>
                             <Button
-                              disabled={true}
+                                //   disabled={true}
                                 type="primary"
                                 icon={<UserAddOutlined />}
                                 onClick={handleAdd}
-                                style={{ marginBottom: 16 }}
+                                style={{ backgroundColor: "#3A5F73", }}
                             >
-                                Добавить сотрудника
+                                {!isMobile && 'Добавить сотрудника'}
                             </Button>
                         </Col>
                     </Row>
                     <Table
                         //   dataSource={employees} 
+                        components={{
+                            header: {
+                                cell: (props: any) => (
+                                    <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff", border: "none", }}>
+                                        {props.children}
+                                    </th>
+                                ),
+                            },
+                        }}
+                        style={{
+                            borderRadius: "8px",
+                            overflow: "hidden",
+                            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                            backgroundColor: "#F7F9FB",
+                        }}
+                        scroll={{ x: 'max-content' }}
                         columns={columns} rowKey="id" />
                     <Modal
                         title={editingEmployee ? "Редактировать сотрудника" : "Добавить сотрудника"}

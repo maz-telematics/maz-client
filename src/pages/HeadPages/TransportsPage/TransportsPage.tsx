@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Table, Row, Col } from "antd";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
-import { Car } from "../../../types/organizationTypes";
+import { Car } from "../../../Types/organizationTypes";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axiosInstance from '../../../services/axiosInstance';
@@ -61,7 +61,7 @@ const TransportsPage = () => {
       overflow: "hidden",
       scrollbarWidth: "thin",
       scrollbarColor:"#3b82f6 white"}}>
-      <Row style={{ width: "80%", margin: "30px auto" }}>
+      <Row style={{   padding: "0 40px", }}>
         <Col xs={24}>
         <ToastContainer />
        <Table

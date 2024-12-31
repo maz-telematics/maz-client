@@ -1015,7 +1015,7 @@ import {
   Dot
 } from "recharts";
 import { Card, Tabs } from "antd";
-import { BatteryParameters } from "../../../types/carTrackingTypes";
+import { BatteryParameters } from "../../../Types/carTrackingTypes";
 const { TabPane } = Tabs;
 
 interface BatteryParametersChartProps {
@@ -1137,7 +1137,6 @@ const BatteryParametersChart: React.FC<BatteryParametersChartProps> = ({ process
                 name="Напряжение"
                 dot={{ r: 5 }}
               />
-              {/* Выделение аномальных значений */}
               <ReferenceArea x1="2024-12-12T00:00:00Z" x2="2024-12-15T00:00:00Z" stroke="red" fill="red" fillOpacity={0.3} />
             </LineChart>
           </ResponsiveContainer>

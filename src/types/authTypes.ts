@@ -12,3 +12,10 @@ export interface AuthContextIntarface {
     email: string;
     password: string;
   }
+
+  export interface User{
+    id:number
+    role:string,
+    name:string,
+    token:string
+  }

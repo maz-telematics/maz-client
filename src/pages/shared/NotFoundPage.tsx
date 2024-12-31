@@ -18,7 +18,7 @@ const NotFound: React.FC = () => {
       title="404"
       subTitle={`Извините, страница ${location.pathname} не найдена.`}
       extra={
-        <Button type="primary" onClick={() => navigate(-1)}>
+        <Button type="primary" style={{backgroundColor:"#1B232A"}} onClick={() => navigate(-1)}>
           Вернуться назад
         </Button>
       }

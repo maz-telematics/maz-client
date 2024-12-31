@@ -1,56 +1,64 @@
-
 import React from 'react';
-import { Bar } from 'react-chartjs-2';
-import { Chart, registerables } from 'chart.js';
-import { Row, Col } from 'antd';
-
-Chart.register(...registerables);
+import { Row, Col, Progress } from 'antd';
 
 const MainPage: React.FC = () => {
-  const data = {
-    labels: ['Неделя 1', 'Неделя 2', 'Неделя 3', 'Неделя 4'],
-    datasets: [
-      {
-        label: 'Активность транспорта',
-        data: [12, 19, 3, 5],
-        backgroundColor: 'rgba(56, 162, 255, 0.6)',
-      },
-    ],
+  const transportData = {
+    totalVehicles: 60,
+    totalVehiclesMoving: 40,
+    totalVehiclesStopped: 15,
+    totalVehiclesMaintenance: 5,
+    trucks: 30,
+    buses: 15,
+    otherVehicles: 5,
+    avgDelay: "12 минут",
+    activeRoutes: 25,
+    completedRoutes: 20,
+    totalUsers: 100,
+    admins: 5,
+    operators: 20,
+    organizations: 20,
   };
 
+  const criticalInfo = [
+    "Обнаружены проблемы с транспортом #23: ошибка датчика температуры.",
+    "Организация 'Transport Company A' не активна с 2024-10-01.",
+    "Проблемы с маршрутом #12: задержка на 30 минут.",
+  ];
+
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      width: "100%",
-      height: '100vh',
-      backgroundColor: "#F0F4F8",
-    }}>
-      <Row style={{
-        margin: "30px 40px 30px 40px",
-        flex: "1",
-      }}>
-        <Col xs={24} >
-          <h1 style={{ margin: 0, color: '#1e40af' }}>Главная страница</h1>
-
-          <div style={cardsContainerStyle}>
-            <Card title="Активные транспортные средства" value="50" />
-            <Card title="Неактивные транспортные средства" value="10" />
-            <Card title="Организации" value="20 (активные: 18, неактивные: 2)" />
-            <Card title="Пользователи" value="100 (Администраторы: 5, Операторы: 20)" />
-          </div>
-
+    <div style={containerStyle}>
+      <Row>
+        <Col xs={24}>
+          <section style={sectionStyle}>
+            <h2 style={sectionTitleStyle}>Общая информация</h2>
+            <div style={cardsContainerStyle}>
+              <Card title="Общее количество транспорта" value={transportData.totalVehicles.toString()} />
+              <Card title="Грузовики" value={transportData.trucks.toString()} />
+              <Card title="Автобусы" value={transportData.buses.toString()} />
+              <Card title="Тягачи" value={transportData.otherVehicles.toString()} />
+              <Card title="Организации" value={transportData.organizations.toString()} />
+              <Card
+                title="Пользователи"
+                value={`${transportData.totalUsers} (Администраторы: ${transportData.admins}, Операторы: ${transportData.operators})`}
+              />
+            </div>
+          </section>
+          <section style={sectionStyle}>
+            <h2 style={sectionTitleStyle}>Текущий статус транспорта</h2>
+            <div style={statusContainerStyle}>
+              <StatusCard title="Транспорт в движении" value={transportData.totalVehiclesMoving} color="#3498db" />
+              <StatusCard title="Транспорт на остановке" value={transportData.totalVehiclesStopped} color="#e74c3c" />
+              <StatusCard title="Транспорт на ремонте" value={transportData.totalVehiclesMaintenance} color="#f39c12" />
+            </div>
+          </section>
           <section style={sectionStyle}>
             <h2 style={sectionTitleStyle}>Критическая информация</h2>
-            <p style={infoTextStyle}>Обнаружены проблемы с транспортом #23: ошибка датчика температуры.</p>
-            <p style={infoTextStyle}>Организация "Transport Company A" не активна с 2024-10-01.</p>
-            <p style={infoTextStyle}>Проблемы с маршрутом #12: задержка на 30 минут.</p>
+            {criticalInfo.map((info, index) => (
+              <p key={index} style={infoTextStyle}>
+                {info}
+              </p>
+            ))}
           </section>
-
-          <div style={chartContainerStyle}>
-            <h2 style={chartTitleStyle}>График активности транспорта</h2>
-            <Bar data={data} options={chartOptions} />
-          </div>
         </Col>
       </Row>
     </div>
@@ -66,13 +74,31 @@ const Card: React.FC<{ title: string; value: string }> = ({ title, value }) => {
   );
 };
 
+const StatusCard: React.FC<{ title: string; value: number; color: string }> = ({ title, value, color }) => {
+  return (
+    <div style={{ ...statusCardStyle, borderLeft: `5px solid ${color}` }}>
+      <h3 style={statusCardTitleStyle}>{title}</h3>
+      <Progress percent={(value / 60) * 100} status="active" strokeColor={color} showInfo={false} />
+      <p style={statusCardValueStyle}>{`${value} транспортных средств`}</p>
+    </div>
+  );
+};
+const isMobile = window.innerWidth < 768;
+const containerStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  width: '100%',
+  backgroundColor: '#E1E1E1',
+  margin: 0,
+  padding: '0 20px',
+};
 
 const cardsContainerStyle: React.CSSProperties = {
   display: 'flex',
-  justifyContent: 'space-around',
-  width: '100%',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  gap: '20px',
   marginBottom: '20px',
-  marginTop: '20px',
 };
 
 const cardStyle: React.CSSProperties = {
@@ -81,8 +107,9 @@ const cardStyle: React.CSSProperties = {
   padding: '15px',
   textAlign: 'center',
   boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-  flex: '1',
-  margin: '0 10px',
+  flex: '1 1 calc(50% - 20px)',
+  minWidth: '200px',
+  maxWidth: '250px',
 };
 
 const cardTitleStyle: React.CSSProperties = {
@@ -95,6 +122,36 @@ const cardValueStyle: React.CSSProperties = {
   color: '#3498db',
 };
 
+const statusContainerStyle: React.CSSProperties = {
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  gap: '20px',
+  marginTop: '20px',
+};
+
+const statusCardStyle: React.CSSProperties = {
+  backgroundColor: '#fff',
+  borderRadius: '8px',
+  padding: '15px',
+  textAlign: 'center',
+  boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+  flex: '1 1 calc(50% - 20px)',
+  minWidth: '200px',
+  maxWidth: '250px',
+};
+
+const statusCardTitleStyle: React.CSSProperties = {
+  fontSize: '1.2rem',
+  fontWeight: 'bold',
+  marginBottom: '10px',
+};
+
+const statusCardValueStyle: React.CSSProperties = {
+  fontSize: '1.2rem',
+  marginTop: '10px',
+};
+
 const sectionStyle: React.CSSProperties = {
   margin: '20px 0',
   padding: '10px',
@@ -104,32 +161,15 @@ const sectionStyle: React.CSSProperties = {
 };
 
 const sectionTitleStyle: React.CSSProperties = {
-  fontSize: '1.5rem',
+  // fontSize: '1.5rem',
   marginBottom: '10px',
+  fontSize: isMobile ? '18px' : '24px'
+  
 };
 
 const infoTextStyle: React.CSSProperties = {
   fontSize: '1rem',
   color: '#e74c3c',
-};
-
-const chartContainerStyle: React.CSSProperties = {
-  width: '100%',
-  maxWidth: '600px',
-  margin: '20px auto',
-};
-
-const chartTitleStyle: React.CSSProperties = {
-  fontSize: '1.5rem',
-  textAlign: 'center',
-};
-
-const chartOptions = {
-  scales: {
-    y: {
-      beginAtZero: true,
-    },
-  },
 };
 
 export default MainPage;

@@ -16,7 +16,7 @@ import {
 } from "antd";
 import moment from "moment";
 import dayjs, { Dayjs } from 'dayjs';
-import { Organization } from "../../../types/transportListTypes";
+import { Organization } from "../../../Types/transportListTypes";
 import axios from "axios";
 import axiosInstance from '../../../services/axiosInstance';
 
@@ -39,12 +39,12 @@ export interface OrgType {
   registrationDate: string;
   vehicles: Vehicle[];
 }
-export interface Subscription{
-  id:number;
-  start_date:string;
-  end_date:string;
-  organization_id:number;
-  status:string
+export interface Subscription {
+  id: number;
+  start_date: string;
+  end_date: string;
+  organization_id: number;
+  status: string
 }
 interface EmployeeType {
   id: number;
@@ -151,7 +151,7 @@ const OrganizationDetails: React.FC = () => {
 
   const deleteVehicle = async (vehicleId: number) => {
     try {
-        const response = await axiosInstance.delete(`/transport/organization/${vehicleId}`,
+      const response = await axiosInstance.delete(`/transport/organization/${vehicleId}`,
         {
           data: {
             id, // Передаем ID организации в теле запроса
@@ -204,7 +204,7 @@ const OrganizationDetails: React.FC = () => {
           </>
         ),
         onOk: async () => {
-            const response = await axiosInstance.patch(`/organizations/subscription/${idOrganization}`,
+          const response = await axiosInstance.patch(`/organizations/subscription/${idOrganization}`,
             {
               requestBody: {
                 start_date: start_date,
@@ -277,13 +277,13 @@ const OrganizationDetails: React.FC = () => {
       title: "Дата начала",
       dataIndex: "start_date",
       key: "start_date",
-      render: (text: string) => moment(text).format("YYYY-MM-DD"), 
+      render: (text: string) => moment(text).format("YYYY-MM-DD"),
     },
     {
       title: "Дата окончания",
       dataIndex: "end_date",
       key: "end_date",
-      render: (text: string) => moment(text).format("YYYY-MM-DD"), 
+      render: (text: string) => moment(text).format("YYYY-MM-DD"),
     },
     {
       title: "Статус",
@@ -293,7 +293,7 @@ const OrganizationDetails: React.FC = () => {
         <span style={{ color: text === "active" ? "blue" : "black" }}>
           {text === "active" ? "Активная" : "Завершенная"}
         </span>
-      ), 
+      ),
     },
   ];
   const sortedData = subscriptionHistory.sort((a, b) => (a.status === "active" ? -1 : 1));
@@ -301,27 +301,27 @@ const OrganizationDetails: React.FC = () => {
   const handleAddVehicle = async () => {
     try {
       const response = await axiosInstance.patch(`/transport/add-car/${vin}`, {
-  
+
         data: {
-          id: idTransport, 
+          id: idTransport,
         },
       });
-  
+
       if (response) {
         setVehicles(response.data);
         message.success("Автомобиль успешно добавлен к организации!");
-        setVisible(false); 
+        setVisible(false);
       } else {
         message.error("Произошла ошибка при добавлении автомобиля.");
       }
-    } catch (error: unknown) {  
+    } catch (error: unknown) {
       console.error("Ошибка при добавлении автомобиля:", error);
       if (axios.isAxiosError(error) && error.response) {
         const errorMessage = error.response.data.message;
         if (errorMessage.includes("VIN уже принадлежит другой организации")) {
           message.error("Транспорт с таким VIN номером принадлежит другой организации.");
         } else {
-          message.error( errorMessage);
+          message.error(errorMessage);
         }
       } else {
         message.error("Ошибка при добавлении автомобиля.");
@@ -333,230 +333,305 @@ const OrganizationDetails: React.FC = () => {
     if (!organizationData) return false;
     return current.isBefore(dayjs(organizationData.subscription_end), 'day');
   };
+  const isMobile = window.innerWidth < 768;
   return (
-   
+
     <div style={{
       display: "flex",
       flexDirection: "column",
       width: "100%",
-      height:"100vh",
-      backgroundColor: "#F0F4F8",
+      height: "100vh",
+      backgroundColor: "#E1E1E1",
     }}>
-       <Row style={{
-        margin: "30px 40px 30px 40px",
+      <Row style={{
+        padding: "0 40px",
         flex: "1",
-        maxHeight:'20px'
-      }}> <h1 style={{ margin: 0,  color: '#1e40af' }}> {organizationData?.organization_name || "Название компании"}</h1></Row>
- 
-    <Card
-      title="Информация об организации"
-      style={{
-        backgroundColor: "#F7F9FB",
-       width: "auto",
-        marginRight: 40,
-        marginLeft:40,
-        borderRadius: 8,
-        boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)' // Эффект тени
-      }}
-    >
-      <Row gutter={16}>
-        <Col span={24}>
-          <Typography.Paragraph>
-            <strong>Дата начала подписки:</strong>{" "}
-            {moment(organizationData?.subscription_start).format("YYYY-MM-DD")}
-          </Typography.Paragraph>
-          <Typography.Paragraph>
-            <strong>Дата окончания подписки:</strong>{" "}
-            {moment(organizationData?.subscription_end).format("YYYY-MM-DD")}
-          </Typography.Paragraph>
-          <Typography.Paragraph>
-            <strong>Статус подписки:</strong>{" "}
-            <span style={{fontWeight:500, color: organizationData?.status ? '#007bff' :  'red' }}>
-              {organizationData?.status ? "Активна" : "Заблокирована"}
-            </span>
-          </Typography.Paragraph>
-          <Typography.Paragraph>
-            <strong>Дата регистрации:</strong>{" "}
-            {moment(organizationData?.created_at).format("YYYY-MM-DD")}
-          </Typography.Paragraph>
-          <Typography.Paragraph>
-            <strong>Доступ к мониторингу транспортных средств:</strong>
-            <Switch
-              style={{ marginLeft: "5px" }}
-              checked={organizationData?.status}
-              onChange={showConfirmBlockAccess}
-            />
-          </Typography.Paragraph>
-                   <Row>
-               <Col span={22}>
-                 <Typography.Title level={5}>
-                  Продлить доступ к системе:
-                 </Typography.Title>
-                 <RangePicker onChange={showConfirmExtend}     disabledDate={disabledDate}/>
-               </Col>
-             </Row>
-
-
-          <Tabs defaultActiveKey="1" style={{ marginTop: 10 }}>
-            <TabPane tab="Транспортные средства" key="1">
-              <Table
-                bordered
-                dataSource={vehicles}
-                columns={columnsVehicles}
-                rowKey="id"
-                pagination={false}
-                style={{
-                  marginTop: '16px',
-                  borderRadius: '8px',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                }}
-              />
-              <Button
-                disabled={true}
-                style={{ marginTop: "20px", width:"300px", backgroundColor: '#007bff', color: '#fff', borderColor: '#007bff' }}
-                onClick={() => setVisible(true)}
-              >
-                Добавить транспорт к организации
-              </Button>
-
-            </TabPane>
-            <TabPane tab="История подписок" key="2">
-              <Table
-                bordered
-                dataSource={sortedData}
-                columns={columnsHistory}
-                rowKey="id"
-                style={{
-                  marginTop: '16px',
-                  borderRadius: '8px',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                }}
-              />
-            </TabPane>
-            <TabPane tab="Сотрудники" key="3">
-  <Table
-    bordered
-    dataSource={employees}
-    columns={[
-      {
-        title: "Имя",
-        dataIndex: "name",
-        key: "name",
-      },
-      {
-        title: "Должность",
-        dataIndex: "position",
-        key: "position",
-      },
-      {
-        title: "Контакт",
-        dataIndex: "contact",
-        key: "contact",
-      },
-      {
-        title: "Действия",
-        key: "actions",
-        render: (text, employee) => (
-          <>
-            <Button
-              type="link"
-              disabled={true}
-              onClick={() => {
-                // setEditingEmployee(employee);
-                setIsEmployeeModalVisible(true);
-              }}
-            >
-              Редактировать
-            </Button>
-            <Button
-              disabled={true}
-              type="link"
-              danger
-              onClick={() => deleteEmployee(employee.id)}
-            >
-              Удалить
-            </Button>
-          </>
-        ),
-      },
-    ]}
-    rowKey="id"
-    style={{ marginTop: "16px", borderRadius: "8px", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)" }}
-  />
-  <Button
-    disabled={true}
-    style={{ marginTop: "20px", backgroundColor: "#007bff", color: "#fff", borderColor: "#007bff" }}
-    onClick={() => {
-      setEditingEmployee(null);
-      setIsEmployeeModalVisible(true);
-    }}
-  >
-    Добавить сотрудника
-  </Button>
-</TabPane>
-          </Tabs>
-        </Col>
+        maxHeight: '50px'
+      }}>
+        <h1
+          style={{
+            margin: 0,
+            padding: 0,
+            height: "10px",
+            fontSize: isMobile ? '24px' : '32px',
+          }}
+        >{organizationData?.organization_name || "Название компании"}</h1>
       </Row>
-    </Card>
 
-    <Modal
-      title="Добавить автомобиль"
-      visible={visible}
-      onCancel={() => setVisible(false)}
-      footer={null}
-      style={{ borderRadius: '8px' }} 
-    >
-      <Form onFinish={handleAddVehicle}>
-        <Form.Item
-          label="VIN-номер"
-          name="vin"
-          rules={[
-            { required: true, message: "Пожалуйста, введите VIN-номер!" },
-          ]}
+      <Card
+
+        title={<div style={{ fontSize: isMobile ? '14px' : '18px' }}>Информация об организации</div>}
+        style={{
+          backgroundColor: "#F7F9FB",
+          width: "auto",
+          marginRight: 40,
+          marginLeft: 40,
+          borderRadius: 8,
+          boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)'
+        }}
+      >
+        <Row gutter={16}>
+          <Col span={24}>
+            <Typography.Paragraph>  <Row>    <Col xs={24} sm={4}>
+              <strong>Дата начала подписки:</strong></Col> <Col xs={24} sm={4} style={{
+                color: "#1890f",
+                fontWeight: "bold"
+              }}>
+                {moment(organizationData?.subscription_start).format("YYYY-MM-DD")}</Col> </Row>
+            </Typography.Paragraph>
+            <Typography.Paragraph> <Row> <Col xs={24} sm={4}>
+              <strong>Дата окончания подписки:</strong></Col>
+              <Col xs={24} sm={4} style={{
+                color: "#1890f",
+                fontWeight: "bold"
+              }}> {moment(organizationData?.subscription_end).format("YYYY-MM-DD")}</Col> </Row>
+            </Typography.Paragraph>
+            <Typography.Paragraph>
+              <Row>
+                <Col xs={24} sm={4}>
+                  <strong>Статус подписки:</strong> </Col> <Col xs={24} sm={4}>
+                  <span style={{ fontWeight: 500, color: organizationData?.status ? '#007bff' : 'red' }}>
+                    {organizationData?.status ? "Активна" : "Заблокирована"}
+                  </span> </Col> </Row>
+            </Typography.Paragraph>
+            <Typography.Paragraph style={{ marginBottom: 0 }}>
+              <Row>
+                <Col xs={24} sm={4}>
+                  <strong>Дата регистрации:</strong>
+                </Col>
+                <Col xs={24} sm={4} style={{
+                  color: "#1890f",
+                  fontWeight: "bold"
+                }}>
+                  {moment(organizationData?.created_at).format("YYYY-MM-DD")}
+                </Col>
+              </Row>
+            </Typography.Paragraph>
+            <Typography.Paragraph style={{ marginTop: "10px" }}>
+              <Row align="middle" gutter={[16, 8]}>
+                <Col xs={24} sm={12} md={8}>
+                  <Typography.Text strong>
+                    Доступ к мониторингу транспортных средств:
+                  </Typography.Text>
+                </Col>
+                <Col xs={24} sm={12} md={8}>
+                  <Switch
+                    checked={organizationData?.status}
+                    onChange={showConfirmBlockAccess}
+                  />
+                </Col>
+              </Row>
+            </Typography.Paragraph>
+            <Row>
+              <Col span={22}>
+                <Typography.Title level={5} >
+                  Продлить доступ к системе:
+                </Typography.Title>
+                <RangePicker onChange={showConfirmExtend} disabledDate={disabledDate} />
+              </Col>
+            </Row>
+
+
+            <Tabs defaultActiveKey="1" style={{ marginTop: 10 }}>
+              <TabPane tab="Транспортные средства" key="1">
+                <Table
+                  bordered
+                  dataSource={vehicles}
+                  columns={columnsVehicles}
+                  rowKey="id"
+                  pagination={false}
+                  style={{
+                    marginTop: '16px',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                  }}
+                  components={{
+                    header: {
+                      cell: (props: any) => (
+                        <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff", border: "none", }}>
+                          {props.children}
+                        </th>
+                      ),
+                    },
+                  }}
+                  scroll={{ x: 'max-content' }}
+                />
+                <div style={{ marginTop: "20px", display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    disabled={true}
+                    style={{
+                      fontSize: isMobile ? '12px' : '16px',
+                      width: isMobile ? '100%' : '300px',
+                      backgroundColor: '#3A5F73',
+                      color: '#fff',
+                    }}
+                    onClick={() => setVisible(true)}
+                  >
+                    Добавить транспорт к организации
+                  </Button>
+                </div>
+              </TabPane>
+              <TabPane tab="История подписок" key="2">
+                <Table
+                  components={{
+                    header: {
+                      cell: (props: any) => (
+                        <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff", border: "none", }}>
+                          {props.children}
+                        </th>
+                      ),
+                    },
+                  }}
+                  bordered
+                  dataSource={sortedData}
+                  columns={columnsHistory}
+                  rowKey="id"
+                  style={{
+                    marginTop: '16px',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                  }}
+                  scroll={{ x: 'max-content' }}
+                />
+              </TabPane>
+              <TabPane tab="Сотрудники" key="3">
+                <Table
+                  bordered
+                  dataSource={employees}
+                  pagination={false}
+                  components={{
+                    header: {
+                      cell: (props: any) => (
+                        <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff", border: "none", }}>
+                          {props.children}
+                        </th>
+                      ),
+                    },
+                  }}
+                  columns={[
+                    {
+                      title: "Имя",
+                      dataIndex: "name",
+                      key: "name",
+                    },
+                    {
+                      title: "Должность",
+                      dataIndex: "position",
+                      key: "position",
+                    },
+                    {
+                      title: "Контакт",
+                      dataIndex: "contact",
+                      key: "contact",
+                    },
+                    {
+                      title: "Действия",
+                      key: "actions",
+                      render: (text, employee) => (
+                        <>
+                          <Button
+                            type="link"
+                            disabled={true}
+                            onClick={() => {
+                              // setEditingEmployee(employee);
+                              setIsEmployeeModalVisible(true);
+                            }}
+                          >
+                            Редактировать
+                          </Button>
+                          <Button
+                            disabled={true}
+                            type="link"
+                            danger
+                            onClick={() => deleteEmployee(employee.id)}
+
+                          >
+                            Удалить
+                          </Button>
+                        </>
+                      ),
+                    },
+                  ]}
+                  scroll={{ x: 'max-content' }}
+                  rowKey="id"
+                  style={{ marginTop: "16px", borderRadius: "8px", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)" }}
+                />
+                <div style={{ marginTop: "20px", display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    disabled={true}
+                    style={{ fontSize: isMobile ? '12px' : '16px', width: isMobile ? '100%' : '200px', backgroundColor: "#3A5F73", color: "#fff" }}
+                    onClick={() => {
+                      setEditingEmployee(null);
+                      setIsEmployeeModalVisible(true);
+                    }}
+                  >
+                    Добавить сотрудника
+                  </Button>
+                </div>
+              </TabPane>
+            </Tabs>
+          </Col>
+        </Row>
+      </Card>
+
+      <Modal
+        title="Добавить автомобиль"
+        visible={visible}
+        onCancel={() => setVisible(false)}
+        footer={null}
+        style={{ borderRadius: '8px' }}
+      >
+        <Form onFinish={handleAddVehicle}>
+          <Form.Item
+            label="VIN-номер"
+            name="vin"
+            rules={[
+              { required: true, message: "Пожалуйста, введите VIN-номер!" },
+            ]}
+          >
+            <Input value={vin} onChange={(e) => setVin(e.target.value)} />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
+              Добавить
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title={editingEmployee ? "Редактировать сотрудника" : "Добавить сотрудника"}
+        visible={isEmployeeModalVisible}
+        onCancel={() => setIsEmployeeModalVisible(false)}
+        footer={null}
+      >
+        <Form
+          initialValues={editingEmployee || { name: "", position: "", contact: "" }}
+          onFinish={(values) => {
+            if (editingEmployee) {
+              // editEmployee(editingEmployee.id, values);
+            } else {
+              addEmployee(values);
+            }
+            setIsEmployeeModalVisible(false);
+          }}
         >
-          <Input value={vin} onChange={(e) => setVin(e.target.value)} />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
-            Добавить
-          </Button>
-        </Form.Item>
-      </Form>
-    </Modal>
-    <Modal
-  title={editingEmployee ? "Редактировать сотрудника" : "Добавить сотрудника"}
-  visible={isEmployeeModalVisible}
-  onCancel={() => setIsEmployeeModalVisible(false)}
-  footer={null}
->
-  <Form
-    initialValues={editingEmployee || { name: "", position: "", contact: "" }}
-    onFinish={(values) => {
-      if (editingEmployee) {
-        // editEmployee(editingEmployee.id, values);
-      } else {
-        addEmployee(values);
-      }
-      setIsEmployeeModalVisible(false);
-    }}
-  >
-    <Form.Item name="name" label="Имя" rules={[{ required: true, message: "Введите имя!" }]}>
-      <Input />
-    </Form.Item>
-    <Form.Item name="position" label="Должность" rules={[{ required: true, message: "Введите должность!" }]}>
-      <Input />
-    </Form.Item>
-    <Form.Item name="contact" label="Контакт" rules={[{ required: true, message: "Введите контакт!" }]}>
-      <Input />
-    </Form.Item>
-    <Form.Item>
-      <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
-        {editingEmployee ? "Сохранить изменения" : "Добавить"}
-      </Button>
-    </Form.Item>
-  </Form>
-</Modal>
-  </div>
+          <Form.Item name="name" label="Имя" rules={[{ required: true, message: "Введите имя!" }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="position" label="Должность" rules={[{ required: true, message: "Введите должность!" }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="contact" label="Контакт" rules={[{ required: true, message: "Введите контакт!" }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
+              {editingEmployee ? "Сохранить изменения" : "Добавить"}
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </div>
   );
 };
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Location } from "../../../types/carTrackingTypes";
+import { Location } from "../../../Types/carTrackingTypes";
 import dayjs, { Dayjs } from "dayjs";
 import axiosInstance from "../../../services/axiosInstance";
 
