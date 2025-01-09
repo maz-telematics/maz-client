@@ -93,7 +93,7 @@ type ElectricSystemParameters = {
 
 type TransportAirConditioning = {
   id: number;
-  acOn: string; // Возможно, лучше заменить на boolean, если строка всегда "true" или "false".
+  acOn: string; 
   frostSensor: string;
   pressureSensorOn: string;
   outsideAirTempSensor: number;
@@ -103,7 +103,7 @@ type TransportAirConditioning = {
 
 type TransportLighting = {
   id: number;
-  daytimeRunningLights: string; // Аналогично, возможно, лучше заменить на boolean.
+  daytimeRunningLights: string; 
   lowBeam: string;
   highBeam: string;
   frontLogLights: string;
@@ -118,13 +118,10 @@ type TransportLighting = {
 };
 
 
-
-
 export interface ErrorData {
-  data: string;
-  description: string;
-  error_code: string;
-  error_type: string;
-  id: number;
-  id_transport: number;
+  id: string;
+  data: string; 
+  spn: string;  
+  fmi?: string;
 }
+

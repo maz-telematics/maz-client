@@ -4,8 +4,7 @@ import LoginPage from "./pages/AuthPage/LoginPage";
 import EditProfile from "./pages/shared/EditProfilePage/ProfilePage";
 import { AuthContext } from "./services/auth";
 import NotFound from "./pages/shared/NotFoundPage";
-import Header from "./Components/Header";
-import SuperAdminRoutes from "./Routes/SuperAdminRotes";
+import SuperAdminRoutes from "./routes/SuperAdminRotes";
 import SuperAdmin from "./pages/SuperAdminPages/SuperAdmin";
 
 const App = () => {
@@ -35,9 +34,6 @@ const App = () => {
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, token, role, logout }}>
-      {/* {token && location.pathname !== '/' && location.pathname !== '/not-found' && 
-      // <Header style={{ gridArea: "header" }} />
-      } */}
       {token && location.pathname !== '/' ? (
         location.pathname !== '/not-found' ? (
           <div
