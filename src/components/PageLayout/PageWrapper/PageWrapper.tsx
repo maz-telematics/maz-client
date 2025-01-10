@@ -11,9 +11,7 @@ import { AuthContext, useUser } from "../../../services/auth";
 import { AuthContextIntarface } from "../../../Types/authTypes";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import ExitToAppIcon from '@mui/icons-material/ExitToApp'; // Импортируем иконку для выхода
-// Например, в файле index.tsx или App.tsx
 import '../../../App.css'; // Убедитесь, что путь правильный
-
 
 const { Content, Sider, Header } = Layout;
 const { useBreakpoint } = Grid;
@@ -48,12 +46,11 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
     logoutMutation();
   };
 
-  
   return (
     <Layout style={{ backgroundColor: "#E1E1E1", minHeight: "100vh" }}>
       <Header
         style={{
-          backgroundColor: "white",
+          backgroundColor: "1B232A",
           padding: "0 20px",
           position: "fixed",
           top: 0,
@@ -79,22 +76,25 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
               xxl={10}
               style={{ display: "flex", alignItems: "center" }}
             >
-              <img
-                src="/mazIcon1.svg"
-                alt="Maz Icon"
-                style={{
-                  width: "64px",
-                  height: "64px",
-                  marginRight: "10px",
-                  flexShrink: 0,
-                }}
-              />
+              <Link to="/master/main">
+                <img
+                  src="/mazIcon1.svg"
+                  alt="Maz Icon"
+                  style={{
+                    width: "64px",
+                    height: "64px",
+                    marginRight: "10px",
+                    flexShrink: 0,
+                    cursor: "pointer",
+                  }}
+                />
+              </Link>
               <div>
                 <h1
                   style={{
                     fontSize: "24px",
                     fontWeight: "600",
-                    color: "#1B232A",
+                    color: "white",
                     margin: 0,
                     letterSpacing: "1px",
                     whiteSpace: "nowrap",
@@ -109,7 +109,7 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
                   style={{
                     fontSize: "16px",
                     fontWeight: "400",
-                    color: "#666",
+                    color: "white",
                     margin: 0,
                     letterSpacing: "0.5px",
                     lineHeight: "1.2",
@@ -123,11 +123,11 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "24px", // Отступ между иконками
+                gap: "25px", // Отступ между иконками
               }}
             >
               <Badge count={0} showZero>
-                <MessageOutlined style={{ fontSize: "24px", color: "#666" }} />
+                <MessageOutlined style={{ fontSize: "24px", color: "white" }} />
               </Badge>
              
               <div
@@ -139,16 +139,16 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
               >
                 <Link
                   className="icon-hover profile"
-                  to = '/master/profile' // Переход в профиль при клике
+                  to='/master/profile' // Переход в профиль при клике
                 >
                   <AccountBoxIcon
-                    style={{ fontSize: "40px", color: "#1B232A" }}
+                    style={{ fontSize: "40px", color: "white" }}
                   />
                 </Link>
                 <span
                   style={{
                     fontSize: "14px",
-                    color: "#666",
+                    color: "white",
                     lineHeight: "1.2",
                   }}
                 >
@@ -161,7 +161,7 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
                 onClick={logOut}
               >
                 <ExitToAppIcon 
-                  style={{ fontSize: "36px", color: "black" }} 
+                  style={{ fontSize: "36px", color: "white" }} 
                 />
               </div>
             </Col>
@@ -236,16 +236,19 @@ const MobileWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
                 xxl={10}
                 style={{ display: "flex", alignItems: "center" }}
               >
-                <img
-                  src="/mazIcon1.svg"
-                  alt="Maz Icon"
-                  style={{
-                    width: "64px",
-                    height: "64px",
-                    marginRight: "10px",
-                    flexShrink: 0,
-                  }}
-                />
+                <Link to="/master/main">
+                  <img
+                    src="/mazIcon1.svg"
+                    alt="Maz Icon"
+                    style={{
+                      width: "64px",
+                      height: "64px",
+                      marginRight: "10px",
+                      flexShrink: 0,
+                      cursor: "pointer",
+                    }}
+                  />
+                </Link>
                 <div>
                   <h1
                     style={{
