@@ -41,3 +41,20 @@
   height: 100vh;
   z-index: 1;
 }
+/* Анимация для иконки выхода */
+/* Вставьте в ваш CSS файл, например, в index.css или в файл, который подключен глобально */
+.icon-hover {
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.icon-hover:hover {
+  transform: scale(1.2);
+}
+
+.icon-hover.profile:hover {
+  color: #1890ff; /* Цвет для иконки профиля при наведении */
+}
+
+.icon-hover.exit:hover {
+  color: #ff4d4f; /* Цвет для иконки выхода при наведении */
+}
