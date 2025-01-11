@@ -118,10 +118,27 @@ type TransportLighting = {
 };
 
 
-export interface ErrorData {
-  id: string;
-  data: string; 
-  spn: string;  
-  fmi?: string;
+interface ErrorItem {
+  id: number;
+  parameterNumber: string;
+  status: string;
+  quantity: number;
+  errorsPackage: number;
 }
+
+export interface ErrorData {
+  errors: ErrorItem[];
+  date: string | number; 
+  device: string;
+  lamp1: string;
+  lamp2: string;
+  lamp3: string;
+  lamp4: string;
+}
+export interface ErrorDataResponse {
+  data: ErrorData[];
+  totalPages: number;
+  currentPage: number;
+}
+
 

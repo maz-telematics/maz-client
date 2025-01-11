@@ -15,3 +15,13 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Переопределение стилей активной вкладки */
+.ant-menu-item-selected {
+  background-color: #E1E1E1 !important; /* Выделить фоновый цвет */
+  color: #E1E1E1 !important; /* Цвет текста активной вкладки */
+}
+
+.ant-menu-item:hover {
+  background-color: #333333 !important; /* Цвет фона при наведении */
+}

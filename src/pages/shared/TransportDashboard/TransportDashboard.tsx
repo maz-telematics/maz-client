@@ -4,7 +4,7 @@ import dayjs, { Dayjs } from "dayjs";
 import locale from "antd/es/locale/ru_RU";
 import "dayjs/locale/ru";
 import ParametersTable from "./ParametersTable";
-import ErrorTable from "./ErrorsTable";
+import ErrorTable from "./ErrorsTable/ErrorsTable";
 import Map from "./Map";
 
 const TransportDashboard = () => {

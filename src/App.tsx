@@ -6,6 +6,8 @@ import { AuthContext } from "./services/auth";
 import NotFound from "./pages/shared/NotFoundPage";
 import SuperAdminRoutes from "./routes/SuperAdminRotes";
 import SuperAdmin from "./pages/SuperAdminPages/SuperAdmin";
+import PrivacyPolicy from "./pages/shared/PrivacyPolicy";
+import AboutPage from "./pages/shared/AboutPage";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -92,6 +94,8 @@ const App = () => {
             }
           />
           <Route path="*" element={<NotFound />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         </Routes>
       )}
     </AuthContext.Provider>

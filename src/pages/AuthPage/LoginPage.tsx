@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, notification, Button, Row, Col, message, Spin } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Form, Input, notification, Button, Row, Col, message, Spin, Checkbox } from "antd";
+import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../../services/auth";
 import axiosInstance from "../../services/axiosInstance";
 
@@ -24,7 +24,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
   const { setUser } = useUser();
 
   const [imagesLoaded, setImagesLoaded] = useState(false);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
   const images = [Outputs1, Outputs2, Outputs3, Outputs4, Outputs5, Outputs6, Outputs7, Outputs8];
 
@@ -47,7 +47,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
   }, []);
 
   const login = async (username: string, password: string) => {
-    setLoading(true); 
+    setLoading(true);
     try {
       const response = await axiosInstance.post(`/login`, {
         username,
@@ -76,7 +76,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
         return 401;
       }
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -156,7 +156,6 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
         fontFamily: "'FontRegular', Arial, sans-serif",
       }}
     >
-
       {!imagesLoaded && (
         <Spin
           size="large"
@@ -168,7 +167,6 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
           }}
         />
       )}
-      
 
       {loading && !imagesLoaded && (
         <Spin
@@ -194,9 +192,9 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
       >
         {imagesLoaded &&
           imageSources.map((image, index) => {
-            const duration = Math.random() * 15 + 5; 
-            const gap = 14; 
-            const topPosition = `${index * gap + 10}vh`; 
+            const duration = Math.random() * 15 + 5;
+            const gap = 14;
+            const topPosition = `${index * gap + 10}vh`;
 
             return (
               <img
@@ -226,8 +224,8 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          height: "auto",  // Высота будет автоматически подстраиваться
-          minHeight: "500px",  // Минимальная высота, чтобы не растягивалось сильно
+          height: "auto", // Высота будет автоматически подстраиваться
+          minHeight: "500px", // Минимальная высота, чтобы не растягивалось сильно
           backgroundColor: "#CDCDCD",
           opacity: "90%",
           borderRadius: "10px",
@@ -283,10 +281,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
           </div>
           <Form.Item
             name="username"
-            rules={[
-              { required: true, message: "Введите email" },
-              { type: "email", message: "Введите корректный email" },
-            ]}
+            rules={[{ required: true, message: "Введите email" }, { type: "email", message: "Введите корректный email" }]}
           >
             <Input
               placeholder="Введите ваш логин"
@@ -321,7 +316,19 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
             />
           </Form.Item>
 
-      
+          <Form.Item
+            name="agreement"
+            valuePropName="checked"
+            rules={[{ required: true, message: "Необходимо согласие с условиями!" }]}
+          >
+            <Checkbox>
+              Я согласен с{" "}
+              <Link to="/privacy-policy"  className="text-blue-500 hover:text-blue-700">
+                условиями обработки данных
+              </Link>
+            </Checkbox>
+          </Form.Item>
+
           <Form.Item>
             <Button
               type="primary"
@@ -345,10 +352,9 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
 
       <style>
         {`
-        
           @keyframes moving-right {
             0% { left: 100%; }
-            100% { left: -200px; } 
+            100% { left: -200px; }
           }
           @keyframes moving-left {
             0% { left: -200px; }
