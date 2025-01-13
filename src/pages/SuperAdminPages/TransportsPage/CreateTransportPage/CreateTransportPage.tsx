@@ -223,16 +223,7 @@ const CreateTransportPage = () => {
     <Input placeholder="Введите VIN автомобиля" style={{ width: "100%" }} />
   </Form.Item>
 
-  <Form.Item
-    label="Состояние"
-    name="state"
-    labelCol={{ span: 6 }}
-    wrapperCol={{ span: 16 }}
-    rules={[{ required: true, message: "Введите состояние автомобиля" }]}
-    style={{ marginBottom: "16px" }}
-  >
-    <Input placeholder="Введите состояние автомобиля" style={{ width: "100%" }} />
-  </Form.Item>
+  
 
   <Form.Item
     label="Тип автомобиля"

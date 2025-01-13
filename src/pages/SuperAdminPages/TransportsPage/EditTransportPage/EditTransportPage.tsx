@@ -310,7 +310,7 @@ const EditTransportPage = () => {
   {[
     { label: "Модель", name: "model", placeholder: data?.model },
     { label: "VIN номер", name: "vin", placeholder: data?.id },
-    { label: "Cостояние", name: "state", placeholder: data?.connectionStatus,
+    
       // component: (
       //   <Select
       //     placeholder={data?.vehicleType}
@@ -318,7 +318,7 @@ const EditTransportPage = () => {
       //     style={{ width: "100%" }}
       //   />
       // ),
-     },
+     
     {
       label: "Тип транспорта",
       name: "vehicle_type_id",

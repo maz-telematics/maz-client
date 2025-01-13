@@ -394,6 +394,7 @@ const OrganizationDetails: React.FC = () => {
                     {organizationData?.status ? "Активна" : "Заблокирована"}
                   </span> </Col> </Row>
             </Typography.Paragraph>
+            
             <Typography.Paragraph style={{ marginBottom: 0 }}>
               <Row>
                 <Col xs={24} sm={4}>

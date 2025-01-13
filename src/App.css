@@ -62,3 +62,7 @@
 .custom-header {
   background-color: #1B232A;
 }
+
+.ant-table-cell {
+  text-align: center !important;
+}
