@@ -13,7 +13,7 @@ const TransportDashboard = () => {
     return storedDate ? dayjs(storedDate) : dayjs();
   });
 
-  const [activeTab, setActiveTab] = useState("map");
+  const [activeTab, setActiveTab] = useState("params");
 
   const onTabChange = (e: any) => {
     setActiveTab(e.target.value);
@@ -49,20 +49,6 @@ const TransportDashboard = () => {
         }}
       >
         <Radio.Button
-          value="map"
-          style={{
-            backgroundColor: activeTab === "map" ? "#1B232A" : "#F7F9FB",
-            color: activeTab === "map" ? "#fff" : "#1B232A",
-            borderColor: "#1B232A",
-            borderRadius: "4px",
-            margin: "0 5px",
-            transition: "background-color 0.3s, color 0.3s",
-            fontSize: isMobile ? "12px" : "14px", 
-          }}
-        >
-          Карта
-        </Radio.Button>
-        <Radio.Button
           value="params"
           style={{
             backgroundColor: activeTab === "params" ? "#1B232A" : "#F7F9FB",
@@ -76,6 +62,22 @@ const TransportDashboard = () => {
         >
           Параметры
         </Radio.Button>
+
+        <Radio.Button
+          value="map"
+          style={{
+            backgroundColor: activeTab === "map" ? "#1B232A" : "#F7F9FB",
+            color: activeTab === "map" ? "#fff" : "#1B232A",
+            borderColor: "#1B232A",
+            borderRadius: "4px",
+            margin: "0 5px",
+            transition: "background-color 0.3s, color 0.3s",
+            fontSize: isMobile ? "12px" : "14px", 
+          }}
+        >
+          Карта
+        </Radio.Button>
+        
         <Radio.Button
           value="errors"
           style={{

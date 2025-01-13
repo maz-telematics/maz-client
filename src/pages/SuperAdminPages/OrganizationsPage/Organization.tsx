@@ -16,7 +16,7 @@ import {
 } from "antd";
 import moment from "moment";
 import dayjs, { Dayjs } from 'dayjs';
-import { Organization } from "../../../Types/transportListTypes";
+import { Organization } from "../../../types/transportListTypes";
 import axios from "axios";
 import axiosInstance from '../../../services/axiosInstance';
 

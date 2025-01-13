@@ -1,13 +1,16 @@
+// transportListTypes.ts
 export interface Car {
-    id: number;
-    organization_id:number;
-    model?: string;
-    vin?: string;
-    year_release?: string;
-    engineType?: string;
-    vehicleType?: string;
-    organizationName?: string;
-  }
+  id: string;
+  model: string;
+  yearRelease: string; // Год выпуска
+  connectionStatus: boolean;
+  vehicleType: string;
+  engineType: string;
+  organizationName: string;
+  telemetryBlock?: string;
+  organization_id: number;
+}
+
   
   export interface Organization {
     registration_date: number;

@@ -5,54 +5,50 @@ import { Car } from "../../../types/transportListTypes";
 import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
-import moment from "moment";
 import axiosInstance from "../../../services/axiosInstance";
 
 const TransportsPage = () => {
   const [cars, setCars] = useState<Car[]>([]);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [deleteVin, setDeleteVin] = useState<number>();
-  const [deleteOrganizationId, setDeleteOrganizationId] = useState<number>();
-  const user = localStorage.getItem("user");
-  let userId: number;
-  let role: string | null = null;
-  if (user) {
-    const userData = JSON.parse(user);
-    userId = userData.id;
-    role = userData.role;
-  }
-
+  const [deleteVin, setDeleteVin] = useState<string | undefined>();
+  const [deleteOrganizationId, setDeleteOrganizationId] = useState<number | undefined>();
   const navigate = useNavigate();
 
-  const navigateToNewCar = () => {
-    navigate("/master/create-transport");
-  };
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        const response = await axiosInstance.get<Car[]>("/transport/list-transport");
+        setCars(response.data);
+      } catch (error) {
+        console.error(error);
+        message.error("Ошибка загрузки данных транспорта.");
+      }
+    };
+    fetchCars();
+  }, []);
 
-  const navigateToEditCar = async (id: number) => {
-    await sessionStorage.setItem("id", String(id));
-    navigate("/master/edit-transport");
-  };
-
-  const handleDelete = (vin: number, organization_id: number) => {
+  const handleDelete = (vin: string, organizationId: number) => {
     setDeleteVin(vin);
-    setDeleteOrganizationId(organization_id);
+    setDeleteOrganizationId(organizationId);
     setDeleteModalVisible(true);
   };
 
   const handleConfirmDelete = async () => {
+    if (!deleteVin || !deleteOrganizationId) return;
     try {
       const response = await axiosInstance.delete(`/transport/${deleteVin}`, {
         params: { organization_id: deleteOrganizationId },
       });
       if (response.status === 200) {
-        message.success("Авто перемещена в архив успешно!!");
+        message.success("Транспорт перемещён в архив успешно!");
         setCars(response.data.remainingCars);
         setDeleteModalVisible(false);
       } else {
-        message.error("Ошибка при архивировании!");
+        message.error("Ошибка архивирования транспорта.");
       }
     } catch (error) {
-      message.error("Ошибка при архивировании!");
+      console.error(error);
+      message.error("Ошибка архивирования транспорта.");
     }
   };
 
@@ -60,151 +56,129 @@ const TransportsPage = () => {
     setDeleteModalVisible(false);
   };
 
-  useEffect(() => {
-    const fetchCars = async () => {
-      try {
-        const response = await axiosInstance.get(`/transport/list-transport`);
-        setCars(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  const columns = [
+    {
+      title: "Модель",
+      dataIndex: "model",
+      key: "model",
+      render: (model: string, record: Car) => (
+        <a
+          onClick={() => navigate(`/master/transport?id=${record.id}`)}
+          style={{ color: "#1890ff", fontWeight: 500 }}
+        >
+          {model}
+        </a>
+      ),
+    },
+    {
+      title: "VIN номер",
+      dataIndex: "id",
+      key: "id",
+      render: (id: string) => <span>{id}</span>,
+    },
+    {
+      title: "Состояние",
+      dataIndex: "connectionStatus",
+      key: "connectionStatus",
+      render: (status: boolean | undefined) => (
+        <span>{status ? "Связь есть" : "Нет связи"}</span>
+      ),
+    },
+    {
+      title: "Тип транспорта",
+      dataIndex: "vehicleType",
+      key: "vehicleType",
+    },
+    {
+      title: "Тип двигателя",
+      dataIndex: "engineType",
+      key: "engineType",
+    },
+    {
+      title: "Год выпуска",
+      dataIndex: "yearRelease",
+      key: "yearRelease",
+      render: (year: string) => <span>{year}</span>,
+    },
+    {
+      title: "Организация",
+      dataIndex: "organizationName",
+      key: "organizationName",
+    },
+    {
+      title: "Блок телематики",
+      dataIndex: "telemetryBlock",
+      key: "telemetryBlock",
+      render: (block: string | undefined) => (
+        <span>{block || "Не указано"}</span>
+      ),
+    },
+    {
+      title: "Действия",
+      key: "actions",
+      render: (_: any, record: Car) => (
+        <div style={{ display: "flex", gap: "8px" }}>
+          <Button
+            size="middle"
+            onClick={() => navigate(`/master/edit-transport?id=${record.id}`)}
+            style={{ backgroundColor: "#3A5F73", color: "#fff" }}
+            icon={<ModeEditOutlinedIcon />}
+          >
+            Изменить
+          </Button>
+          <Button
+            size="middle"
+            onClick={() => handleDelete(record.id, record.organization_id)}
+            style={{ backgroundColor: "#3A5F73", color: "#fff" }}
+            icon={<ArchiveOutlinedIcon />}
+          >
+            Переместить в архив
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
-    fetchCars();
-  }, []);
-
-  const handleRedirectAndSaveId = async (id: number) => {
-    await sessionStorage.setItem("id", String(id));
-    navigate("/master/transport");
-  };
-  const isMobile = window.innerWidth < 768;
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        width: "100%",
-        backgroundColor: "#E1E1E1",
-      }}
-    >
-      <Row style={{ padding: "0 40px", flex: "1" }}>
-        <Col xs={24}>
-          <Row justify="space-between" style={{ marginBottom: 16, alignItems: 'flex-end' }}>
-            <Col>
-              <h1
-                style={{
-                  margin: 0,
-                  fontSize: isMobile ? '24px' : '32px',
-                }}
-              >Транспорт</h1>
-            </Col>
-            <Col>
-              <Button
-                type="primary"
-                icon={<LibraryAddOutlinedIcon />}
-                onClick={navigateToNewCar}
-                style={{
-                  backgroundColor: "#3A5F73",
-                }}
-              >
-                {!isMobile && 'Добавить транспорт'}
-              </Button>
-            </Col>
-          </Row>
-          <div style={{ overflowX: 'auto', maxWidth: '100%', WebkitOverflowScrolling: 'touch' }}>
-            <Table
-              components={{
-                header: {
-                  cell: (props: any) => (
-                    <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff", border: "none" }}>
-                      {props.children}
-                    </th>
-                  ),
-                },
-              }}
-              columns={[
-                {
-                  title: "Модель",
-                  dataIndex: "model",
-                  key: "model",
-                  render: (text, record) => (
-                    <a onClick={() => handleRedirectAndSaveId(record.id)} style={{ color: "#1890ff", fontWeight: "500" }}>
-                      {text}
-                    </a>
-                  ),
-                },
-                {
-                  title: "VIN номер",
-                  dataIndex: "id",
-                  key: "id",
-                },
-                {
-                  title: "Год выпуска",
-                  dataIndex: "year_release",
-                  key: "year_release",
-                  render: (text) => <span>{moment(text).format("YYYY")}</span>,
-                },
-                {
-                  title: "Организация",
-                  dataIndex: "organizationName",
-                  key: "organizationName",
-                },
-                {
-                  title: "Тип транспорта",
-                  dataIndex: "vehicleType",
-                  key: "vehicleType",
-                },
-                {
-                  title: "Тип двигателя",
-                  dataIndex: "engineType",
-                  key: "engineType",
-                },
-                {
-                  dataIndex: "",
-                  key: "actions",
-                  width: 250,
-                  align: "center",
-                  render: (text, record) => (
-                    <div style={{ display: "flex", gap: "8px" }}>
-                      <Button
-                        size="middle"
-                        onClick={() => navigateToEditCar(record.id)}
-                        style={{ backgroundColor: "#3A5F73", color: "#fff", display: "flex", alignItems: "center" }}
-                        icon={<ModeEditOutlinedIcon />}
-                      >
-                        Изменить
-                      </Button>
-                      <Button
-                        disabled={true}
-                        size="middle"
-                        onClick={() => handleDelete(record.id, record.organization_id)}
-                        style={{ backgroundColor: "#3A5F73", color: "#fff", display: "flex", alignItems: "center" }}
-                        icon={<ArchiveOutlinedIcon />}
-                      >
-                        Переместить в архив
-                      </Button>
-                    </div>
-                  ),
-                },
-              ]}
-              pagination={false}
-              dataSource={cars}
-              bordered
-              rowKey={(record) => record.id}
-              style={{
-                borderRadius: "8px",
-                overflow: "hidden",
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-                backgroundColor: "#F7F9FB",
-              }}
-              scroll={{ x: 'max-content' }}
-            />
-          </div>
-
-          <Row justify="end" style={{ marginTop: "30px" }}></Row>
+    <div style={{ padding: "16px", backgroundColor: "#E1E1E1" }}>
+      <Row justify="space-between" style={{ marginBottom: "16px", alignItems: "flex-end",  padding: "16px" }}>
+        <Col>
+          <h1 style={{ margin: 0, color: "#black", fontSize: "32px" }}>Транспорт</h1>
+        </Col>
+        <Col>
+          <Button
+            type="primary"
+            icon={<LibraryAddOutlinedIcon />}
+            onClick={() => navigate("/master/create-transport")}
+            style={{ backgroundColor: "#3A5F73" }}
+          >
+            Добавить транспорт
+          </Button>
         </Col>
       </Row>
-
+      <Table
+        components={{
+          header: {
+            cell: (props: any) => (
+              <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff", border: "none" }}>
+                {props.children}
+              </th>
+            ),
+          },
+        }}
+        columns={columns}
+        dataSource={cars}
+        rowKey={(record) => record.id}
+        bordered
+        pagination={false}
+        scroll={{ x: "max-content" }}
+        style={{
+          backgroundColor: "#F7F9FB",
+          borderRadius: "8px",
+          overflow: "hidden",
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+        }}
+      />
       <Modal
         title="Подтверждение архивирования"
         visible={deleteModalVisible}
@@ -212,7 +186,6 @@ const TransportsPage = () => {
         onCancel={handleCancelDelete}
         okText="Переместить в архив"
         cancelText="Отменить"
-        style={{ borderRadius: "8px" }}
       >
         <p>Вы уверены, что хотите переместить транспорт в архив?</p>
       </Modal>

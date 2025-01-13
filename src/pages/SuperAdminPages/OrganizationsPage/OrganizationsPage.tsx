@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Table, Modal, Button, Row, Col, message } from "antd";
-import { useNavigate, Link } from "react-router-dom";
-import { Organization } from "../../../Types/transportListTypes";
+import { Table, Modal, Button, Row, Col, message, Progress } from "antd";
+import { useNavigate } from "react-router-dom";
+import { Organization } from "../../../types/transportListTypes";
 import moment from "moment";
 import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
@@ -17,6 +17,8 @@ const OrganizationsPage = () => {
     userId = userData.id;
     role = userData.role;
   }
+
+  const navigate = useNavigate();
 
   const navigateToNewOrganization = () => {
     navigate("/master/create-organization");
@@ -38,6 +40,7 @@ const OrganizationsPage = () => {
     await sessionStorage.setItem("organization_id", String(id));
     navigate("/master/organization");
   };
+
   const handleDeleteOrganization = async (idOrganization: number) => {
     Modal.confirm({
       title: "Подтверждение архивирования",
@@ -47,7 +50,7 @@ const OrganizationsPage = () => {
       cancelText: "Отмена",
       onOk: async () => {
         try {
-          const response = await axiosInstance.delete('/organizations/${idOrganization}');
+          const response = await axiosInstance.delete(`/organizations/${idOrganization}`);
           if (response.status === 200) {
             message.success(`Организация перемещена в архив успешно!`);
             fetchOrganizatios();
@@ -59,46 +62,33 @@ const OrganizationsPage = () => {
       },
     });
   };
+
   const isMobile = window.innerWidth < 768;
-  const navigate = useNavigate();
+
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      width: "100%",
-      // minHeight: '100vh',
-      backgroundColor: "#E1E1E1",
-    }}>
-      <Row style={{
-        padding: "0 40px",
-      }}>
-        <Col xs={24} >
-          <Row justify="space-between" style={{ marginBottom: 16,alignItems: 'flex-end' }}>
+    <div style={{ display: "flex", flexDirection: "column", width: "100%", backgroundColor: "#E1E1E1" }}>
+      <Row style={{ padding: "0 40px" }}>
+        <Col xs={24}>
+          <Row justify="space-between" style={{ marginBottom: 16, alignItems: 'flex-end' }}>
             <Col>
-              <h1
-          style={{
-            margin: 0,
-            fontSize: isMobile ? '24px' : '32px', 
-          }}
-        >Организации</h1>
+              <h1 style={{ margin: 0, fontSize: isMobile ? '24px' : '32px' }}>Организации</h1>
             </Col>
             <Col>
               <Button
-                // disabled={true}
                 type="primary"
                 onClick={navigateToNewOrganization}
                 icon={<LibraryAddOutlinedIcon />}
-                style={{backgroundColor: "#3A5F73",}}
+                style={{ backgroundColor: "#3A5F73" }}
               >
                 {!isMobile && 'Создать организацию'}
               </Button>
             </Col>
           </Row>
           <Table
-             components={{
+            components={{
               header: {
-                cell: (props:any) => (
-                  <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff",  border: "none", }}>
+                cell: (props: any) => (
+                  <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff", border: "none" }}>
                     {props.children}
                   </th>
                 ),
@@ -110,27 +100,10 @@ const OrganizationsPage = () => {
                 dataIndex: "organizationName",
                 key: "organizationName",
                 render: (text, record) => (
-                  <a
-                    onClick={() =>
-                      handleRedirectAndSaveOrganizationId(
-                        record.id
-                      )
-                    }
-                    style={{ color: "#1890ff", fontWeight: "500" }}
-                  >
+                  <a onClick={() => handleRedirectAndSaveOrganizationId(record.id)} style={{ color: "#1890ff", fontWeight: "500" }}>
                     {text}
                   </a>
                 ),
-              },
-              {
-                title: "Номер телефона",
-                dataIndex: "contactInfo",
-                key: "contactInfo",
-              },
-              {
-                title: "Контактное лицо",
-                dataIndex: "contactPerson",
-                key: "contactPerson",
               },
               {
                 title: "Адрес",
@@ -143,32 +116,62 @@ const OrganizationsPage = () => {
                 key: "emailContactPerson",
               },
               {
+                title: "Номер телефона",
+                dataIndex: "contactInfo",
+                key: "contactInfo",
+              },
+              {
+                title: "Контактное лицо",
+                dataIndex: "contactPerson",
+                key: "contactPerson",
+              },
+              {
                 title: "Дата регистрации",
                 dataIndex: "registrationDate",
                 key: "registrationDate",
-                render: (text) => (
-                  <span>{moment(text).format("YYYY-MM-DD")}</span>
-                ),
+                render: (text) => <span>{moment(text).format("YYYY-MM-DD")}</span>,
               },
               {
-                dataIndex: "",
+                title: "Договор",
+                dataIndex: "contractFile",
+                key: "contractFile",
+                render: (text) => (
+                  <>
+                    <a href={text} target="_blank" rel="noopener noreferrer">
+                      Открыть
+                    </a>
+                    
+                    <span style={{ margin: "0 8px" }}>|</span>
+                    <a href={text} target="_blank" rel="noopener noreferrer" download>
+                      Скачать
+                    </a>
+                  </>
+                ),
+              },
+              
+              {
+                title: "Тип подписки",
+                dataIndex: "subscriptionType",
+                key: "subscriptionType",
+              },
+              {
+                title: "Статус подписки",
+                dataIndex: "subscription_status",
+                key: "subscription_status",
+                render: (text) => <Progress percent={text} status="active" strokeColor="#3A5F73" />,
+              },
+              {
+                dataIndex: "actions",
                 key: "actions",
                 width: 150,
                 align: "center",
                 render: (text, record) => (
                   <Button
-                  disabled={true}
+                    disabled={true}
                     size="middle"
-                    onClick={() =>
-                      handleDeleteOrganization(record.id)
-                    }
-                   style={{
-                        backgroundColor: "#3A5F73",
-                        color: "#fff",
-                        display: "flex",
-                        alignItems: "center",
-                      }}
-                    icon={<ArchiveOutlinedIcon/>}
+                    onClick={() => handleDeleteOrganization(record.id)}
+                    style={{ backgroundColor: "#3A5F73", color: "#fff", display: "flex", alignItems: "center" }}
+                    icon={<ArchiveOutlinedIcon />}
                   >
                     Переместить в архив
                   </Button>
@@ -185,7 +188,7 @@ const OrganizationsPage = () => {
               boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
               backgroundColor: "#F7F9FB",
             }}
-            scroll={{ x: 'max-content' }}  
+            scroll={{ x: 'max-content' }}
           />
         </Col>
       </Row>

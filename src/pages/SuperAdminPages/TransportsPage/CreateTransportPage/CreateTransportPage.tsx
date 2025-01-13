@@ -11,8 +11,8 @@ import {
   Table,
   Popconfirm,
 } from "antd";
-import { Car } from "../../../../Types/transportListTypes";
-import { Common } from "../../../../Types/editCarTypes";
+import { Car } from "../../../../types/transportListTypes";
+import { Common } from "../../../../types/editCarTypes";
 import dayjs from "dayjs";
 import axiosInstance from "../../../../services/axiosInstance";
 import { Parameter } from "../EditTransportPage/EditTransportPage";
@@ -224,33 +224,14 @@ const CreateTransportPage = () => {
   </Form.Item>
 
   <Form.Item
-    label="Дата"
-    name="year_release"
+    label="Состояние"
+    name="state"
     labelCol={{ span: 6 }}
     wrapperCol={{ span: 16 }}
-    rules={[{ required: true, message: "Выберите дату" }]}
+    rules={[{ required: true, message: "Введите состояние автомобиля" }]}
     style={{ marginBottom: "16px" }}
   >
-    <DatePicker
-      format={formatDate}
-      placeholder="YYYY"
-      style={{ width: "100%" }}
-    />
-  </Form.Item>
-
-  <Form.Item
-    label="Выбор двигателя"
-    name="engine_type_id"
-    labelCol={{ span: 6 }}
-    wrapperCol={{ span: 16 }}
-    rules={[{ required: true, message: "Выберите тип двигателя автомобиля" }]}
-    style={{ marginBottom: "16px" }}
-  >
-    <Select
-      placeholder="Выберите тип двигателя автомобиля"
-      style={{ width: "100%" }}
-      options={techniqueOptions}
-    />
+    <Input placeholder="Введите состояние автомобиля" style={{ width: "100%" }} />
   </Form.Item>
 
   <Form.Item
@@ -269,6 +250,36 @@ const CreateTransportPage = () => {
   </Form.Item>
 
   <Form.Item
+    label="Тип двигателя"
+    name="engine_type_id"
+    labelCol={{ span: 6 }}
+    wrapperCol={{ span: 16 }}
+    rules={[{ required: true, message: "Выберите тип двигателя автомобиля" }]}
+    style={{ marginBottom: "16px" }}
+  >
+    <Select
+      placeholder="Выберите тип двигателя автомобиля"
+      style={{ width: "100%" }}
+      options={techniqueOptions}
+    />
+  </Form.Item>
+
+  <Form.Item
+    label="Год выпуска"
+    name="year_release"
+    labelCol={{ span: 6 }}
+    wrapperCol={{ span: 16 }}
+    rules={[{ required: true, message: "Выберите дату" }]}
+    style={{ marginBottom: "16px" }}
+  >
+    <DatePicker
+      format={formatDate}
+      placeholder="YYYY"
+      style={{ width: "100%" }}
+    />
+  </Form.Item>
+
+  <Form.Item
     label="Организация"
     name="organization_id"
     labelCol={{ span: 6 }}
@@ -282,6 +293,31 @@ const CreateTransportPage = () => {
       options={organizationsOptions}
     />
   </Form.Item>
+
+  <Form.Item
+  label="Блок телематики"
+  name="state_block"
+  labelCol={{ span: 6 }}
+  wrapperCol={{ span: 16 }}
+  rules={[
+    {
+      required: true,
+      message: "Введите название организации, выпустившей блок",
+    },
+    {
+      validator: (_, value) => {
+        if (value && value !== "Агат" && value !== "Проток") {
+          return Promise.reject("Введите название организации (Агат или Проток)");
+        }
+        return Promise.resolve();
+      },
+    },
+  ]}
+  style={{ marginBottom: "16px" }}
+>
+  <Input placeholder="Введите состояние блока" style={{ width: "100%" }} />
+</Form.Item>
+
 </Form>
           <Row justify="space-between" style={{ marginBottom: "15px", marginTop:"30px", alignItems: 'flex-end' }}>
             <h2 style={{margin:0, fontSize: isMobile ? '18px' : '24px'}}>Параметры мониторинга</h2>

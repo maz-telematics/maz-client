@@ -50,7 +50,7 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
     <Layout style={{ backgroundColor: "#E1E1E1", minHeight: "100vh" }}>
       <Header
         style={{
-          backgroundColor: "1B232A",
+          backgroundColor: "#1B232A",
           padding: "0 20px",
           position: "fixed",
           top: 0,
@@ -168,8 +168,8 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
           </Row>
         )}
       </Header>
-      <Divider style={{ margin: 0, backgroundColor: "#C6C6C6" }} />
-      <Layout style={{ backgroundColor: "#E1E1E1", marginTop: 66 }}>
+      <Divider style={{ margin: 0, backgroundColor: "#1B232A" }} />
+      <Layout style={{ backgroundColor: "#1B232A", marginTop: 66 }}>
         <Sider
           width={250}
           collapsed={slidebarState}
@@ -179,7 +179,7 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
             minHeight: "100%",
             height: "auto",
             position: "fixed",
-            top: 66,
+            top: 64,
             left: 0,
             zIndex: 99,
           }}
