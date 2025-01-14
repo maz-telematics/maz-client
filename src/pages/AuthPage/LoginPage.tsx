@@ -131,16 +131,15 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
   };
 
   const imageSources = [
-    { src: Outputs1, direction: "left", size: { width: "220px", height: "100px" } },
+    { src: Outputs1, direction: "left", size: { width: "230px", height: "120px" } },
     { src: Outputs2, direction: "right", size: { width: "130px", height: "90px" } },
-    { src: Outputs6, direction: "left", size: { width: "250px", height: "95px" } },
+    { src: Outputs6, direction: "left", size: { width: "250px", height: "75px" } },
     { src: Outputs5, direction: "left", size: { width: "205px", height: "73px" } },
-    { src: Outputs3, direction: "right", size: { width: "220px", height: "100px" } },
-    { src: Outputs2, direction: "right", size: { width: "130px", height: "90px" } },
+    { src: Outputs3, direction: "right", size: { width: "230px", height: "120px" } },
     { src: Outputs4, direction: "right", size: { width: "205px", height: "73px" } },
-    { src: Outputs6, direction: "left", size: { width: "250px", height: "95px" } },
-    { src: Outputs7, direction: "right", size: { width: "250px", height: "95px" } },
-    { src: Outputs8, direction: "left", size: { width: "230px", height: "80px" } },
+    { src: Outputs8, direction: "left", size: { width: "240px", height: "100px" } },
+    
+    
   ];
 
   return (
@@ -194,7 +193,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
           imageSources.map((image, index) => {
             const duration = Math.random() * 15 + 5;
             const gap = 14;
-            const topPosition = `${index * gap + 10}vh`;
+            const topPosition = `${index * gap + 6}vh`;
 
             return (
               <img
@@ -289,6 +288,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
                 borderRadius: "15px",
                 backgroundColor: "#f7f7f7",
                 color: "#333",
+                
               }}
             />
           </Form.Item>
