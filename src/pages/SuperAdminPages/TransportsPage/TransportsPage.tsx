@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Table, Modal, Button, Row, Col, message } from "antd";
 import { useNavigate } from "react-router-dom";
-import { Car } from "../../../Types/transportListTypes";
+import { Car } from "../../../types/transportListTypes";
 import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
