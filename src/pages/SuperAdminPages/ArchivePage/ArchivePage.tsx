@@ -54,13 +54,12 @@ const ArchivePage: React.FC = () => {
   const isMobile = window.innerWidth < 768;
   return (
     <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: '100%',
-        backgroundColor: '#E1E1E1',
-        height: '100vh',
-      }}
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      width: "100%",
+      backgroundColor: "#E1E1E1",
+    }}
     >
       <Row
         style={{

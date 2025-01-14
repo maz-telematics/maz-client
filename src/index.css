@@ -16,12 +16,14 @@ code {
     monospace;
 }
 
-/* Переопределение стилей активной вкладки */
 .ant-menu-item-selected {
-  background-color: #E1E1E1 !important; /* Выделить фоновый цвет */
-  color: #E1E1E1 !important; /* Цвет текста активной вкладки */
+  background-color: #E1E1E1 !important; 
+  color: #E1E1E1 !important; 
 }
 
 .ant-menu-item:hover {
-  background-color: #333333 !important; /* Цвет фона при наведении */
+  background-color: #333333 !important; 
+}
+.ant-tabs-nav-more {
+  display: none !important;
 }

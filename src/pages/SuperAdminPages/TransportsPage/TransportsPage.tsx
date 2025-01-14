@@ -7,6 +7,8 @@ import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
 import moment from "moment";
 import axiosInstance from "../../../services/axiosInstance";
+import DownloadIcon from '@mui/icons-material/Download';
+import DownloadButton from "../../../Components/DownloadButton";
 
 const TransportsPage = () => {
   const [cars, setCars] = useState<Car[]>([]);
@@ -99,17 +101,28 @@ const TransportsPage = () => {
               >Транспорт</h1>
             </Col>
             <Col>
-              <Button
-                type="primary"
-                icon={<LibraryAddOutlinedIcon />}
-                onClick={navigateToNewCar}
-                style={{
-                  backgroundColor: "#3A5F73",
-                }}
-              >
-                {!isMobile && 'Добавить транспорт'}
-              </Button>
-            </Col>
+  <Row align="middle" wrap={false} style={{ gap: "16px" }}>
+    <Button
+      type="primary"
+      icon={<LibraryAddOutlinedIcon />}
+      onClick={navigateToNewCar}
+      style={{
+        backgroundColor: "#3A5F73",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {!isMobile && "Добавить транспорт"}
+    </Button>
+    <DownloadButton
+      url="/api/transports/download"
+      filename="transports.pdf"
+      buttonText="Скачать таблицу"
+      icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
+      buttonProps={{ className: 'bg-blue-500 text-white hover:bg-blue-600' }}
+    />
+  </Row>
+</Col>
+
           </Row>
           <div style={{ overflowX: 'auto', maxWidth: '100%', WebkitOverflowScrolling: 'touch' }}>
             <Table
