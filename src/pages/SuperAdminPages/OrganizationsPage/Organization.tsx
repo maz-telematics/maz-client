@@ -257,6 +257,11 @@ const OrganizationDetails: React.FC = () => {
       key: "vin",
     },
     {
+      title: "Договор",
+      dataIndex: "agreement",
+      key: "agreement_type",
+    },
+    {
       title: "Действия",
       key: "action",
       render: (text: any, vehicle: Vehicle) => (
