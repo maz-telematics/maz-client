@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { Table, Card, DatePicker, Row, Col, Select, Button } from 'antd';
 import { Dayjs } from 'dayjs';
 import DetailView from './DetailView'; 
+import DownloadButton from '../../../Components/DownloadButton';
+import DownloadIcon from '@mui/icons-material/Download';
 
 const ReportsPage: React.FC = () => {
   const [transportReports, setTransportReports] = useState<any[]>([]);
@@ -65,13 +67,15 @@ const ReportsPage: React.FC = () => {
     { title: 'Скорость (км/ч)', dataIndex: 'speed', key: 'speed' },
   ];
   const isMobile = window.innerWidth < 768;
+
+  
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      width: "100%",
-      minHeight: '100vh',
-      backgroundColor: "#E1E1E1",
+    <div 
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        backgroundColor: "#E1E1E1",
     }}>
       <Row style={{
        padding: "0 40px",
@@ -117,7 +121,20 @@ const ReportsPage: React.FC = () => {
       </Select>
     </div>
     <div style={{ marginBottom: '20px' }}>
-  <h3 style={{  marginBottom: "15px",fontSize: isMobile ? '18px' : '24px' }}>Отчеты по транспорту</h3>
+    <Col>
+  <Row align="middle" justify="space-between" wrap={false} style={{ gap: "16px" }}>
+    <h3 style={{ marginBottom: "15px", fontSize: isMobile ? "18px" : "24px" }}>
+      Отчеты по транспорту
+    </h3>
+    <DownloadButton
+      url="/api/transports_report/download"
+      filename="transports_report.pdf"
+      buttonText="Скачать отчёт"
+      icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
+      buttonProps={{ className: "bg-blue-500 text-white hover:bg-blue-600" }}
+    />
+  </Row>
+</Col>
   <Table
     dataSource={filteredTransportReports.length > 0 ? filteredTransportReports : transportReports}
     columns={transportColumns}
@@ -146,7 +163,20 @@ const ReportsPage: React.FC = () => {
 </div>
 
 <div >
-  <h3 style={{ marginBottom: "15px",fontSize: isMobile ? '18px' : '24px' }}>Отчеты по организациям</h3>
+  <Col>
+  <Row align="middle" justify="space-between" wrap={false} style={{ gap: "16px" }}>
+    <h3 style={{ marginBottom: "15px", fontSize: isMobile ? "18px" : "24px" }}>
+      Отчеты по организациям
+    </h3>
+    <DownloadButton
+      url="/api/organizations_report/download"
+      filename="organizations_report.pdf"
+      buttonText="Скачать отчёт"
+      icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
+      buttonProps={{ className: "bg-blue-500 text-white hover:bg-blue-600" }}
+    />
+  </Row>
+</Col>
   <Table
     dataSource={filteredOrganizationReports.length > 0 ? filteredOrganizationReports : organizationReports}
     columns={organizationColumns}

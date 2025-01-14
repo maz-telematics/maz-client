@@ -19,6 +19,8 @@ import dayjs, { Dayjs } from 'dayjs';
 import { Organization } from "../../../Types/transportListTypes";
 import axios from "axios";
 import axiosInstance from '../../../services/axiosInstance';
+import DownloadButton from "../../../Components/DownloadButton";
+import DownloadIcon from '@mui/icons-material/Download';
 
 const { RangePicker } = DatePicker;
 const { TabPane } = Tabs;
@@ -61,7 +63,7 @@ const OrganizationDetails: React.FC = () => {
   const [organizationData, setOrganizationData] = useState<Organization>();
   const [visible, setVisible] = useState<boolean>(false);
   const [vin, setVin] = useState<string>();
-
+  const [activeKey, setActiveKey] = useState<string | number>('1');
   const [employees, setEmployees] = useState<EmployeeType[]>([]);
   const [isEmployeeModalVisible, setIsEmployeeModalVisible] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
@@ -334,6 +336,67 @@ const OrganizationDetails: React.FC = () => {
     return current.isBefore(dayjs(organizationData.subscription_end), 'day');
   };
   const isMobile = window.innerWidth < 768;
+
+ 
+  const operations: { [key: string]: JSX.Element } = {
+    1: (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'flex-end' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <DownloadButton 
+        url="/api/organization_transport/download"
+        filename="organization_transport.pdf"
+        buttonText="Скачать транспорт"
+        icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
+        buttonProps={{ className: 'bg-blue-500 text-white hover:bg-blue-600' }}
+      />
+      <Button 
+        onClick={() => setVisible(true)} 
+        style={{
+          marginLeft: '10px',
+          backgroundColor: '#3A5F73',
+          color: '#fff',
+          height: 'fit-content',
+          // padding: '0 16px',
+        }}
+      >
+        Добавить транспорт
+      </Button>
+    </div>
+  </div>
+    ),
+    2: (
+      <DownloadButton 
+        url="/api/organization_subscriptions/download"
+        filename="organization_subscriptions.pdf"
+        buttonText="Скачать подписки"
+        icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
+        buttonProps={{ className: 'bg-blue-500 text-white hover:bg-blue-600' }}
+      />
+    ),
+    3: (
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'flex-end' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <DownloadButton 
+        url="/api/organization_employees/download"
+        filename="organization_employees.pdf"
+        buttonText="Скачать сотрудников"
+        icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
+        buttonProps={{ className: 'bg-blue-500 text-white hover:bg-blue-600' }}
+      />
+     <Button
+        disabled={true}
+        style={{ fontSize: isMobile ? '12px' : '16px',   marginLeft: '10px', width: isMobile ? '100%' : '200px', backgroundColor: "#3A5F73", color: "#fff" }}
+        onClick={() => {
+          setEditingEmployee(null);
+          setIsEmployeeModalVisible(true);
+        }}
+      > Добавить сотрудника
+       </Button>
+      </div>
+    </div>
+    ),
+  };
+
   return (
 
     <div style={{
@@ -430,146 +493,106 @@ const OrganizationDetails: React.FC = () => {
                 <RangePicker onChange={showConfirmExtend} disabledDate={disabledDate} />
               </Col>
             </Row>
+   <Tabs
+      defaultActiveKey="1"
+      activeKey={activeKey}
+      onChange={setActiveKey}
+      style={{ marginTop: 10 }}
+      tabBarExtraContent={operations[activeKey as keyof typeof operations]}
+    >
+      <TabPane tab="Транспортные средства" key="1">
+        <Table
+          bordered
+          dataSource={vehicles}
+          columns={columnsVehicles}
+          rowKey="id"
+          pagination={false}
+          style={{
+            marginTop: '16px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+          }}
+          components={{
+            header: {
+              cell: (props: any) => (
+                <th {...props} style={{ backgroundColor: '#1B232A', color: '#fff', border: 'none' }}>
+                  {props.children}
+                </th>
+              ),
+            },
+          }}
+          scroll={{ x: 'max-content' }}
+        />
+      </TabPane>
 
+      <TabPane tab="История подписок" key="2">
+        <Table
+          bordered
+          dataSource={sortedData}
+          columns={columnsHistory}
+          rowKey="id"
+          pagination={false}
+          style={{
+            marginTop: '16px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+          }}
+          components={{
+            header: {
+              cell: (props: any) => (
+                <th {...props} style={{ backgroundColor: '#1B232A', color: '#fff', border: 'none' }}>
+                  {props.children}
+                </th>
+              ),
+            },
+          }}
+          scroll={{ x: 'max-content' }}
+        />
+      </TabPane>
 
-            <Tabs defaultActiveKey="1" style={{ marginTop: 10 }}>
-              <TabPane tab="Транспортные средства" key="1">
-                <Table
-                  bordered
-                  dataSource={vehicles}
-                  columns={columnsVehicles}
-                  rowKey="id"
-                  pagination={false}
-                  style={{
-                    marginTop: '16px',
-                    borderRadius: '8px',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                  }}
-                  components={{
-                    header: {
-                      cell: (props: any) => (
-                        <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff", border: "none", }}>
-                          {props.children}
-                        </th>
-                      ),
-                    },
-                  }}
-                  scroll={{ x: 'max-content' }}
-                />
-                <div style={{ marginTop: "20px", display: "flex", justifyContent: "flex-end" }}>
-                  <Button
-                    disabled={true}
-                    style={{
-                      fontSize: isMobile ? '12px' : '16px',
-                      width: isMobile ? '100%' : '300px',
-                      backgroundColor: '#3A5F73',
-                      color: '#fff',
-                    }}
-                    onClick={() => setVisible(true)}
-                  >
-                    Добавить транспорт к организации
+      <TabPane tab="Сотрудники" key="3">
+        <Table
+          bordered
+          dataSource={employees}
+          pagination={false}
+          components={{
+            header: {
+              cell: (props: any) => (
+                <th {...props} style={{ backgroundColor: '#1B232A', color: '#fff', border: 'none' }}>
+                  {props.children}
+                </th>
+              ),
+            },
+          }}
+          columns={[
+            { title: 'Имя', dataIndex: 'name', key: 'name' },
+            { title: 'Должность', dataIndex: 'position', key: 'position' },
+            { title: 'Контакт', dataIndex: 'contact', key: 'contact' },
+            {
+              title: 'Действия',
+              key: 'actions',
+              render: (text, employee) => (
+                <>
+                  <Button type="link" disabled={true} onClick={() => { /* Редактирование сотрудника */ }}>
+                    Редактировать
                   </Button>
-                </div>
-              </TabPane>
-              <TabPane tab="История подписок" key="2">
-                <Table
-                  components={{
-                    header: {
-                      cell: (props: any) => (
-                        <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff", border: "none", }}>
-                          {props.children}
-                        </th>
-                      ),
-                    },
-                  }}
-                  bordered
-                  dataSource={sortedData}
-                  columns={columnsHistory}
-                  rowKey="id"
-                  style={{
-                    marginTop: '16px',
-                    borderRadius: '8px',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                  }}
-                  scroll={{ x: 'max-content' }}
-                />
-              </TabPane>
-              <TabPane tab="Сотрудники" key="3">
-                <Table
-                  bordered
-                  dataSource={employees}
-                  pagination={false}
-                  components={{
-                    header: {
-                      cell: (props: any) => (
-                        <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff", border: "none", }}>
-                          {props.children}
-                        </th>
-                      ),
-                    },
-                  }}
-                  columns={[
-                    {
-                      title: "Имя",
-                      dataIndex: "name",
-                      key: "name",
-                    },
-                    {
-                      title: "Должность",
-                      dataIndex: "position",
-                      key: "position",
-                    },
-                    {
-                      title: "Контакт",
-                      dataIndex: "contact",
-                      key: "contact",
-                    },
-                    {
-                      title: "Действия",
-                      key: "actions",
-                      render: (text, employee) => (
-                        <>
-                          <Button
-                            type="link"
-                            disabled={true}
-                            onClick={() => {
-                              // setEditingEmployee(employee);
-                              setIsEmployeeModalVisible(true);
-                            }}
-                          >
-                            Редактировать
-                          </Button>
-                          <Button
-                            disabled={true}
-                            type="link"
-                            danger
-                            onClick={() => deleteEmployee(employee.id)}
-
-                          >
-                            Удалить
-                          </Button>
-                        </>
-                      ),
-                    },
-                  ]}
-                  scroll={{ x: 'max-content' }}
-                  rowKey="id"
-                  style={{ marginTop: "16px", borderRadius: "8px", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)" }}
-                />
-                <div style={{ marginTop: "20px", display: "flex", justifyContent: "flex-end" }}>
-                  <Button
-                    disabled={true}
-                    style={{ fontSize: isMobile ? '12px' : '16px', width: isMobile ? '100%' : '200px', backgroundColor: "#3A5F73", color: "#fff" }}
-                    onClick={() => {
-                      setEditingEmployee(null);
-                      setIsEmployeeModalVisible(true);
-                    }}
-                  >
-                    Добавить сотрудника
+                  <Button disabled={true} type="link" danger onClick={() => { /* Удалить сотрудника */ }}>
+                    Удалить
                   </Button>
-                </div>
-              </TabPane>
-            </Tabs>
+                </>
+              ),
+            },
+          ]}
+          scroll={{ x: 'max-content' }}
+          rowKey="id"
+          style={{
+            marginTop: '16px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+          }}
+        />
+      </TabPane>
+    </Tabs>
           </Col>
         </Row>
       </Card>
