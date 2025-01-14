@@ -70,48 +70,22 @@ const TransportsPage = () => {
         </a>
       ),
     },
-    {
-      title: "VIN номер",
-      dataIndex: "id",
-      key: "id",
-      render: (id: string) => <span>{id}</span>,
-    },
+    { title: "VIN номер", dataIndex: "id", key: "id" },
     {
       title: "Состояние",
       dataIndex: "connectionStatus",
       key: "connectionStatus",
-      render: (status: boolean | undefined) => (
-        <span>{status ? "Связь есть" : "Нет связи"}</span>
-      ),
+      render: (status: boolean | undefined) => (status ? "Связь есть" : "Нет связи"),
     },
-    {
-      title: "Тип транспорта",
-      dataIndex: "vehicleType",
-      key: "vehicleType",
-    },
-    {
-      title: "Тип двигателя",
-      dataIndex: "engineType",
-      key: "engineType",
-    },
-    {
-      title: "Год выпуска",
-      dataIndex: "yearRelease",
-      key: "yearRelease",
-      render: (year: string) => <span>{year}</span>,
-    },
-    {
-      title: "Организация",
-      dataIndex: "organizationName",
-      key: "organizationName",
-    },
+    { title: "Тип транспорта", dataIndex: "vehicleType", key: "vehicleType" },
+    { title: "Тип двигателя", dataIndex: "engineType", key: "engineType" },
+    { title: "Год выпуска", dataIndex: "yearRelease", key: "yearRelease" },
+    { title: "Организация", dataIndex: "organizationName", key: "organizationName" },
     {
       title: "Блок телематики",
       dataIndex: "telemetryBlock",
       key: "telemetryBlock",
-      render: (block: string | undefined) => (
-        <span>{block || "Не указано"}</span>
-      ),
+      render: (block: string | undefined) => block || "Не указано",
     },
     {
       title: "Действия",
@@ -141,9 +115,9 @@ const TransportsPage = () => {
 
   return (
     <div style={{ padding: "16px", backgroundColor: "#E1E1E1" }}>
-      <Row justify="space-between" style={{ marginBottom: "16px", alignItems: "flex-end",  padding: "16px" }}>
+      <Row justify="space-between" align="middle" style={{ marginBottom: "16px" }}>
         <Col>
-          <h1 style={{ margin: 0, color: "#black", fontSize: "32px" }}>Транспорт</h1>
+          <h1 style={{ margin: 0, fontSize: "32px", fontWeight: "bold" }}>Транспорт</h1>
         </Col>
         <Col>
           <Button
@@ -157,6 +131,9 @@ const TransportsPage = () => {
         </Col>
       </Row>
       <Table
+        columns={columns}
+        dataSource={cars}
+        rowKey={(record) => record.id}
         components={{
           header: {
             cell: (props: any) => (
@@ -166,18 +143,14 @@ const TransportsPage = () => {
             ),
           },
         }}
-        columns={columns}
-        dataSource={cars}
-        rowKey={(record) => record.id}
         bordered
-        pagination={false}
-        scroll={{ x: "max-content" }}
         style={{
           backgroundColor: "#F7F9FB",
           borderRadius: "8px",
-          overflow: "hidden",
           boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
         }}
+        pagination={false}
+        scroll={{ x: "max-content" }}
       />
       <Modal
         title="Подтверждение архивирования"

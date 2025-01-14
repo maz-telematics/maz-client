@@ -91,6 +91,7 @@ const TransportsPage = () => {
                   <span>{status ? "Связь есть" : "Нет связи"}</span>
                 ),
               },
+              
               {
                 title: "Тип транспорта",
                 dataIndex: "vehicleType",

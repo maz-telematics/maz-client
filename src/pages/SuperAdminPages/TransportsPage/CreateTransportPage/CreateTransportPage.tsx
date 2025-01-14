@@ -293,21 +293,16 @@ const CreateTransportPage = () => {
   rules={[
     {
       required: true,
-      message: "Введите название организации, выпустившей блок",
-    },
-    {
-      validator: (_, value) => {
-        if (value && value !== "Агат" && value !== "Проток") {
-          return Promise.reject("Введите название организации (Агат или Проток)");
-        }
-        return Promise.resolve();
-      },
+      message: "Выберите название блока",
     },
   ]}
-  style={{ marginBottom: "16px" }}
 >
-  <Input placeholder="Введите состояние блока" style={{ width: "100%" }} />
+  <Select placeholder="Выберите блок">
+    <Select.Option value="Агат">Агат</Select.Option>
+    <Select.Option value="Проток">Проток</Select.Option>
+  </Select>
 </Form.Item>
+
 
 </Form>
           <Row justify="space-between" style={{ marginBottom: "15px", marginTop:"30px", alignItems: 'flex-end' }}>

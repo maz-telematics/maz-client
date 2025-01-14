@@ -366,7 +366,21 @@ const EditTransportPage = () => {
         />
       ),
     },
-    { label: "Блок телематики", name: "model", placeholder: data?.telemetryBlock },
+    {
+      label: "Блок телематики",
+      name: "block",
+      component: (
+        <Select
+          placeholder={data?.telemetryBlock || "Выберите блок"}
+          options={[
+            { value: "Агат", label: "Агат" },
+            { value: "Проток", label: "Проток" },
+          ]}
+          style={{ width: "100%" }}
+        />
+      ),
+    },
+    
   ].map((field, index) => (
     <Form.Item
       key={index}
