@@ -65,20 +65,20 @@ const Slidebar: React.FC = () => {
   const getSlidebarItems = () => {
     switch (user?.role) {
       case "ROLE_SUPERADMIN":
-        return superAdminItems;
+        return superAdminItems(); // Вызов функции
       default:
         return [];
     }
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col" style={{width: "94px", height: "100vh"}}>
       <Menu
         style={{ backgroundColor: '#1B232A' }}
         className="h-full m -6"
         onClick={handleMenuClick}
         mode="inline"
-        items={getSlidebarItems()}
+        items={getSlidebarItems()} // Вызов функции
         selectedKeys={[selectedKey]} // Применяем выбранный ключ
         activeKey={selectedKey} // Также можно использовать activeKey, но selectedKeys предпочтительнее для Ant Design
       />
