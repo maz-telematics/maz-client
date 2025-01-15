@@ -1,6 +1,6 @@
 import { Table,  Modal } from "antd";
 import { useState, useRef, useEffect } from "react";
-import { ErrorData, ErrorDataResponse } from "../../../../Types/carTrackingTypes";
+import { ErrorData, ErrorDataResponse } from "../../../../types/carTrackingTypes";
 import dayjs, { Dayjs } from "dayjs";
 import axiosInstance from "../../../../services/axiosInstance";
 import { getErrorColumns } from "./ErrorsColumns";

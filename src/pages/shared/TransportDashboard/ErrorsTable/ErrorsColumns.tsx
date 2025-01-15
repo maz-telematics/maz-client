@@ -1,7 +1,7 @@
 import { TableProps, Tooltip } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import moment from "moment";
-import { ErrorData } from "../../../../Types/carTrackingTypes";  // Путь к типам данных
+import { ErrorData } from "../../../../types/carTrackingTypes";  // Путь к типам данных
 
 export const getErrorColumns = (
   isPlusUser: boolean,
