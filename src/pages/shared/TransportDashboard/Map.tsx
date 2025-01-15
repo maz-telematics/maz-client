@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Location } from "../../../Types/carTrackingTypes";
+import { Location } from "../../../types/carTrackingTypes";
 import dayjs, { Dayjs } from "dayjs";
 import axiosInstance from "../../../services/axiosInstance";
 
@@ -12,10 +12,10 @@ interface MapProps {
 const Map: React.FC<MapProps> = ({ selectedDate }) => {
   const [locations, setLocations] = useState<Location[]>([]);
   const mapRef = useRef<L.Map | null>(null);
-  const polylineRef = useRef<L.Polyline | null>(null); // Указан тип L.Polyline или null
-  const markersRef = useRef<L.Marker[]>([]); // Ссылка на маркеры
-  const [mapCenter, setMapCenter] = useState<[number, number] | null>(null); // Состояние для центра карты
-  const [mapZoom, setMapZoom] = useState<number>(10); // Состояние для зума карты
+  const polylineRef = useRef<L.Polyline | null>(null); 
+  const markersRef = useRef<L.Marker[]>([]); 
+  const [mapCenter, setMapCenter] = useState<[number, number] | null>(null); 
+  const [mapZoom, setMapZoom] = useState<number>(10); 
   const id = sessionStorage.getItem("id");
   const isCurrentDay = (date: Dayjs | null): boolean => {
     return date ? date.isSame(dayjs(), "day") : false;
@@ -64,8 +64,11 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
       console.error("Токен отсутствует");
       return;
     }
-
-    const message = `${user.token}, ${id}`;
+    const message =  JSON.stringify({
+      transportVin: id,
+      messageType: "locations",
+      token: user.token
+    });
     websocketRef.current.onopen = () => {
       console.log("WebSocket подключен", message);
       websocketRef.current?.send(message);
@@ -128,22 +131,18 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
     }
 
     if (!mapRef.current) return;
-
-    // Очистить старые маркеры и полилинию при изменении данных
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current = [];
 
     if (polylineRef.current) {
-      polylineRef.current.remove(); // Удаление старой полилинии
+      polylineRef.current.remove(); 
       polylineRef.current = null;
     }
 
-    // Фильтрация и подготовка точек маршрута
     const waypoints = locations
       .filter((loc) => loc.latitude !== undefined && loc.longitude !== undefined)
       .map((loc) => L.latLng(loc.latitude, loc.longitude));
 
-    // Если полилиния ещё не создана, создаём её
     if (!polylineRef.current) {
       polylineRef.current = L.polyline(waypoints, {
         color: "blue",
@@ -152,7 +151,7 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
         interactive: false,
       }).addTo(mapRef.current);
     } 
-    // Добавляем маркеры на карту
+
     waypoints.forEach((point, index) => {
       const popupContent = `
         <div>

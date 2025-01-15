@@ -1,4 +1,4 @@
-import { BatteryParameters, Parameters } from "../../../Types/carTrackingTypes";
+import { BatteryParameters, Parameters } from "../../../types/carTrackingTypes";
 import { Table, Tabs, Row, Col } from "antd";
 import { 
   // columnsBatteryParameters,

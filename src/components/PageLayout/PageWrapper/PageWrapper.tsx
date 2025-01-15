@@ -1,20 +1,23 @@
 import React, { useState, useContext } from "react";
 import { Grid, Col, Row, Layout, Divider, Badge, Spin } from "antd";
 import { MessageOutlined } from "@ant-design/icons";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { RootState } from "../../../Store/store";
 import { useGetCurrentUserQuery, useLogoutMutation } from "../../../Store/apis/authApi";
 import { UserRole } from "../../../shared/constants";
 import Slidebar from "../Slidebar/Slidebar";
 import { AuthContext, useUser } from "../../../services/auth";
-import { AuthContextIntarface } from "../../../Types/authTypes";
+import { AuthContextIntarface } from "../../../types/authTypes";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import ExitToAppIcon from '@mui/icons-material/ExitToApp'; // Импортируем иконку для выхода
 import '../../../App.css'; // Убедитесь, что путь правильный
-
+import { MenuInfo } from "rc-menu/lib/interface";
 const { Content, Sider, Header } = Layout;
 const { useBreakpoint } = Grid;
+import { showSuperAdminMain, showSuperAdminTransports, showSuperAdminOrganizations, showSuperAdminEmpoyess, showSuperAdminReports, showSuperAdminArchive } from "../../../Store/utils/superAdminModuleViewSlice";
+import { superAdminItems } from "../Slidebar/slidebarTools";
+
 
 interface FormWrapperProps {
   children: React.ReactNode;
@@ -32,20 +35,21 @@ const PageWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
 };
 
 const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
+
   const slidebarState = useSelector(
     (state: RootState) => state.slidebar.collapsedSlideBar
   );
-  const { user } = useUser();
   const { data: userData, isLoading: isFetchingUser } = useGetCurrentUserQuery();
   const [logoutMutation] = useLogoutMutation();
   const { logout } = useContext(AuthContext) as AuthContextIntarface;
-  const navigate = useNavigate();
 
   const logOut = () => {
     logout();
     logoutMutation();
   };
 
+  const { user } = useUser();
+  
   return (
     <Layout style={{ backgroundColor: "#E1E1E1", minHeight: "100vh" }}>
       <Header
@@ -123,7 +127,7 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "25px", // Отступ между иконками
+                gap: "25px", 
               }}
             >
               <Badge count={0} showZero>
@@ -134,12 +138,12 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "8px", // Отступ между иконкой профиля и именем пользователя
+                  gap: "8px", 
                 }}
               >
                 <Link
                   className="icon-hover profile"
-                  to='/master/profile' // Переход в профиль при клике
+                  to='/master/profile'
                 >
                   <AccountBoxIcon
                     style={{ fontSize: "40px", color: "white" }}
@@ -155,7 +159,6 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
                   {user?.name || "Никитка "}
                 </span>
               </div>
-              {/* Кнопка для выхода без раскрывающегося меню */}
               <div
                 className="icon-hover exit"
                 onClick={logOut}
@@ -168,8 +171,12 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
           </Row>
         )}
       </Header>
-      <Divider style={{ margin: 0, backgroundColor: "#1B232A" }} />
-      <Layout style={{ backgroundColor: "#1B232A", marginTop: 66 }}>
+      <Layout
+        style={{
+          backgroundColor: "#E1E1E1",
+          marginTop: 66, // Высота Header
+        }}
+      >
         <Sider
           width={250}
           collapsed={slidebarState}
@@ -192,6 +199,7 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
             marginLeft: slidebarState ? 80 : 250,
             overflow: "hidden",
             backgroundColor: "#E1E1E1",
+
           }}
         >
           {isFetchingUser ? <Spin /> : children}

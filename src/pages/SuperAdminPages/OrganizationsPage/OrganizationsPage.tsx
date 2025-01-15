@@ -1,14 +1,20 @@
 import { useState, useEffect } from "react";
-import { Table, Modal, Button, Row, Col, message, Progress } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Table, Modal, Button, Row, Col, message, Input,Progress } from "antd";
+import { useNavigate, Link } from "react-router-dom";
 import { Organization } from "../../../types/transportListTypes";
 import moment from "moment";
 import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import axiosInstance from '../../../services/axiosInstance';
+import DownloadButton from "../../../Components/DownloadButton";
+import DownloadIcon from '@mui/icons-material/Download';
 
 const OrganizationsPage = () => {
   const [organization, setOrganizations] = useState<Organization[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null);
+  const [updatedOrganization, setUpdatedOrganization] = useState<Organization | null>(null);
   const user = localStorage.getItem("user");
   let userId: number;
   let role: string | null = null;
@@ -32,6 +38,7 @@ const OrganizationsPage = () => {
       console.error(error);
     }
   };
+
   useEffect(() => {
     fetchOrganizatios();
   }, []);
@@ -62,28 +69,71 @@ const OrganizationsPage = () => {
       },
     });
   };
+  const handleEditOrganization = (organization: Organization) => {
+    setCurrentOrganization(organization);
+    setUpdatedOrganization({ ...organization });
+    setIsModalVisible(true);
+  };
+
+  const handleSaveChanges = async () => {
+    if (updatedOrganization) {
+      try {
+        // Используем PATCH для частичного обновления данных
+        const response = await axiosInstance.patch(`/organizations/${updatedOrganization.id}`, updatedOrganization);
+        if (response.status === 200) {
+          message.success("Данные организации успешно обновлены!");
+          setIsModalVisible(false);
+          fetchOrganizatios();  // Обновляем список организаций после изменения
+        }
+      } catch (error) {
+        console.error("Ошибка при обновлении данных:", error);
+        message.error("Не удалось обновить данные организации.");
+      }
+    }
+  };
 
   const isMobile = window.innerWidth < 768;
-
   return (
-    <div style={{ display: "flex", flexDirection: "column", width: "100%", backgroundColor: "#E1E1E1" }}>
-      <Row style={{ padding: "0 40px" }}>
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      width: "100%",
+      backgroundColor: "#E1E1E1",
+    }}>
+      <Row style={{
+        padding: "0 40px",
+      }}>
         <Col xs={24}>
           <Row justify="space-between" style={{ marginBottom: 16, alignItems: 'flex-end' }}>
             <Col>
-              <h1 style={{ margin: 0, fontSize: isMobile ? '24px' : '32px' }}>Организации</h1>
+              <h1
+                style={{
+                  margin: 0,
+                  fontSize: isMobile ? '24px' : '32px',
+                }}
+              >Организации</h1>
             </Col>
             <Col>
-              <Button
-                type="primary"
-                onClick={navigateToNewOrganization}
-                icon={<LibraryAddOutlinedIcon />}
-                style={{ backgroundColor: "#3A5F73" }}
-              >
-                {!isMobile && 'Создать организацию'}
-              </Button>
+              <Row align="middle" wrap={false} style={{ gap: "16px" }}>
+                <Button
+                  type="primary"
+                  onClick={navigateToNewOrganization}
+                  icon={<LibraryAddOutlinedIcon />}
+                  style={{ backgroundColor: "#3A5F73" }}
+                >
+                  {!isMobile && 'Создать организацию'}
+                </Button>
+                <DownloadButton
+                  url="/api/organizations/download"
+                  filename="organizations.pdf"
+                  buttonText="Скачать таблицу"
+                  icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
+                  buttonProps={{ className: 'bg-blue-500 text-white hover:bg-blue-600' }}
+                />
+              </Row>
             </Col>
           </Row>
+
           <Table
             components={{
               header: {
@@ -100,7 +150,12 @@ const OrganizationsPage = () => {
                 dataIndex: "organizationName",
                 key: "organizationName",
                 render: (text, record) => (
-                  <a onClick={() => handleRedirectAndSaveOrganizationId(record.id)} style={{ color: "#1890ff", fontWeight: "500" }}>
+                  <a
+                    onClick={() =>
+                      handleRedirectAndSaveOrganizationId(record.id)
+                    }
+                    style={{ color: "#1890ff", fontWeight: "500" }}
+                  >
                     {text}
                   </a>
                 ),
@@ -166,15 +221,29 @@ const OrganizationsPage = () => {
                 width: 150,
                 align: "center",
                 render: (text, record) => (
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <Button
+                    // disabled={true}
+                    style={{ backgroundColor: "#3A5F73", color: "#fff", display: "flex", alignItems: "center" }}
+                    size="middle"
+                    onClick={() => handleEditOrganization(record)}
+                    icon={<EditOutlinedIcon />}
+                  >
+                    Изменить
+                  </Button>
                   <Button
                     disabled={true}
                     size="middle"
                     onClick={() => handleDeleteOrganization(record.id)}
-                    style={{ backgroundColor: "#3A5F73", color: "#fff", display: "flex", alignItems: "center" }}
+                    style={{
+                      backgroundColor: "#3A5F73",
+                      color: "#fff",
+                    }}
                     icon={<ArchiveOutlinedIcon />}
                   >
                     Переместить в архив
                   </Button>
+                </div>
                 ),
               },
             ]}
@@ -192,6 +261,54 @@ const OrganizationsPage = () => {
           />
         </Col>
       </Row>
+
+      {/* Modal для редактирования данных организации */}
+      <Modal
+        title="Изменить организацию"
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        onOk={handleSaveChanges}
+      >
+        {updatedOrganization && (
+          <>
+            <div style={{ marginBottom: 16 }}>
+              <label>Название организации</label>
+              <Input
+                value={updatedOrganization.organization_name}
+                onChange={(e) => setUpdatedOrganization({ ...updatedOrganization, organization_name: e.target.value })}
+              />
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <label>Номер телефона</label>
+              <Input
+                value={updatedOrganization.contact_info}
+                onChange={(e) => setUpdatedOrganization({ ...updatedOrganization, contact_info: e.target.value })}
+              />
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <label>Контактное лицо</label>
+              <Input
+                value={updatedOrganization.contact_person}
+                onChange={(e) => setUpdatedOrganization({ ...updatedOrganization, contact_person: e.target.value })}
+              />
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <label>Адрес</label>
+              <Input
+                value={updatedOrganization.organization_address}
+                onChange={(e) => setUpdatedOrganization({ ...updatedOrganization, organization_address: e.target.value })}
+              />
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <label>Электронная почта</label>
+              <Input
+                value={updatedOrganization.email_contact_person}
+                onChange={(e) => setUpdatedOrganization({ ...updatedOrganization, email_contact_person: e.target.value })}
+              />
+            </div>
+          </>
+        )}
+      </Modal>
     </div>
   );
 };

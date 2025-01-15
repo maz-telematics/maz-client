@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import {AuthContextIntarface,User} from '../Types/authTypes'
+import {AuthContextIntarface,User} from '../types/authTypes'
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 const apiUrl = import.meta.env.VITE_API_URL;

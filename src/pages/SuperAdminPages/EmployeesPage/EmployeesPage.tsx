@@ -13,6 +13,8 @@ import {
 } from "antd";
 import { EditOutlined, DeleteOutlined, UserAddOutlined } from "@ant-design/icons";
 import axios from "axios";
+import DownloadButton from "../../../Components/DownloadButton";
+import DownloadIcon from '@mui/icons-material/Download';
 
 const { Option } = Select;
 
@@ -162,15 +164,24 @@ const EmployeesPage: React.FC = () => {
                             >Сотрудники</h1>
                         </Col>
                         <Col>
-                            <Button
-                                //   disabled={true}
-                                type="primary"
-                                icon={<UserAddOutlined />}
-                                onClick={handleAdd}
-                                style={{ backgroundColor: "#3A5F73", }}
-                            >
-                                {!isMobile && 'Добавить сотрудника'}
-                            </Button>
+                            <Row align="middle" wrap={false} style={{ gap: "16px" }}>
+                                <Button
+                                    //   disabled={true}
+                                    type="primary"
+                                    icon={<UserAddOutlined />}
+                                    onClick={handleAdd}
+                                    style={{ backgroundColor: "#3A5F73", }}
+                                >
+                                    {!isMobile && 'Добавить сотрудника'}
+                                </Button>
+                                <DownloadButton
+                                    url="/api/employees/download"
+                                    filename="employees.pdf"
+                                    buttonText="Скачать таблицу"
+                                    icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
+                                    buttonProps={{ className: 'bg-blue-500 text-white hover:bg-blue-600' }}
+                                />
+                            </Row>
                         </Col>
                     </Row>
                     <Table

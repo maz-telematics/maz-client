@@ -1,6 +1,6 @@
 import baseQuery from "../../middlewares/authBaseQuery";
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { UserQueryResult } from "../../Types/adminTypes";
+import { UserQueryResult } from "../../types/adminTypes";
 
 
 export const authSlice = createApi({

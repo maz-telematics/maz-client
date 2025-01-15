@@ -15,3 +15,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.ant-menu-item-selected {
+  background-color: #E1E1E1 !important; 
+  color: #E1E1E1 !important; 
+}
+
+.ant-menu-item:hover {
+  background-color: #333333 !important; 
+}
+.ant-tabs-nav-more {
+  display: none !important;
+}

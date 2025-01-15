@@ -1015,7 +1015,7 @@ import {
   Dot
 } from "recharts";
 import { Card, Tabs } from "antd";
-import { BatteryParameters } from "../../../Types/carTrackingTypes";
+import { BatteryParameters } from "../../../types/carTrackingTypes";
 const { TabPane } = Tabs;
 
 interface BatteryParametersChartProps {
