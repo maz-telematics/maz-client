@@ -190,7 +190,7 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
             minHeight: "100%",
             height: "auto",
             position: "fixed",
-            top: 66,
+            top: 60,
             left: 0,
             zIndex: 99,
           }}
@@ -200,7 +200,7 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
         <Content
           style={{
             padding: 20,
-            marginLeft: slidebarState ? 80 : 250,
+            marginLeft: slidebarState ? 94 : 250,
             overflow: "hidden",
             backgroundColor: "#E1E1E1",
 

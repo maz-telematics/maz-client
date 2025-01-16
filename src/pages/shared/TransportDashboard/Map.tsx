@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { Location } from "../../../Types/carTrackingTypes";
 import dayjs, { Dayjs } from "dayjs";
 import axiosInstance from "../../../services/axiosInstance";
+import { useUser } from "../../../services/auth";
 
 interface MapProps {
   selectedDate: Dayjs | null;
@@ -22,7 +23,7 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
   };
   const websocketRef = useRef<WebSocket | null>(null);
   const apiUrl = import.meta.env.VITE_API_URL;
-
+  console.log(id)
   const getLocations = async (id: string, date: Dayjs | null): Promise<Location[]> => {
     try {
       if (!date) {
@@ -32,7 +33,7 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
       const dateStr = date.format("YYYY-MM-DDTHH:mm:ss.SSSZ");
       const response = await axiosInstance.get(`/transport/locations/${id}`, {
         params: { date: dateStr },
-      });
+      })
       return response.data;
     } catch (error) {
       console.error(error);
@@ -84,6 +85,7 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
 
   useEffect(() => {
     const id = sessionStorage.getItem("id");
+  
     if (!id) return;
 
     if (isCurrentDay(selectedDate)) {
@@ -100,6 +102,7 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
     return () => {
       closeWebSocket();
     };
+    
   }, [id, selectedDate]);
 
   useEffect(() => {
@@ -153,7 +156,7 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
     } 
 
     waypoints.forEach((point, index) => {
-      const popupContent = `
+      const popupContent = 
         <div>
           // <strong>Точка ${index + 1}</strong><br />
           Широта: ${locations[index].latitude}<br />
@@ -161,7 +164,7 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
           Скорость: ${locations[index].speed ?? "N/A"} км/ч<br />
           Дата: ${locations[index].date ? new Date(locations[index].date).toLocaleString() : "N/A"}<br />
         </div>
-      `;
+      ;
 
       const iconUrl =
         index === 0

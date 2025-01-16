@@ -8,7 +8,7 @@ import TransportsPage from "../../pages/SuperAdminPages/TransportsPage/Transport
 import OrganizationsPage from "../../pages/SuperAdminPages/OrganizationsPage/OrganizationsPage";
 import EmployeesPage from "../../pages/SuperAdminPages/EmployeesPage/EmployeesPage";
 
-import { showSuperAdminArchive, showSuperAdminCreateOrganization, showSuperAdminCreateTransport, showSuperAdminEditTransport, showSuperAdminEmpoyess, showSuperAdminMain, showSuperAdminOrganization, showSuperAdminOrganizations, showSuperAdminProfile, showSuperAdminReports, showSuperAdminTransport, showSuperAdminTransports } from "../../Store/utils/superAdminModuleViewSlice";
+import { showSuperAdminArchive, showSuperAdminCreateOrganization, showSuperAdminCreateTransport, showSuperAdminEditTransport, showSuperAdminEmpoyess, showSuperAdminFirmware, showSuperAdminMain, showSuperAdminOrganization, showSuperAdminOrganizations, showSuperAdminProfile, showSuperAdminReports, showSuperAdminTransport, showSuperAdminTransports } from "../../Store/utils/superAdminModuleViewSlice";
 import { Typography } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -19,12 +19,11 @@ import CreateOrganization from "./OrganizationsPage/CreateOrganizationPage/Creat
 import OrganizationDetails from "./OrganizationsPage/Organization";
 import CreateTransportPage from "./TransportsPage/CreateTransportPage/CreateTransportPage";
 import ProfilePage from "../shared/EditProfilePage/ProfilePage";
+import FirmwarePage from "./Firmware/Firmware";
 
 export default function SuperAdmin() {
   const view = useSelector((state: RootState) => state.superAdminView.view);
   const { urlView} = useParams();
-console.log("view",view)
-console.log("urlView",urlView)
   const dispatch = useDispatch();
   useEffect(() => {
     if (urlView === "main") {
@@ -63,6 +62,9 @@ console.log("urlView",urlView)
     if((urlView === "profile")) {
       dispatch(showSuperAdminProfile());
     }
+    if((urlView === "firmware")) {
+      dispatch(showSuperAdminFirmware());
+    }
   }, [urlView, dispatch]);
 
   const switchPageView = () => {
@@ -91,6 +93,8 @@ console.log("urlView",urlView)
           return <CreateTransportPage/>
       case "profile":
           return <ProfilePage/>
+      case "firmware":
+          return <FirmwarePage/>
     }
   };
   return (

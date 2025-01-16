@@ -4,6 +4,7 @@ import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import CommuteOutlinedIcon from '@mui/icons-material/CommuteOutlined';
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
+import TuneIcon from '@mui/icons-material/Tune';
 import type { MenuProps } from "antd";
 import { Link } from "react-router-dom";
 
@@ -54,5 +55,10 @@ export const superAdminItems: MenuItem[] = [
     <Link to="/master/archive" style={{color:"white" }}>Архив</Link>,
     "archive",
     <ArchiveOutlinedIcon style={{ fontSize: 25 ,color:"white"}} />
+  ),
+  getItem(
+    <Link to="/master/firmware" style={{color:"white" }}>Прошивка</Link>,
+    "firmware",
+    <TuneIcon  style={{ fontSize: 25 ,color:"white"}} />
   ),
 ];

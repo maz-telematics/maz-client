@@ -14,6 +14,7 @@ const ErrorTable: React.FC<ErrorsProps> = ({ selectedDate }) => {
     totalPages: 0,
     currentPage: 0,
   });
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<string | null>(null);
 
@@ -107,6 +108,7 @@ const ErrorTable: React.FC<ErrorsProps> = ({ selectedDate }) => {
 
   useEffect(() => {
     const id = sessionStorage.getItem("id");
+    console.log("работаем")
     if (!id) return;
 
     if (isCurrentDay(selectedDate)) {
@@ -133,7 +135,7 @@ const ErrorTable: React.FC<ErrorsProps> = ({ selectedDate }) => {
     return () => {
       closeWebSocket();
     };
-  }, [id, selectedDate]);
+  }, [ selectedDate]);
 
   const errorColumns = getErrorColumns(isPlusUser, showModal);
   return (
