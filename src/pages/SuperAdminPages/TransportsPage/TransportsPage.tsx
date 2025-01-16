@@ -80,13 +80,14 @@ const TransportsPage = () => {
     { title: "Тип транспорта", dataIndex: "vehicleType", key: "vehicleType" },
     { title: "Тип двигателя", dataIndex: "engineType", key: "engineType" },
     { title: "Год выпуска", dataIndex: "yearRelease", key: "yearRelease" },
-    { title: "Организация", dataIndex: "organizationName", key: "organizationName" },
     {
       title: "Блок телематики",
       dataIndex: "telemetryBlock",
       key: "telemetryBlock",
       render: (block: string | undefined) => block || "Не указано",
     },
+    { title: "Организация", dataIndex: "organizationName", key: "organizationName" },
+    
     {
       title: "Действия",
       key: "actions",
