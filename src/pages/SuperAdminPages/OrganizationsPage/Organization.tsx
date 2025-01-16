@@ -16,7 +16,7 @@ import {
 } from "antd";
 import moment from "moment";
 import dayjs, { Dayjs } from 'dayjs';
-import { Organization } from "../../../Types/transportListTypes";
+import { Organization } from "../../../types/transportListTypes";
 import axios from "axios";
 import axiosInstance from '../../../services/axiosInstance';
 import DownloadButton from "../../../Components/DownloadButton";
@@ -259,6 +259,11 @@ const OrganizationDetails: React.FC = () => {
       key: "vin",
     },
     {
+      title: "Договор",
+      dataIndex: "agreement",
+      key: "agreement_type",
+    },
+    {
       title: "Действия",
       key: "action",
       render: (text: any, vehicle: Vehicle) => (
@@ -457,6 +462,7 @@ const OrganizationDetails: React.FC = () => {
                     {organizationData?.status ? "Активна" : "Заблокирована"}
                   </span> </Col> </Row>
             </Typography.Paragraph>
+            
             <Typography.Paragraph style={{ marginBottom: 0 }}>
               <Row>
                 <Col xs={24} sm={4}>

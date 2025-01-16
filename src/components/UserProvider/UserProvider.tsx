@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 
 import { authFetch, useAuth } from "../../middlewares/authProvider";
-import { UserInfo, UserProviderProps } from "../../Types/userProviderTypes";
+import { UserInfo, UserProviderProps } from "../../types/userProviderTypes";
 
 export const UserInfoContext = createContext<UserInfo | null>(null);
 

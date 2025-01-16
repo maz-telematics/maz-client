@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Form, Input, Table, message, Popconfirm, Col, Row, DatePicker, Select } from "antd";
-import { Common } from "../../../../Types/editCarTypes";
-import { Car } from "../../../../Types/transportListTypes";
+import { Common } from "../../../../types/editCarTypes";
+import { Car } from "../../../../types/transportListTypes";
 import dayjs from "dayjs";
 import axiosInstance from "../../../../services/axiosInstance";
 import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
@@ -30,8 +30,8 @@ const EditTransportPage = () => {
   );
   const [editingKey, setEditingKey] = useState<number | null>(null);
 
-  const dateValue = data?.year_release
-    ? dayjs(data.year_release).format("YYYY")
+  const dateValue = data?.yearRelease
+    ? dayjs(data.yearRelease).format("YYYY")
     : null;
 
   useEffect(() => {
@@ -309,7 +309,38 @@ const EditTransportPage = () => {
 >
   {[
     { label: "Модель", name: "model", placeholder: data?.model },
-    { label: "VIN номер", name: "vin", placeholder: data?.vin },
+    { label: "VIN номер", name: "vin", placeholder: data?.id },
+    
+      // component: (
+      //   <Select
+      //     placeholder={data?.vehicleType}
+      //     options={engineOptions}
+      //     style={{ width: "100%" }}
+      //   />
+      // ),
+     
+    {
+      label: "Тип транспорта",
+      name: "vehicle_type_id",
+      component: (
+        <Select
+          placeholder={data?.vehicleType}
+          options={engineOptions}
+          style={{ width: "100%" }}
+        />
+      ),
+    },
+    {
+      label: "Тип двигателя",
+      name: "engine_type_id",
+      component: (
+        <Select
+          placeholder={data?.engineType}
+          options={techniqueOptions}
+          style={{ width: "100%" }}
+        />
+      ),
+    },
     {
       label: "Дата выпуска",
       name: "year_release",
@@ -322,28 +353,8 @@ const EditTransportPage = () => {
         />
       ),
     },
-    {
-      label: "Выбор двигателя",
-      name: "engine_type_id",
-      component: (
-        <Select
-          placeholder={data?.engineType}
-          options={techniqueOptions}
-          style={{ width: "100%" }}
-        />
-      ),
-    },
-    {
-      label: "Тип автомобиля",
-      name: "vehicle_type_id",
-      component: (
-        <Select
-          placeholder={data?.vehicleType}
-          options={engineOptions}
-          style={{ width: "100%" }}
-        />
-      ),
-    },
+    
+    
     {
       label: "Организация",
       name: "organization_id",
@@ -355,6 +366,21 @@ const EditTransportPage = () => {
         />
       ),
     },
+    {
+      label: "Блок телематики",
+      name: "block",
+      component: (
+        <Select
+          placeholder={data?.telemetryBlock || "Выберите блок"}
+          options={[
+            { value: "Агат", label: "Агат" },
+            { value: "Проток", label: "Проток" },
+          ]}
+          style={{ width: "100%" }}
+        />
+      ),
+    },
+    
   ].map((field, index) => (
     <Form.Item
       key={index}
@@ -366,7 +392,7 @@ const EditTransportPage = () => {
     >
       {field.component || (
         <Input
-          placeholder={field.placeholder}
+          
           style={{ width: "100%" }}
         />
       )}

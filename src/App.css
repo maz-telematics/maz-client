@@ -14,7 +14,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #1B232A;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -58,3 +58,12 @@
 .icon-hover.exit:hover {
   color: #ff4d4f; /* Цвет для иконки выхода при наведении */
 }
+
+.custom-header {
+  background-color: #1B232A;
+}
+
+.ant-table-cell {
+  text-align: center !important;
+}
+

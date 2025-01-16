@@ -7,7 +7,7 @@ import { Button, Dropdown, MenuProps, Space, Spin } from "antd";
 import { Link } from "react-router-dom";
 import { useIntl } from "react-intl";
 import { AuthContext, useUser } from "../../../services/auth";
-import { AuthContextIntarface } from "../../../Types/authTypes";
+import { AuthContextIntarface } from "../../../types/authTypes";
 
 interface MenuItem {
   id: string;

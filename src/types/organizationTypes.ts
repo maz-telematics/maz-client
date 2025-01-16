@@ -1,10 +1,11 @@
 export interface Car {
-  id: string,
-  model: string;
-  year_release: number;
-  organizationName: string;
-  vehicleType: string;
-  engineType: string;
-  organization_id: number;
-
+  id: string; // VIN номер
+  model: string; // Модель
+  year_release: number; // Год выпуска
+  organizationName: string; // Организация
+  vehicleType: string; // Тип транспорта
+  engineType: string; // Тип двигателя
+  organization_id: number; // ID организации
+  connectionStatus?: boolean; // Состояние (наличие связи)
+  telemetryBlock?: string; // Блок телематики
 }

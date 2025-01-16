@@ -8,7 +8,7 @@ import { useGetCurrentUserQuery, useLogoutMutation } from "../../../Store/apis/a
 import { UserRole } from "../../../shared/constants";
 import Slidebar from "../Slidebar/Slidebar";
 import { AuthContext, useUser } from "../../../services/auth";
-import { AuthContextIntarface } from "../../../Types/authTypes";
+import { AuthContextIntarface } from "../../../types/authTypes";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import ExitToAppIcon from '@mui/icons-material/ExitToApp'; // Импортируем иконку для выхода
 import '../../../App.css'; // Убедитесь, что путь правильный
@@ -34,7 +34,6 @@ const PageWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
   );
 };
 
-
 const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
 
   const slidebarState = useSelector(
@@ -51,14 +50,11 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
 
   const { user } = useUser();
   
-
-
-
   return (
     <Layout style={{ backgroundColor: "#E1E1E1", minHeight: "100vh" }}>
       <Header
         style={{
-          backgroundColor: "1B232A",
+          backgroundColor: "#1B232A",
           padding: "0 20px",
           position: "fixed",
           top: 0,
