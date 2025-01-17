@@ -157,12 +157,21 @@ const OrganizationsPage = () => {
                     onClick={() =>
                       handleRedirectAndSaveOrganizationId(record.id)
                     }
-                    style={{ color: "#1890ff", fontWeight: "500" }}
+                    style={{
+                      color: "red",
+                      fontWeight: "500",
+                      textDecoration: "none",
+                      cursor: "pointer",
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.textDecoration = "underline")}
+                    onMouseOut={(e) => (e.currentTarget.style.textDecoration = "none")}
                   >
                     {text}
                   </a>
                 ),
               },
+              
+              
               {
                 title: "Контактное лицо",
                 dataIndex: "contactPerson",
@@ -196,17 +205,35 @@ const OrganizationsPage = () => {
                 key: "contractFile",
                 render: (text) => (
                   <>
-                    <a href={text} target="_blank" rel="noopener noreferrer">
+                    <a
+                      href={text}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: "red", textDecoration: "none" }}
+                      onMouseOver={(e) => (e.currentTarget.style.textDecoration = "underline")}
+                      onMouseOut={(e) => (e.currentTarget.style.textDecoration = "none")}
+                    >
                       Открыть
                     </a>
-                    
+              
                     <span style={{ margin: "0 8px" }}>|</span>
-                    <a href={text} target="_blank" rel="noopener noreferrer" download>
+                    <a
+                      href={text}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                      style={{ color: "red", textDecoration: "none" }}
+                      onMouseOver={(e) => (e.currentTarget.style.textDecoration = "underline")}
+                      onMouseOut={(e) => (e.currentTarget.style.textDecoration = "none")}
+                    >
                       Скачать
                     </a>
                   </>
                 ),
               },
+              
+             
+              
               
               {
                 title: "Тип подписки",

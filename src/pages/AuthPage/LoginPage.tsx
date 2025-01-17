@@ -67,7 +67,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
         setIsAuthenticated(true);
         setUser(response.data);
         navigateBasedOnRole(response.data.role);
-        return Number(200);
+        return 200;
       }
     } catch (error: any) {
       if (error.response?.status === 302) {
@@ -109,9 +109,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
     try {
       const { username, password } = values;
       const result = await login(username, password);
-      if (result === null) {
-        message.error("Возникли проблемы при авторизации!");
-      } else if (result === 200) {
+      if (result === 200) {
         message.success("Авторизация успешна!");
       } else if (result === 401) {
         message.error("Неверный пароль или логин!");
@@ -138,8 +136,6 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
     { src: Outputs3, direction: "right", size: { width: "230px", height: "120px" } },
     { src: Outputs4, direction: "right", size: { width: "205px", height: "73px" } },
     { src: Outputs8, direction: "left", size: { width: "240px", height: "100px" } },
-    
-    
   ];
 
   return (
@@ -223,8 +219,8 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          height: "auto", // Высота будет автоматически подстраиваться
-          minHeight: "500px", // Минимальная высота, чтобы не растягивалось сильно
+          height: "auto",
+          minHeight: "500px",
           backgroundColor: "#CDCDCD",
           opacity: "90%",
           borderRadius: "10px",
@@ -288,7 +284,6 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
                 borderRadius: "15px",
                 backgroundColor: "#f7f7f7",
                 color: "#333",
-                
               }}
             />
           </Form.Item>
@@ -323,7 +318,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
           >
             <Checkbox>
               Я согласен с{" "}
-              <Link to="/privacy-policy"  className="text-blue-500 hover:text-blue-700">
+              <Link to="/privacy-policy" className="text-blue-500 hover:text-blue-700">
                 условиями обработки данных
               </Link>
             </Checkbox>

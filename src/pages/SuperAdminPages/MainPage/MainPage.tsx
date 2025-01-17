@@ -158,37 +158,38 @@ const MainPage: React.FC = () => {
     },
   ];
 
-   const transportInfoData = [
+  const transportInfoData = [
     {
-      icon: <LocalShippingIcon className="w-20 h-20"/>,
-      label: "Транспорта",
+      icon: <LocalShippingIcon className="w-20 h-20 text-red-500" />, // Цвет иконки красный
+      label: <span style={{ color: "#1B232A" }}>Транспорта</span>, // Цвет текста
       count: transportData.totalVehicles,
     },
     {
-      icon: <SpeedIcon/>,
-      label: "В движении",
+      icon: <SpeedIcon className="text-red-500" />, // Цвет иконки красный
+      label: <span style={{ color: "#1B232A" }}>В движении</span>, // Цвет текста
       count: transportData.totalVehiclesMoving,
     },
     {
-      icon: <LocalParkingIcon/>,
-      label: "На остановке",
+      icon: <LocalParkingIcon className="text-red-500" />, // Цвет иконки красный
+      label: <span style={{ color: "#1B232A" }}>На остановке</span>, // Цвет текста
       count: transportData.totalVehiclesStopped,
     },
     {
-      icon: <ConstructionIcon/>,
-      label: "На ремонте",
+      icon: <ConstructionIcon className="text-red-500" />, // Цвет иконки красный
+      label: <span style={{ color: "#1B232A" }}>На ремонте</span>, // Цвет текста
       count: transportData.totalVehiclesMaintenance,
     },
     {
-      icon: <StoreIcon/>,
-      label: "Организаций",
-      count: parseInt(transportData.avgDelay), // Здесь нужно преобразовать строку в число, если необходимо
+      icon: <StoreIcon className="text-red-500" />, // Цвет иконки красный
+      label: <span style={{ color: "#1B232A" }}>Организаций</span>, // Цвет текста
+      count: parseInt(transportData.avgDelay), // Преобразование строки в число
     },
     {
-      icon: <GroupIcon/>,
-      label: "Пользователей",
+      icon: <GroupIcon className="text-red-500" />, // Цвет иконки красный
+      label: <span style={{ color: "#1B232A" }}>Пользователей</span>, // Цвет текста
       count: transportData.completedRoutes,
     },
+  
   ];
   const calculateRemainingTime = (endDate: string) => {
     const now = dayjs();
