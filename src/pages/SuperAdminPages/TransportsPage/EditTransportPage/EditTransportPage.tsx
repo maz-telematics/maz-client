@@ -416,7 +416,7 @@ const EditTransportPage = () => {
                 type="primary"
                 onClick={handleAdd}
                 disabled={!!editingKey}
-                style={{ backgroundColor: "#3A5F73" }}
+                style={{ backgroundColor: "#1B232A" }}
                 icon={<LibraryAddOutlinedIcon />}
               >
                {!isMobile && 'Добавить параметр'}
@@ -453,7 +453,7 @@ const EditTransportPage = () => {
                 type="primary"
                 onClick={saveAllChanges}
                 disabled={!parameters.length}
-                style={{ backgroundColor: "#3A5F73" }}
+                style={{ backgroundColor: "#1B232A" }}
                 icon={<SaveAltOutlinedIcon />}
               >
                 Сохранить все изменения

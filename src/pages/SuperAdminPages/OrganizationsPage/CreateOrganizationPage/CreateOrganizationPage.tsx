@@ -18,9 +18,17 @@ type OrganizationData = {
 };
 
 const subscriptionOptions = [
-  { label: 'Месяц', value: 'month' },
-  { label: 'Квартал', value: 'quarter' },
-  { label: 'Год', value: 'year' },
+  { label: '1 месяц', value: '1month' },
+  { label: '3 месяца', value: '3month' },
+  { label: '6 месяцев', value: '6month' },
+  { label: '9 месяцев', value: '9month' },
+  { label: '12 месяцев', value: '6month' },
+];
+const typeOptions = [
+  { label: 'Базоый план ', value: '1month' },
+  { label: 'Расширенный план', value: '3month' },
+  { label: 'Премиум план', value: '6month' },
+  
 ];
 
 const CreateOrganization: React.FC = () => {
@@ -356,9 +364,9 @@ const CreateOrganization: React.FC = () => {
             >
               {(fields, { add, remove }) => (
                 <>
-                  {fields.map(({ key, name, fieldKey, fieldIndex }) => (
+                  {fields.map(({ key, name, fieldKey }) => (
                     <Row gutter={16} key={key} align="middle">
-                      <Col xs={24} sm={12}>
+                      <Col xs={24} sm={12}> 
                         <Form.Item
                           {...(fieldKey ? { fieldKey } : {})}
                           name={[name, 'vin']}
@@ -399,39 +407,54 @@ const CreateOrganization: React.FC = () => {
         );
       case 3:
         return (
-          <Form form={form} layout="vertical">
-            <Row gutter={16}>
-              <Col xs={24} sm={12} md={8}>
-                <Form.Item
-                  name="subscriptionPeriod"
-                  label="Период подписки"
-                  rules={[{ required: true, message: "Выберите период подписки!" }]}
-                >
-                  <DatePicker
-                    onChange={showConfirmExtend}
-                    disabledDate={disabledDate}
-                    style={{ width: "100%" }}
-                  />
-                </Form.Item>
-              </Col>
+          <Form form={form} layout="vertical" style={{ flexDirection: "column" }}>
+  <Col xs={24} sm={12} md={8}>
+    <Form.Item
+      name="subscriptionPeriod"
+      label="Начало подписки"
+      rules={[{ required: true, message: "Выберите период начала подписки!" }]}
+    >
+      <DatePicker
+        onChange={showConfirmExtend}
+        disabledDate={disabledDate}
+        style={{ width: "100%" }}
+      />
+    </Form.Item>
+  </Col>
 
-              <Col xs={24} sm={12} md={8}>
-                <Form.Item
-                  name="subscriptionType"
-                  label="Тип подписки"
-                  rules={[{ required: true, message: "Выберите тип подписки!" }]}
-                >
-                  <Select placeholder="Выберите тип подписки" style={{ width: "100%" }}>
-                    {subscriptionOptions.map((option) => (
-                      <Select.Option key={option.value} value={option.value}>
-                        {option.label}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-            </Row>
-          </Form>
+  <Col xs={24} sm={12} md={8}>
+    <Form.Item
+      name="subscriptionType"
+      label="Период подписки"
+      rules={[{ required: true, message: "Выберите тип подписки!" }]}
+    >
+      <Select placeholder="Выберите тип подписки" style={{ width: "100%" }}>
+        {subscriptionOptions.map((option) => (
+          <Select.Option key={option.value} value={option.value}>
+            {option.label}
+          </Select.Option>
+        ))}
+      </Select>
+    </Form.Item>
+  </Col>
+
+  <Col xs={24} sm={12} md={8}>
+    <Form.Item
+      name="typeOptions"
+      label="Тип подписки"
+      rules={[{ required: true, message: "Выберите тип подписки!" }]}
+    >
+      <Select placeholder="Выберите тип подписки" style={{ width: "100%" }}>
+        {typeOptions.map((option) => (
+          <Select.Option key={option.value} value={option.value}>
+            {option.label}
+          </Select.Option>
+        ))}
+      </Select>
+    </Form.Item>
+  </Col>
+</Form>
+
         );
     }
   };
@@ -461,7 +484,7 @@ const CreateOrganization: React.FC = () => {
             <Step title="Подписка" />
           </Steps>
           <div style={{ marginTop: 20 }}>{renderForm()}</div>
-          <div style={{ marginTop: 20 }}>
+          <div style={{ marginTop: 20  }}>
             {/* <Button disabled={currentStep === 0} onClick={prevStep} style={{ marginRight: 10 }}>
               Назад
             </Button>
@@ -474,11 +497,11 @@ const CreateOrganization: React.FC = () => {
                   Назад
                 </Button>
                 {currentStep === 3 ? (
-                  <Button type="primary" onClick={handleFinish}>
+                  <Button type="primary" onClick={handleFinish} style={{backgroundColor: "#1B232A"}}>
                     Сохранить
                   </Button>
                 ) : (
-                  <Button type="primary" onClick={nextStep}>
+                  <Button type="primary" onClick={nextStep } style={{backgroundColor: "#1B232A"}}>
                     Далее
                   </Button>
                 )}

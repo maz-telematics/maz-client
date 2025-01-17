@@ -114,26 +114,29 @@ const OrganizationsPage = () => {
               >Организации</h1>
             </Col>
             <Col>
-              <Row align="middle" wrap={false} style={{ gap: "16px" }}>
+            
+              <Row align="middle" wrap={false} style={{ gap: "16px",  }}>
+              <DownloadButton 
+                  url="/api/organizations/download"
+                  filename="organizations.pdf"
+                  buttonText="Скачать таблицу"
+                  
+                  
+                  icon={<DownloadIcon style={{ fontSize: 18, color: 'white',  }} />}
+                  buttonProps={{ className: 'bg-[#1b232a] text-white hover:bg-[#1B232A]' }}
+                />
                 <Button
                   type="primary"
                   onClick={navigateToNewOrganization}
                   icon={<LibraryAddOutlinedIcon />}
-                  style={{ backgroundColor: "#3A5F73" }}
+                  style={{ backgroundColor: "#1B232A" }}
                 >
                   {!isMobile && 'Создать организацию'}
                 </Button>
-                <DownloadButton
-                  url="/api/organizations/download"
-                  filename="organizations.pdf"
-                  buttonText="Скачать таблицу"
-                  icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
-                  buttonProps={{ className: 'bg-blue-500 text-white hover:bg-blue-600' }}
-                />
+                
               </Row>
             </Col>
           </Row>
-
           <Table
             components={{
               header: {
@@ -161,14 +164,9 @@ const OrganizationsPage = () => {
                 ),
               },
               {
-                title: "Адрес",
-                dataIndex: "organizationAddress",
-                key: "organizationAddress",
-              },
-              {
-                title: "Электронная почта",
-                dataIndex: "emailContactPerson",
-                key: "emailContactPerson",
+                title: "Контактное лицо",
+                dataIndex: "contactPerson",
+                key: "contactPerson",
               },
               {
                 title: "Номер телефона",
@@ -176,10 +174,16 @@ const OrganizationsPage = () => {
                 key: "contactInfo",
               },
               {
-                title: "Контактное лицо",
-                dataIndex: "contactPerson",
-                key: "contactPerson",
+                title: "Электронная почта",
+                dataIndex: "emailContactPerson",
+                key: "emailContactPerson",
               },
+              {
+                title: "Адрес",
+                dataIndex: "organizationAddress",
+                key: "organizationAddress",
+              },
+   
               {
                 title: "Дата регистрации",
                 dataIndex: "registrationDate",
@@ -224,7 +228,7 @@ const OrganizationsPage = () => {
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <Button
                     // disabled={true}
-                    style={{ backgroundColor: "#3A5F73", color: "#fff", display: "flex", alignItems: "center" }}
+                    style={{ backgroundColor: "#1B232A", color: "#fff", display: "flex", alignItems: "center" }}
                     size="middle"
                     onClick={() => handleEditOrganization(record)}
                     icon={<EditOutlinedIcon />}
@@ -236,7 +240,7 @@ const OrganizationsPage = () => {
                     size="middle"
                     onClick={() => handleDeleteOrganization(record.id)}
                     style={{
-                      backgroundColor: "#3A5F73",
+                      backgroundColor: "#1B232A",
                       color: "#fff",
                     }}
                     icon={<ArchiveOutlinedIcon />}

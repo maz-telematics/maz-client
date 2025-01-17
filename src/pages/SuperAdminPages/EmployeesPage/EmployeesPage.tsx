@@ -170,7 +170,7 @@ const EmployeesPage: React.FC = () => {
                                     type="primary"
                                     icon={<UserAddOutlined />}
                                     onClick={handleAdd}
-                                    style={{ backgroundColor: "#3A5F73", }}
+                                    style={{ backgroundColor: "#1B232A", }}
                                 >
                                     {!isMobile && 'Добавить сотрудника'}
                                 </Button>
@@ -179,7 +179,7 @@ const EmployeesPage: React.FC = () => {
                                     filename="employees.pdf"
                                     buttonText="Скачать таблицу"
                                     icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
-                                    buttonProps={{ className: 'bg-blue-500 text-white hover:bg-blue-600' }}
+                                    buttonProps={{ className: 'bg-[#1B232A] text-white hover:bg-[#1B232A]' }}
                                 />
                             </Row>
                         </Col>
@@ -199,7 +199,7 @@ const EmployeesPage: React.FC = () => {
                             borderRadius: "8px",
                             overflow: "hidden",
                             boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-                            backgroundColor: "#F7F9FB",
+                            backgroundColor: "#1B232A",
                         }}
                         scroll={{ x: 'max-content' }}
                         columns={columns} rowKey="id" />
@@ -256,7 +256,7 @@ const EmployeesPage: React.FC = () => {
                             >
                                 <Input />
                             </Form.Item>
-                            <Button type="primary" htmlType="submit">
+                            <Button type="primary" htmlType="submit" >
                                 Сохранить
                             </Button>
                         </Form>

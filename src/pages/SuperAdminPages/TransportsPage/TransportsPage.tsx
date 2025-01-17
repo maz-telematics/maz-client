@@ -72,6 +72,19 @@ const TransportsPage = () => {
     },
     { title: "VIN номер", dataIndex: "id", key: "id" },
     {
+      title: "Регистрационный номер",
+      dataIndex: "reg_number",
+      key: "reg_number",
+      render: (model: string, record: Car) => (
+        <a
+          onClick={() => navigate(`/master/transport?id=${record.id}`)}
+          style={{ color: "#1890ff", fontWeight: 500 }}
+        >
+          {model}
+        </a>
+      ),
+    },
+    {
       title: "Состояние",
       dataIndex: "connectionStatus",
       key: "connectionStatus",
@@ -80,13 +93,14 @@ const TransportsPage = () => {
     { title: "Тип транспорта", dataIndex: "vehicleType", key: "vehicleType" },
     { title: "Тип двигателя", dataIndex: "engineType", key: "engineType" },
     { title: "Год выпуска", dataIndex: "yearRelease", key: "yearRelease" },
-    { title: "Организация", dataIndex: "organizationName", key: "organizationName" },
     {
       title: "Блок телематики",
       dataIndex: "telemetryBlock",
       key: "telemetryBlock",
       render: (block: string | undefined) => block || "Не указано",
     },
+    { title: "Организация", dataIndex: "organizationName", key: "organizationName" },
+    
     {
       title: "Действия",
       key: "actions",
@@ -95,7 +109,7 @@ const TransportsPage = () => {
           <Button
             size="middle"
             onClick={() => navigate(`/master/edit-transport?id=${record.id}`)}
-            style={{ backgroundColor: "#3A5F73", color: "#fff" }}
+            style={{ backgroundColor: "#1B232A", color: "#fff" }}
             icon={<ModeEditOutlinedIcon />}
           >
             Изменить
@@ -103,7 +117,7 @@ const TransportsPage = () => {
           <Button
             size="middle"
             onClick={() => handleDelete(record.id, record.organization_id)}
-            style={{ backgroundColor: "#3A5F73", color: "#fff" }}
+            style={{ backgroundColor: "#1B232A", color: "#fff" }}
             icon={<ArchiveOutlinedIcon />}
           >
             Переместить в архив
@@ -124,7 +138,7 @@ const TransportsPage = () => {
             type="primary"
             icon={<LibraryAddOutlinedIcon />}
             onClick={() => navigate("/master/create-transport")}
-            style={{ backgroundColor: "#3A5F73" }}
+            style={{ backgroundColor: "#1B232A" }}
           >
             Добавить транспорт
           </Button>

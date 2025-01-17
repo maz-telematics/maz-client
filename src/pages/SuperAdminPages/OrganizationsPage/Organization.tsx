@@ -430,7 +430,7 @@ const OrganizationDetails: React.FC = () => {
 
         title={<div style={{ fontSize: isMobile ? '14px' : '18px' }}>Информация об организации</div>}
         style={{
-          backgroundColor: "#F7F9FB",
+          backgroundColor: "#1B232A",
           width: "auto",
           marginRight: 40,
           marginLeft: 40,
