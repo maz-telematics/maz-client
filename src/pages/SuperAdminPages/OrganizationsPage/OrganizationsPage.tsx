@@ -115,21 +115,22 @@ const OrganizationsPage = () => {
             </Col>
             <Col>
             
-              <Row align="middle" wrap={false} style={{ gap: "16px",  }}>
-              <DownloadButton 
+              <Row align="middle" wrap={false} style={{ gap: "10px",  }}>
+              <DownloadButton
                   url="/api/organizations/download"
                   filename="organizations.pdf"
-                  buttonText="Скачать таблицу"
+                  buttonText="Скачать"
+                  
                   
                   
                   icon={<DownloadIcon style={{ fontSize: 18, color: 'white',  }} />}
-                  buttonProps={{ className: 'bg-[#1b232a] text-white hover:bg-[#1B232A]' }}
+                  buttonProps={{ className: 'bg-[#1b232a] text-white hover:bg-[#1B232A] ' }}
                 />
                 <Button
                   type="primary"
                   onClick={navigateToNewOrganization}
                   icon={<LibraryAddOutlinedIcon />}
-                  style={{ backgroundColor: "#1B232A" }}
+                  style={{ backgroundColor: "#1B232A",marginRight: "15px" }}
                 >
                   {!isMobile && 'Создать организацию'}
                 </Button>
@@ -244,7 +245,7 @@ const OrganizationsPage = () => {
                 title: "Статус подписки",
                 dataIndex: "subscription_status",
                 key: "subscription_status",
-                render: (text) => <Progress percent={text} status="active" strokeColor="#3A5F73" />,
+                render: (text) => <Progress percent={text} status="active" strokeColor="red" />,
               },
               {
                 dataIndex: "actions",
@@ -253,15 +254,47 @@ const OrganizationsPage = () => {
                 align: "center",
                 render: (text, record) => (
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <Button
-                    // disabled={true}
-                    style={{ backgroundColor: "#1B232A", color: "#fff", display: "flex", alignItems: "center" }}
-                    size="middle"
-                    onClick={() => handleEditOrganization(record)}
-                    icon={<EditOutlinedIcon />}
-                  >
-                    Изменить
-                  </Button>
+                    <Button
+                      style={{
+                        backgroundColor: "#1B232A",
+                        color: "#fff",
+                        display: "flex",
+                        alignItems: "center",
+                        // border: "1px solid red",
+                        transition: "all 0.3s ease", // Добавляет плавный переход
+                      }}
+                      size="middle"
+                      onClick={() => handleEditOrganization(record)}
+                      icon={<EditOutlinedIcon />}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "red"; // Красный фон
+                        e.currentTarget.style.borderColor = "red";     // Красный бордер
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "#1B232A"; // Исходный фон
+                        e.currentTarget.style.borderColor = "#1B232A";         // Исходный бордер
+                      }}
+                    >
+                      Изменить
+                    </Button>
+                    {/* <Button
+                      style={{
+                        backgroundColor: "#1B232A",
+                        color: "#fff",
+                        display: "flex",
+                        alignItems: "center",
+                        border: "1px solid red",
+                      }}
+                      size="middle"
+                      onClick={() => handleEditOrganization(record)}
+                      icon={<EditOutlinedIcon />}
+                      className="edit-button"
+                      
+                    >
+                      
+                      Изменить
+                    </Button> */}
+
                   <Button
                     disabled={true}
                     size="middle"

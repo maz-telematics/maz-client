@@ -6,6 +6,9 @@ import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
 import axiosInstance from "../../../services/axiosInstance";
+import DownloadButton from "../../../Components/DownloadButton";
+import DownloadIcon from '@mui/icons-material/Download';
+
 
 const TransportsPage = () => {
   const [cars, setCars] = useState<Car[]>([]);
@@ -64,7 +67,14 @@ const TransportsPage = () => {
       render: (model: string, record: Car) => (
         <a
           onClick={() => navigate(`/master/transport?id=${record.id}`)}
-          style={{ color: "#1890ff", fontWeight: 500 }}
+          style={{ 
+            color: "red", 
+            fontWeight: 500,
+            textDecoration: "none",
+            transition: "text-decoration 0.3s ease",
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
+          onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
         >
           {model}
         </a>
@@ -129,21 +139,32 @@ const TransportsPage = () => {
 
   return (
     <div style={{ padding: "16px", backgroundColor: "#E1E1E1" }}>
-      <Row justify="space-between" align="middle" style={{ marginBottom: "16px" }}>
+      <Row justify="space-between" align="middle" style={{ marginBottom: "24px", paddingRight: "16px" }}>
         <Col>
           <h1 style={{ margin: 0, fontSize: "32px", fontWeight: "bold" }}>Транспорт</h1>
         </Col>
         <Col>
-          <Button
-            type="primary"
-            icon={<LibraryAddOutlinedIcon />}
-            onClick={() => navigate("/master/create-transport")}
-            style={{ backgroundColor: "#1B232A" }}
-          >
-            Добавить транспорт
-          </Button>
+          <Row align="middle" style={{ gap: "10px" }}>
+            <DownloadButton
+              url="/api/transport/download"
+              filename="transport.pdf"
+              buttonText="Скачать "
+              icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
+              buttonProps={{ className: "bg-[#1B232A] text-white hover:bg-[#1B232A]" }}
+            />
+            <Button
+              type="primary"
+              icon={<LibraryAddOutlinedIcon />}
+              onClick={() => navigate("/master/create-transport")}
+              style={{ backgroundColor: "#1B232A" }}
+            >
+              Добавить транспорт
+            </Button>
+          </Row>
         </Col>
       </Row>
+  
+
       <Table
         columns={columns}
         dataSource={cars}

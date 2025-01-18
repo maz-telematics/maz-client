@@ -449,10 +449,10 @@ const MainPage: React.FC = () => {
     }, []);
 
     return (
-<div className="flex flex-col w-full h-[91vh] bg-gray-200">
+<div className="flex flex-col w-full h-[91vh] bg-gray-200 custom-tabs">
   <Row className="w-full h-full">
   
-    <Col span={5} className="bg-white px-5 py-2 border-gray-300 h-full">
+    <Col span={5} className="bg-white px-5 py-2 border-gray-300 h-fullс custom-tabs">
       <Carousel dots={false} infinite>
         <Tabs
           defaultActiveKey="1"

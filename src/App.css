@@ -67,3 +67,15 @@
   text-align: center !important;
 }
 
+/* Изменение цвета текста вкладки при наведении */
+.ant-tabs-tab:hover .ant-tabs-tab-btn {
+  color: red !important; /* Красный цвет текста при наведении */
+}
+/* Стили для табов с классом custom-tabs */
+.custom-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: red !important; /* Красный цвет текста активного таба */
+}
+
+.custom-tabs .ant-tabs-ink-bar {
+  background-color: red !important; /* Красная полоса под активным табом */
+}

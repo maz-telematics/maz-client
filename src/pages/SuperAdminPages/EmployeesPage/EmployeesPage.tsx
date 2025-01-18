@@ -164,7 +164,14 @@ const EmployeesPage: React.FC = () => {
                             >Сотрудники</h1>
                         </Col>
                         <Col>
-                            <Row align="middle" wrap={false} style={{ gap: "16px" }}>
+                            <Row align="middle" wrap={false} style={{ gap: "10px" }}>
+                                <DownloadButton
+                                    url="/api/employees/download"
+                                    filename="employees.pdf"
+                                    buttonText="Скачать таблицу"
+                                    icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
+                                    buttonProps={{ className: 'bg-[#1B232A] text-white hover:bg-[#1B232A]' }}
+                                />
                                 <Button
                                     //   disabled={true}
                                     type="primary"
@@ -174,13 +181,7 @@ const EmployeesPage: React.FC = () => {
                                 >
                                     {!isMobile && 'Добавить сотрудника'}
                                 </Button>
-                                <DownloadButton
-                                    url="/api/employees/download"
-                                    filename="employees.pdf"
-                                    buttonText="Скачать таблицу"
-                                    icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
-                                    buttonProps={{ className: 'bg-[#1B232A] text-white hover:bg-[#1B232A]' }}
-                                />
+                                
                             </Row>
                         </Col>
                     </Row>
