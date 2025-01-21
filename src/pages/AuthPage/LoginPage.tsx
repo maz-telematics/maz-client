@@ -92,7 +92,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
         navigate("/operator/main", { replace: true });
         break;
       case "ROLE_DIRECTOR":
-        navigate("/head/main", { replace: true });
+        navigate("/director/main", { replace: true });
         break;
       case "ROLE_MANAGER":
         navigate("/manager/main", { replace: true });
