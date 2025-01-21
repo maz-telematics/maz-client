@@ -49,6 +49,7 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
   };
 
   const { user } = useUser();
+  const dispatch = useDispatch();
   
   return (
     <Layout style={{ backgroundColor: "#E1E1E1", minHeight: "100vh" }}>
@@ -62,6 +63,7 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
           right: 0,
           zIndex: 100,
         }}
+        
       >
         {menu && (
           <Row
@@ -80,7 +82,7 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
               xxl={10}
               style={{ display: "flex", alignItems: "center" }}
             >
-              <Link to="/master/main">
+              <Link to="/master/main" onClick = {()=> {(dispatch(showSuperAdminMain()))}}>
                 <img
                   src="/mazIcon1.svg"
                   alt="Maz Icon"
@@ -90,6 +92,7 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
                     marginRight: "10px",
                     flexShrink: 0,
                     cursor: "pointer",
+                  
                   }}
                 />
               </Link>
@@ -196,7 +199,7 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
         <Content
           style={{
             padding: 20,
-            marginLeft: slidebarState ? 94 : 250,
+            marginLeft: slidebarState ?  94: 250,
             overflow: "hidden",
             backgroundColor: "#E1E1E1",
 

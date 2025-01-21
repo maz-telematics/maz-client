@@ -307,7 +307,7 @@ const CreateTransportPage = () => {
 </Form>
           <Row justify="space-between" style={{ marginBottom: "15px", marginTop:"30px", alignItems: 'flex-end' }}>
             <h2 style={{margin:0, fontSize: isMobile ? '18px' : '24px'}}>Параметры мониторинга</h2>
-            <Button icon={<LibraryAddOutlinedIcon />} type="primary" onClick={handleAdd} style={{ backgroundColor: "#3A5F73", }}>
+            <Button icon={<LibraryAddOutlinedIcon />} type="primary" onClick={handleAdd} style={{ backgroundColor: "#1B232A", }}>
               {!isMobile && 'Добавить параметр'}
             </Button>
           </Row>
@@ -328,7 +328,7 @@ const CreateTransportPage = () => {
             scroll={{ x: 'max-content' }}
           />
              <div style={{ marginTop: "20px", display: "flex", justifyContent: "flex-end" }}>
-  <Button style={{  backgroundColor: "#3A5F73" }} type="primary" htmlType="submit">
+  <Button style={{  backgroundColor: "#1B232A" }} type="primary" htmlType="submit">
               Добавить новый автомобиль
             </Button>
             </div>

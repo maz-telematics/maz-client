@@ -347,50 +347,87 @@ const OrganizationDetails: React.FC = () => {
     1: (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'flex-end' }}>
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <DownloadButton 
-        url="/api/organization_transport/download"
-        filename="organization_transport.pdf"
-        buttonText="Скачать транспорт"
-        icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
-        buttonProps={{ className: 'bg-blue-500 text-white hover:bg-blue-600' }}
-      />
-      <Button 
-        onClick={() => setVisible(true)} 
-        style={{
-          marginLeft: '10px',
-          backgroundColor: '#3A5F73',
-          color: '#fff',
-          height: 'fit-content',
-          // padding: '0 16px',
-        }}
-      >
-        Добавить транспорт
-      </Button>
+          <DownloadButton
+            url="/api/organization_transport/download"
+            filename="organization_transport.pdf"
+            buttonText="Скачать транспорт"
+            icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
+            buttonProps={{
+              // className: 'bg-[#1b232a] text-white',
+              style: {
+                border: 'none', // Убираем рамку
+                outline: 'none', // Убираем обводку при фокусе
+                cursor: 'pointer', // Курсор в виде указателя
+                backgroundColor: "#1B232A",
+              }
+            }}
+          />
+
+          <Button
+            onClick={() => setVisible(true)}
+            style={{
+              marginLeft: '10px',
+              backgroundColor: '#1b232a', // Фон кнопки
+              color: '#fff', // Цвет текста
+              padding: '0 16px', // Отступы
+              display: 'flex',
+              alignItems: 'center', // Центрируем иконку и текст
+              height: 'auto', // Автоматическая высота
+              border: 'none', // Убираем рамки
+              outline: 'none', // Убираем контур при фокусе
+              textDecoration: 'none', // Убираем подчеркивание текста
+            }}
+          >
+            {/* Иконка */}
+            <DownloadIcon style={{ fontSize: 18, color: 'white', marginRight: '8px' }} />
+            Добавить транспорт
+          </Button>
+
+
     </div>
   </div>
     ),
     2: (
-      <DownloadButton 
+      <DownloadButton
         url="/api/organization_subscriptions/download"
         filename="organization_subscriptions.pdf"
         buttonText="Скачать подписки"
         icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
-        buttonProps={{ className: 'bg-blue-500 text-white hover:bg-blue-600' }}
+        buttonProps={{
+          
+          style: {
+            border: 'none', // Убираем рамку
+            outline: 'none', // Убираем обводку при фокусе
+            cursor: 'pointer', // Курсор в виде указателя
+            backgroundColor: "#1B232A",
+          }
+        }}
       />
+
     ),
     3: (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'flex-end' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
       <DownloadButton 
-        url="/api/organization_employees/download"
-        filename="organization_employees.pdf"
-        buttonText="Скачать сотрудников"
-        icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
-        buttonProps={{ className: 'bg-blue-500 text-white hover:bg-blue-600' }}
-      />
+  url="/api/organization_subscriptions/download"
+  filename="organization_subscriptions.pdf"
+  buttonText="Скачать подписки"
+  icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
+  buttonProps={{ 
+    
+    style: {
+      border: 'none', // Убираем рамку
+      outline: 'none', // Убираем обводку при фокусе
+      cursor: 'pointer', // Курсор в виде указателя
+      backgroundColor: "red",
+    } 
+  }}
+/>
+
      <Button
         disabled={true}
-        style={{ fontSize: isMobile ? '12px' : '16px',   marginLeft: '10px', width: isMobile ? '100%' : '200px', backgroundColor: "#3A5F73", color: "#fff" }}
+        style={{ fontSize: isMobile ? '12px' : '16px',   marginLeft: '10px', width: isMobile ? '100%' : '200px', backgroundColor: "#1b232a  ", color: "#fff" }}
+        
         onClick={() => {
           setEditingEmployee(null);
           setIsEmployeeModalVisible(true);
@@ -458,7 +495,7 @@ const OrganizationDetails: React.FC = () => {
               <Row>
                 <Col xs={24} sm={4}>
                   <strong>Статус подписки:</strong> </Col> <Col xs={24} sm={4}>
-                  <span style={{ fontWeight: 500, color: organizationData?.status ? '#007bff' : 'red' }}>
+                  <span style={{ fontWeight: 500, color: organizationData?.status ? 'black' : 'red' }}>
                     {organizationData?.status ? "Активна" : "Заблокирована"}
                   </span> </Col> </Row>
             </Typography.Paragraph>
@@ -499,77 +536,84 @@ const OrganizationDetails: React.FC = () => {
                 <RangePicker onChange={showConfirmExtend} disabledDate={disabledDate} />
               </Col>
             </Row>
-   <Tabs
-      defaultActiveKey="1"
-      activeKey={activeKey}
-      onChange={setActiveKey}
-      style={{ marginTop: 10 }}
-      tabBarExtraContent={operations[activeKey as keyof typeof operations]}
-    >
-      <TabPane tab="Транспортные средства" key="1">
-        <Table
-          bordered
-          dataSource={vehicles}
-          columns={columnsVehicles}
-          rowKey="id"
-          pagination={false}
-          style={{
-            marginTop: '16px',
-            borderRadius: '8px',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-          }}
-          components={{
-            header: {
-              cell: (props: any) => (
-                <th {...props} style={{ backgroundColor: '#1B232A', color: '#fff', border: 'none' }}>
-                  {props.children}
-                </th>
-              ),
-            },
-          }}
-          scroll={{ x: 'max-content' }}
-        />
-      </TabPane>
+            <Tabs
+              defaultActiveKey="1"
+              activeKey={activeKey}
+              onChange={setActiveKey}
+              style={{ marginTop: 10 }}
+              tabBarExtraContent={operations[activeKey as keyof typeof operations]}
+              tabBarStyle={{
+                color: 'black', // Устанавливает текст вкладок чёрным
+              }}
+            >
+              <TabPane tab={<span style={{ color: activeKey === '1' ? 'red' : 'black' }}>Транспортные средства</span>} key="1">
+                <Table
+                  bordered
+                  dataSource={vehicles}
+                  columns={columnsVehicles}
+                  rowKey="id"
+                  pagination={false}
+                  style={{
+                    marginTop: '16px',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                  }}
+                  components={{
+                    header: {
+                      cell: (props: any) => (
+                        <th {...props} style={{ backgroundColor: '#1B232A', color: '#fff', border: 'none' }}>
+                          {props.children}
+                        </th>
+                      ),
+                    },
+                  }}
+                  scroll={{ x: 'max-content' }}
+                />
+              </TabPane>
 
-      <TabPane tab="История подписок" key="2">
-        <Table
-          bordered
-          dataSource={sortedData}
-          columns={columnsHistory}
-          rowKey="id"
-          pagination={false}
-          style={{
-            marginTop: '16px',
-            borderRadius: '8px',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-          }}
-          components={{
-            header: {
-              cell: (props: any) => (
-                <th {...props} style={{ backgroundColor: '#1B232A', color: '#fff', border: 'none' }}>
-                  {props.children}
-                </th>
-              ),
-            },
-          }}
-          scroll={{ x: 'max-content' }}
-        />
-      </TabPane>
+              <TabPane tab={<span style={{ color: activeKey === '2' ? 'red' : 'black' }}>История подписок</span>} key="2">
+                <Table
+                  bordered
+                  dataSource={sortedData}
+                  columns={columnsHistory}
+                  rowKey="id"
+                  pagination={false}
+                  style={{
+                    marginTop: '16px',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                  }}
+                  components={{
+                    header: {
+                      cell: (props: any) => (
+                        <th {...props} style={{ backgroundColor: '#1B232A', color: '#fff', border: 'none' }}>
+                          {props.children}
+                        </th>
+                      ),
+                    },
+                  }}
+                  scroll={{ x: 'max-content' }}
+                />
+              </TabPane>
 
-      <TabPane tab="Сотрудники" key="3">
-        <Table
-          bordered
-          dataSource={employees}
-          pagination={false}
-          components={{
-            header: {
-              cell: (props: any) => (
-                <th {...props} style={{ backgroundColor: '#1B232A', color: '#fff', border: 'none' }}>
-                  {props.children}
-                </th>
-              ),
-            },
-          }}
+              <TabPane tab={<span style={{ color: activeKey === '3' ? 'red' : 'black' }}>Сотрудники</span>} key="3">
+                <Table
+                  bordered
+                  dataSource={employees}
+                  pagination={false}
+                  components={{
+                    header: {
+                      cell: (props: any) => (
+                        <th {...props} style={{ backgroundColor: '#1B232A', color: '#fff', border: 'none' }}>
+                          {props.children}
+                        </th>
+                      ),
+                    },
+                  }}
+    
+  
+
+
           columns={[
             { title: 'Имя', dataIndex: 'name', key: 'name' },
             { title: 'Должность', dataIndex: 'position', key: 'position' },
