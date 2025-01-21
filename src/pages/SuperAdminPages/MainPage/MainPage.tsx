@@ -26,6 +26,7 @@ const MainPage: React.FC = () => {
   }, [dispatch]);
 
 
+
   return (
     <div className="flex flex-col w-full h-[91vh] bg-gray-200" style={{ margin: '-20px' }}>
       <Row className="w-full h-full">

@@ -114,26 +114,30 @@ const OrganizationsPage = () => {
               >Организации</h1>
             </Col>
             <Col>
-              <Row align="middle" wrap={false} style={{ gap: "16px" }}>
+            
+              <Row align="middle" wrap={false} style={{ gap: "10px",  }}>
+              <DownloadButton
+                  url="/api/organizations/download"
+                  filename="organizations.pdf"
+                  buttonText="Скачать"
+                  
+                  
+                  
+                  icon={<DownloadIcon style={{ fontSize: 18, color: 'white',  }} />}
+                  buttonProps={{ className: 'bg-[#1b232a] text-white hover:bg-[#1B232A] ' }}
+                />
                 <Button
                   type="primary"
                   onClick={navigateToNewOrganization}
                   icon={<LibraryAddOutlinedIcon />}
-                  style={{ backgroundColor: "#3A5F73" }}
+                  style={{ backgroundColor: "#1B232A",marginRight: "15px" }}
                 >
                   {!isMobile && 'Создать организацию'}
                 </Button>
-                <DownloadButton
-                  url="/api/organizations/download"
-                  filename="organizations.pdf"
-                  buttonText="Скачать таблицу"
-                  icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
-                  buttonProps={{ className: 'bg-blue-500 text-white hover:bg-blue-600' }}
-                />
+                
               </Row>
             </Col>
           </Row>
-
           <Table
             components={{
               header: {
@@ -154,21 +158,25 @@ const OrganizationsPage = () => {
                     onClick={() =>
                       handleRedirectAndSaveOrganizationId(record.id)
                     }
-                    style={{ color: "#1890ff", fontWeight: "500" }}
+                    style={{
+                      color: "red",
+                      fontWeight: "500",
+                      textDecoration: "none",
+                      cursor: "pointer",
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.textDecoration = "underline")}
+                    onMouseOut={(e) => (e.currentTarget.style.textDecoration = "none")}
                   >
                     {text}
                   </a>
                 ),
               },
+              
+              
               {
-                title: "Адрес",
-                dataIndex: "organizationAddress",
-                key: "organizationAddress",
-              },
-              {
-                title: "Электронная почта",
-                dataIndex: "emailContactPerson",
-                key: "emailContactPerson",
+                title: "Контактное лицо",
+                dataIndex: "contactPerson",
+                key: "contactPerson",
               },
               {
                 title: "Номер телефона",
@@ -176,10 +184,16 @@ const OrganizationsPage = () => {
                 key: "contactInfo",
               },
               {
-                title: "Контактное лицо",
-                dataIndex: "contactPerson",
-                key: "contactPerson",
+                title: "Электронная почта",
+                dataIndex: "emailContactPerson",
+                key: "emailContactPerson",
               },
+              {
+                title: "Адрес",
+                dataIndex: "organizationAddress",
+                key: "organizationAddress",
+              },
+   
               {
                 title: "Дата регистрации",
                 dataIndex: "registrationDate",
@@ -192,17 +206,35 @@ const OrganizationsPage = () => {
                 key: "contractFile",
                 render: (text) => (
                   <>
-                    <a href={text} target="_blank" rel="noopener noreferrer">
+                    <a
+                      href={text}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: "red", textDecoration: "none" }}
+                      onMouseOver={(e) => (e.currentTarget.style.textDecoration = "underline")}
+                      onMouseOut={(e) => (e.currentTarget.style.textDecoration = "none")}
+                    >
                       Открыть
                     </a>
-                    
+              
                     <span style={{ margin: "0 8px" }}>|</span>
-                    <a href={text} target="_blank" rel="noopener noreferrer" download>
+                    <a
+                      href={text}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                      style={{ color: "red", textDecoration: "none" }}
+                      onMouseOver={(e) => (e.currentTarget.style.textDecoration = "underline")}
+                      onMouseOut={(e) => (e.currentTarget.style.textDecoration = "none")}
+                    >
                       Скачать
                     </a>
                   </>
                 ),
               },
+              
+             
+              
               
               {
                 title: "Тип подписки",
@@ -213,7 +245,7 @@ const OrganizationsPage = () => {
                 title: "Статус подписки",
                 dataIndex: "subscription_status",
                 key: "subscription_status",
-                render: (text) => <Progress percent={text} status="active" strokeColor="#3A5F73" />,
+                render: (text) => <Progress percent={text} status="active" strokeColor="red" />,
               },
               {
                 dataIndex: "actions",
@@ -222,21 +254,53 @@ const OrganizationsPage = () => {
                 align: "center",
                 render: (text, record) => (
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <Button
-                    // disabled={true}
-                    style={{ backgroundColor: "#3A5F73", color: "#fff", display: "flex", alignItems: "center" }}
-                    size="middle"
-                    onClick={() => handleEditOrganization(record)}
-                    icon={<EditOutlinedIcon />}
-                  >
-                    Изменить
-                  </Button>
+                    <Button
+                      style={{
+                        backgroundColor: "#1B232A",
+                        color: "#fff",
+                        display: "flex",
+                        alignItems: "center",
+                        // border: "1px solid red",
+                        transition: "all 0.3s ease", // Добавляет плавный переход
+                      }}
+                      size="middle"
+                      onClick={() => handleEditOrganization(record)}
+                      icon={<EditOutlinedIcon />}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "red"; // Красный фон
+                        e.currentTarget.style.borderColor = "red";     // Красный бордер
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "#1B232A"; // Исходный фон
+                        e.currentTarget.style.borderColor = "#1B232A";         // Исходный бордер
+                      }}
+                    >
+                      Изменить
+                    </Button>
+                    {/* <Button
+                      style={{
+                        backgroundColor: "#1B232A",
+                        color: "#fff",
+                        display: "flex",
+                        alignItems: "center",
+                        border: "1px solid red",
+                      }}
+                      size="middle"
+                      onClick={() => handleEditOrganization(record)}
+                      icon={<EditOutlinedIcon />}
+                      className="edit-button"
+                      
+                    >
+                      
+                      Изменить
+                    </Button> */}
+
                   <Button
                     disabled={true}
                     size="middle"
                     onClick={() => handleDeleteOrganization(record.id)}
                     style={{
-                      backgroundColor: "#3A5F73",
+                      backgroundColor: "#1B232A",
                       color: "#fff",
                     }}
                     icon={<ArchiveOutlinedIcon />}
