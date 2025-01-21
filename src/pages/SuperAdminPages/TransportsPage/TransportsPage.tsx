@@ -10,6 +10,7 @@ import DownloadButton from "../../../Components/DownloadButton";
 import DownloadIcon from '@mui/icons-material/Download';
 
 
+
 const TransportsPage = () => {
   const [cars, setCars] = useState<Car[]>([]);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -148,18 +149,20 @@ const TransportsPage = () => {
             <DownloadButton
               url="/api/transport/download"
               filename="transport.pdf"
-              buttonText="Скачать "
+              buttonText="Скачать"
               icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
-              buttonProps={{ className: "bg-[#1B232A] text-white hover:bg-[#1B232A]" }}
+              buttonProps={{ className: 'bg-[#1b232a] text-white hover:bg-["red"]' }} // Добавляем класс для кнопки
             />
+
             <Button
               type="primary"
               icon={<LibraryAddOutlinedIcon />}
               onClick={() => navigate("/master/create-transport")}
-              style={{ backgroundColor: "#1B232A" }}
+              className="custom-add-transport-btn" // Класс для кнопки добавления транспорта
             >
               Добавить транспорт
             </Button>
+
           </Row>
         </Col>
       </Row>

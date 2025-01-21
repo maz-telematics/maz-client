@@ -79,3 +79,34 @@
 .custom-tabs .ant-tabs-ink-bar {
   background-color: red !important; /* Красная полоса под активным табом */
 }
+/* Изменить цвет фона активной вкладки */
+/* Изменение цвета подчеркивания активной вкладки */
+.ant-tabs-ink-bar {
+  background-color: red !important; /* Цвет подчеркивания активной вкладки */
+}
+/* Для кнопки DownloadButton */
+/* Для кнопки DownloadButton */
+
+
+
+
+.custom-download-btn {
+  background-color: #1B232A;  /* Темный фон */
+  color: white;                /* Белый текст */
+  border: none;                /* Убираем рамку */
+}
+
+.custom-download-btn:hover {
+  background-color: #f87171;  /* Красный фон при наведении */
+}
+
+/* Для кнопки "Добавить транспорт" */
+.custom-add-transport-btn {
+  background-color: #1B232A;  /* Темный фон */
+  color: white;                /* Белый текст */
+  border: none;                /* Убираем рамку */
+}
+
+.custom-add-transport-btn:hover {
+  background-color: #f87171;  /* Красный фон при наведении */
+}
