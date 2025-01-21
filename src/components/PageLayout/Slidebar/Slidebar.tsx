@@ -9,8 +9,9 @@ import { MenuInfo } from "rc-menu/lib/interface";
 import { useDispatch, useSelector } from "react-redux";
 import { OpenSlideBarButton } from "./slidebar.styles";
 import SlidebarHeader from "./SlidebarHeader/SlidebarHeader";
-import { superAdminItems } from "./slidebarTools";
+import { directorItems, superAdminItems } from "./slidebarTools";
 import { useUser } from "../../../services/auth";
+import { showDirectorMain, showDirectorTransports, showDirectorEmpoyess, showDirectorReports } from "../../../Store/utils/directorModuleViewSlice";
 
 const Slidebar: React.FC = () => {
   const { user, isLoading } = useUser();
@@ -62,13 +63,31 @@ const Slidebar: React.FC = () => {
               break;
         }
         break;
+        case "ROLE_DIRECTOR":
+          switch (e.key) {
+            case "main":
+              dispatch(showDirectorMain());
+              break;
+            case "transports":
+              dispatch(showDirectorTransports());
+              break;
+            case "employees":
+              dispatch(showDirectorEmpoyess());
+              break;
+            case "reports":
+              dispatch(showDirectorReports());
+              break;
+          }
+          break;
     }
   };
 
   const getSlidebarItems = () => {
     switch (user?.role) {
       case "ROLE_SUPERADMIN":
-        return superAdminItems(); // Вызов функции
+        return superAdminItems();
+        case "ROLE_DIRECTOR":
+        return directorItems();
       default:
         return [];
     }

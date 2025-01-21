@@ -126,3 +126,27 @@ export const superAdminItems = (): MenuItem[] => {
   ];
 };
 
+export const directorItems = (): MenuItem[] =>  [
+  getItem(
+    <Link to="/director/main"  style={{color:"white" }}>Главная</Link>,
+    "main",
+    <DashboardIcon style={{ fontSize: 25,color:"white" }} />
+  ),
+  getItem(
+    <Link to="/director/transports" style={{color:"white" }}>Транспорт</Link>,
+    "transports",
+    <CommuteOutlinedIcon style={{ fontSize: 25,color:"white"}} />
+  ),
+  getItem(
+    <Link to="/director/employees" style={{color:"white" }}>Сотрудники</Link>,
+    "empoyess",
+    <PeopleAltOutlinedIcon style={{ fontSize: 25,color:"white"}} />
+  ),
+  getItem(
+    <Link to="/director/reports" style={{color:"white" }}>Отчёты</Link>,
+    "reports",
+    <AssessmentOutlinedIcon style={{ fontSize: 25 ,color:"white"}} />
+  ),
+
+];
+

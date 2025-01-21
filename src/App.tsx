@@ -8,6 +8,8 @@ import SuperAdminRoutes from "./routes/SuperAdminRotes";
 import SuperAdmin from "./pages/SuperAdminPages/SuperAdmin";
 import PrivacyPolicy from "./pages/shared/PrivacyPolicy";
 import AboutPage from "./pages/shared/AboutPage";
+import DirectorRoutes from "./routes/DirectorRoutes";
+import Director from "./pages/DirectorPages/DirectorPages";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -58,20 +60,11 @@ const App = () => {
                 <Route path="/master/:urlView" element={<SuperAdmin/>} />
               </Route>
             </Route>
-                {/* <Route element={<ProtectedRouteSuperAdmin />}>
-                  <Route path="/super-admin/main" element={<SuperAdminMainPage />} />
-                  <Route path="/super-admin/reports" element={<SuperAdminReportsPage />} />
-                  <Route path="/super-admin/archive" element={<SuperAdminArchivePage />} />
-                  <Route path="/super-admin/parameters" element={<SuperAdminCarTracking />} />
-                  <Route path="/super-admin/organizations" element={<OrganizationsPage />} />
-                  <Route path="/super-admin/transports" element={<TransportsPage />} />
-                  <Route path="/super-admin/transport/edit-car" element={<EditTransportPage />} />
-                  <Route path="/super-admin/transport/new-car" element={<CreateTransportPage />} />
-                  <Route path="/super-admin/organization" element={<OrganizationDetails />} />
-                  <Route path="/super-admin/new-organization" element={<CreateOrganizationPage />} />
-                  <Route path="/super-admin/transport" element={<TransportDashboard />} />
-                  <Route path="/super-admin/employees" element={<EmployeesPage />} />
-                </Route> */}
+            <Route element={<DirectorRoutes />}>
+              <Route path="/director" element={<Director />}>
+                <Route path="/director/:urlView" element={<Director/>} />
+              </Route>
+            </Route>
                 <Route path="/edit-profile" element={<EditProfile />} />
                 <Route path="*" element={<Navigate to="/not-found" replace />} />
               </Routes>

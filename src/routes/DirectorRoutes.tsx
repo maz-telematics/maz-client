@@ -1,7 +1,8 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useUser } from "../services/auth";
 import LoadingSpinner from "../Components/LoadingSpinner";
-const ProtectedRouteHead = () => {
+
+const DirectorRoutes = () => {
   const { user, isLoading } = useUser();
   if (isLoading) {
     return <LoadingSpinner />;
@@ -13,4 +14,4 @@ const ProtectedRouteHead = () => {
   return <Outlet />;
 };
 
-export default ProtectedRouteHead;
+export default DirectorRoutes;

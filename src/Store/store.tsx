@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch } from 'react-redux';
 import superAdminModuleViewSlice from "./utils/superAdminModuleViewSlice";
+import directorModuleViewSlice from "./utils/directorModuleViewSlice"
 import  slideBarSlice  from "./utils/slidebarSlice";
 import rolesSlice from './utils/rolesSlice';
 import transportSlice from './utils/transportSlice';
@@ -9,6 +10,7 @@ export const store = configureStore({
   reducer: {
     slidebar: slideBarSlice,
     superAdminView: superAdminModuleViewSlice,
+    directorView: directorModuleViewSlice,
     roles: rolesSlice,
     transports: transportSlice,
     [authSlice.reducerPath]: authSlice.reducer,

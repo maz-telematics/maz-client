@@ -1,7 +1,7 @@
 import { BatteryParameters, Parameters } from "../../../types/carTrackingTypes";
 import { Table, Tabs, Row, Col } from "antd";
 import { 
-  // columnsBatteryParameters,
+  columnsBatteryParameters,
    columnsBzpCommands
   , columnsDbkOutputs, 
   columnsElectricSystemParameters, columnsPowertrainSystemParameters, columnsTransportAirConditioning, 
@@ -168,7 +168,18 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
           <TabPane key="battery_parameters" tab="Параметры батареи">
             <Row gutter={[16, 16]}>
               <Col span={24}>
-                 <BatteryStateChart processedParameters={filterParametersByGroup<BatteryParameters>(processedParameters, "batteryParameters")} />
+                 {/* <BatteryStateChart processedParameters={filterParametersByGroup<BatteryParameters>(processedParameters, "batteryParameters")} /> */}
+                 <Table
+                  bordered
+                  pagination={false}
+                  columns={columnsBatteryParameters}
+                  dataSource={processedParameters.map(parameter => ({
+                    ...parameter.electricSystemParameters,
+                    date: parameter.date,
+                  }))} 
+                  scroll={{ x: "max-content" }}
+                  style={{ maxWidth: "100%", overflowX: "auto" }}
+                />
               </Col>
             </Row>
           </TabPane>
@@ -176,7 +187,7 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
           <TabPane key="electric_system_parameters" tab="Параметры электрической системы">
             <Row gutter={[16, 16]}>
               <Col span={24}>
-                {/* <Table
+                <Table
                   bordered
                   pagination={false}
                   columns={columnsElectricSystemParameters}
@@ -186,8 +197,8 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
                   }))} 
                   scroll={{ x: "max-content" }}
                   style={{ maxWidth: "100%", overflowX: "auto" }}
-                /> */}
-                <ElectricSystemParametersChart processedParameters={processedParameters}/>
+                />
+                {/* <ElectricSystemParametersChart processedParameters={processedParameters}/> */}
               </Col>
             </Row>
           </TabPane>
