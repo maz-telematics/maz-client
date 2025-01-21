@@ -44,6 +44,9 @@ export const superAdminModuleViewSlice = createSlice({
     showSuperAdminProfile:(state) => {
       state.view = "profile"
     },
+    showSuperAdminFirmware:(state) => {
+      state.view = "firmware"
+    },
   },
 });
 
@@ -60,6 +63,7 @@ export const {
     showSuperAdminOrganization,
     showSuperAdminCreateTransport,
     showSuperAdminProfile,
+    showSuperAdminFirmware,
 } = superAdminModuleViewSlice.actions;
 
 export default superAdminModuleViewSlice.reducer;

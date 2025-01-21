@@ -189,7 +189,7 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
             minHeight: "100%",
             height: "auto",
             position: "fixed",
-            top: 64,
+            top: 60,
             left: 0,
             zIndex: 99,
           }}

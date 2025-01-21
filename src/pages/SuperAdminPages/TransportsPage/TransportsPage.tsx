@@ -9,8 +9,6 @@ import axiosInstance from "../../../services/axiosInstance";
 import DownloadButton from "../../../Components/DownloadButton";
 import DownloadIcon from '@mui/icons-material/Download';
 
-
-
 const TransportsPage = () => {
   const [cars, setCars] = useState<Car[]>([]);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -67,15 +65,14 @@ const TransportsPage = () => {
       key: "model",
       render: (model: string, record: Car) => (
         <a
-          onClick={() => navigate(`/master/transport?id=${record.id}`)}
-          style={{ 
-            color: "red", 
-            fontWeight: 500,
-            textDecoration: "none",
-            transition: "text-decoration 0.3s ease",
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"}
-          onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}
+        onClick={() => {
+          // Сохраняем VIN или id в sessionStorage
+          sessionStorage.setItem("id", record.id);
+          
+          // Перенаправляем на страницу
+          navigate(`/master/transport?id=${record.id}`);
+        }}
+        style={{ color: "#1890ff", fontWeight: 500 }}
         >
           {model}
         </a>
@@ -138,36 +135,49 @@ const TransportsPage = () => {
     },
   ];
 
+  const isMobile = window.innerWidth < 768;
+
   return (
-    <div style={{ padding: "16px", backgroundColor: "#E1E1E1" }}>
-      <Row justify="space-between" align="middle" style={{ marginBottom: "24px", paddingRight: "16px" }}>
-        <Col>
-          <h1 style={{ margin: 0, fontSize: "32px", fontWeight: "bold" }}>Транспорт</h1>
-        </Col>
-        <Col>
-          <Row align="middle" style={{ gap: "10px" }}>
-            <DownloadButton
-              url="/api/transport/download"
-              filename="transport.pdf"
-              buttonText="Скачать"
-              icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
-              buttonProps={{ className: 'bg-[#1b232a] text-white hover:bg-["red"]' }} // Добавляем класс для кнопки
-            />
 
-            <Button
-              type="primary"
-              icon={<LibraryAddOutlinedIcon />}
-              onClick={() => navigate("/master/create-transport")}
-              className="custom-add-transport-btn" // Класс для кнопки добавления транспорта
-            >
-              Добавить транспорт
-            </Button>
-
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      width: "100%",
+      backgroundColor: "#E1E1E1",
+    }}>
+      <Row style={{
+        padding: "0 40px",
+      }}>
+           <Col xs={24}>
+          <Row justify="space-between" style={{ marginBottom: 16, alignItems: 'flex-end' }}>
+            <Col>
+              <h1
+                style={{
+                  margin: 0,
+                  fontSize: isMobile ? '24px' : '32px',
+                }}
+              >Транспорт</h1>
+            </Col>
+         <Col>
+               <Row align="middle" wrap={false} style={{ gap: "16px" }}>
+                <Button
+                  type="primary"
+                  onClick={() => navigate("/master/create-transport")}
+                  icon={<LibraryAddOutlinedIcon />}
+                  style={{ backgroundColor: "#3A5F73" }}
+                >
+                  {!isMobile && 'Добавить транспорт'}
+                </Button>
+                <DownloadButton
+                  url="/api/transports/download"
+                  filename="transports.pdf"
+                  buttonText="Скачать таблицу"
+                  icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
+                  buttonProps={{ className: 'bg-blue-500 text-white hover:bg-blue-600' }}
+                />
+              </Row> 
+            </Col>
           </Row>
-        </Col>
-      </Row>
-  
-
       <Table
         columns={columns}
         dataSource={cars}
@@ -190,6 +200,8 @@ const TransportsPage = () => {
         pagination={false}
         scroll={{ x: "max-content" }}
       />
+       </Col>
+       </Row>
       <Modal
         title="Подтверждение архивирования"
         visible={deleteModalVisible}

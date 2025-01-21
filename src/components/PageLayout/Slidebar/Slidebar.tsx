@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { MenuOutlined } from "@ant-design/icons";
 import { UserInfoContext } from "../../UserProvider/UserProvider";
 import { RootState } from "../../../Store/store";
-import { showSuperAdminArchive, showSuperAdminEmpoyess, showSuperAdminMain, showSuperAdminOrganizations, showSuperAdminReports, showSuperAdminTransports } from "../../../Store/utils/superAdminModuleViewSlice";
+import { showSuperAdminArchive, showSuperAdminEmpoyess, showSuperAdminFirmware, showSuperAdminMain, showSuperAdminOrganizations, showSuperAdminReports, showSuperAdminTransports } from "../../../Store/utils/superAdminModuleViewSlice";
 import { toggleSlicebar } from "../../../Store/utils/slidebarSlice";
 import { Menu } from "antd";
 import { MenuInfo } from "rc-menu/lib/interface";
@@ -57,6 +57,9 @@ const Slidebar: React.FC = () => {
           case "archive":
             dispatch(showSuperAdminArchive());
             break;
+          case "firmware":
+            dispatch(showSuperAdminFirmware());
+              break;
         }
         break;
     }
@@ -75,7 +78,7 @@ const Slidebar: React.FC = () => {
     <div className="h-full flex flex-col" style={{width: "94px", height: "100vh"}}>
       <Menu
         style={{ backgroundColor: '#1B232A' }}
-        className="h-full m -6"
+        className="h-full m -6 pt-5"
         onClick={handleMenuClick}
         mode="inline"
         items={getSlidebarItems()} // Вызов функции

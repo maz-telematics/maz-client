@@ -68,6 +68,7 @@ const filterParametersByGroup = <T extends Record<string, any>>(
 const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
   const [processedParameters, setProcessedParameters] = useState<any[]>([]);
   const id = sessionStorage.getItem("id");
+  const user = localStorage.getItem("user");
 
   
   const getParameters = async (id: string, date: string): Promise<[]> => {
@@ -103,7 +104,7 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
     };
 
     fetchAndProcessParameters();
-  }, [id, selectedDate]); 
+  }, [user, selectedDate]); 
 
   return (
     <>
