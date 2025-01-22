@@ -169,18 +169,44 @@ const EmployeesPage: React.FC = () => {
                                     url="/api/employees/download"
                                     filename="employees.pdf"
                                     buttonText="Скачать таблицу"
-                                    icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
-                                    buttonProps={{ className: 'bg-[#1B232A] text-white hover:bg-[#1B232A]' }}
+                                    icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
+                                    buttonProps={{
+                                        style: {
+                                            border: "none", // Убираем рамку
+                                            outline: "none", // Убираем обводку при фокусе
+                                            cursor: "pointer", // Курсор в виде указателя
+                                            backgroundColor: "#1B232A", // Исходный фон
+                                            color: "#fff", // Цвет текста
+                                            transition: "all 0.3s ease", // Плавный переход
+                                        },
+                                        onMouseOver: (e) => {
+                                            e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
+                                        },
+                                        onMouseOut: (e) => {
+                                            e.currentTarget.style.backgroundColor = "#1B232A"; // Исходный фон при убирании мыши
+                                        },
+                                    }}
                                 />
+
                                 <Button
-                                    //   disabled={true}
                                     type="primary"
                                     icon={<UserAddOutlined />}
                                     onClick={handleAdd}
-                                    style={{ backgroundColor: "#1B232A", }}
+                                    style={{
+                                        backgroundColor: "#1B232A", // Исходный фон
+                                        color: "#fff", // Цвет текста
+                                        transition: "all 0.3s ease", // Плавный переход
+                                    }}
+                                    onMouseOver={(e) => {
+                                        e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
+                                    }}
+                                    onMouseOut={(e) => {
+                                        e.currentTarget.style.backgroundColor = "#1B232A"; // Исходный фон при убирании мыши
+                                    }}
                                 >
-                                    {!isMobile && 'Добавить сотрудника'}
+                                    {!isMobile && "Добавить сотрудника"}
                                 </Button>
+
                                 
                             </Row>
                         </Col>

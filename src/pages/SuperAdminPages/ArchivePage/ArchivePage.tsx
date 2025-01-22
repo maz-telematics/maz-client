@@ -94,15 +94,45 @@ const ArchivePage: React.FC = () => {
                       <Button
                         icon={<RestoreOutlinedIcon />}
                         onClick={() => restoreTransport(transport.id)}
-                        style={responsiveButtonStyle}
+                        style={{
+                          backgroundColor: "#1B232A", // Исходный фон
+                          color: "#fff", // Цвет текста
+                          transition: "all 0.3s ease", // Плавный переход
+                          cursor: "pointer", // Курсор в виде указателя
+                          border: "none", // Убираем рамку
+                          marginRight: "10px", // Отступ справа
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.backgroundColor = "#1B232A"; // Возврат к исходному фону
+                        }}
                       >
-                          {!isMobile && 'Востановить транспорт'}
+                        {!isMobile && "Востановить транспорт"}
                       </Button>
+
                       <Button
                         icon={<DeleteOutlineOutlinedIcon />}
                         onClick={() => deleteTransport(transport.id)}
-                        style={responsiveButtonStyle}
-                      >  {!isMobile && 'Удалить транспорт'}</Button>
+                        style={{
+                          backgroundColor: "#1B232A", // Исходный фон
+                          color: "#fff", // Цвет текста
+                          transition: "all 0.3s ease", // Плавный переход
+                          cursor: "pointer", // Курсор в виде указателя
+                          border: "none", // Убираем рамку
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.backgroundColor = "#1B232A"; // Возврат к исходному фону
+                        }}
+                      >
+                        {!isMobile && "Удалить транспорт"}
+                      </Button>
+
+
                     </div>
                   </div>
                 </li>
@@ -124,18 +154,51 @@ const ArchivePage: React.FC = () => {
                       </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <Button
-                        icon={<RestoreOutlinedIcon />}
-                        onClick={() => restoreOrganization(organization.id)}
-                        style={responsiveButtonStyle}
-                      >
-                            {!isMobile && 'Востановить организацию'}
-                      </Button>
-                      <Button
-                        icon={<DeleteOutlineOutlinedIcon />}
-                        onClick={() => deleteOrganization(organization.id)}
-                        style={responsiveButtonStyle}
-                      >  {!isMobile && 'Удалить организацию'}</Button>
+                    <div style={{ display: "flex", gap: "10px" }}>
+                    <div style={{ display: "flex", gap: "10px" }}>
+                          <Button
+                            icon={<RestoreOutlinedIcon />}
+                            onClick={() => restoreOrganization(organization.id)}
+                            style={{
+                              backgroundColor: "#1B232A", // Исходный фон
+                              color: "#fff", // Цвет текста
+                              transition: "all 0.3s ease", // Плавный переход
+                              cursor: "pointer", // Курсор в виде указателя
+                              border: "none", // Убираем рамку
+                            }}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.backgroundColor = "#1B232A"; // Возврат к исходному фону
+                            }}
+                          >
+                            {!isMobile && "Востановить организацию"}
+                          </Button>
+
+                          <Button
+                            icon={<DeleteOutlineOutlinedIcon />}
+                            onClick={() => deleteOrganization(organization.id)}
+                            style={{
+                              backgroundColor: "#1B232A", // Исходный фон
+                              color: "#fff", // Цвет текста
+                              transition: "all 0.3s ease", // Плавный переход
+                              cursor: "pointer", // Курсор в виде указателя
+                              border: "none", // Убираем рамку
+                            }}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.backgroundColor = "#1B232A"; // Возврат к исходному фону
+                            }}
+                          >
+                            {!isMobile && "Удалить организацию"}
+                          </Button>
+                        </div>
+
+                      </div>
+
                     </div>
                   </div>
                 </li>

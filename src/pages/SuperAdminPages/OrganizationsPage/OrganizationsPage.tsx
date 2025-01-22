@@ -116,25 +116,25 @@ const OrganizationsPage = () => {
             <Col>
             
               <Row align="middle" wrap={false} style={{ gap: "10px",  }}>
-              <DownloadButton
+                <DownloadButton
                   url="/api/organizations/download"
                   filename="organizations.pdf"
                   buttonText="Скачать"
-                  
-                  
-                  
-                  icon={<DownloadIcon style={{ fontSize: 18, color: 'white',  }} />}
-                  buttonProps={{ className: 'bg-[#1b232a] text-white hover:bg-[#1B232A] ' }}
+                  icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
+                  buttonProps={{
+                    className: "add-transport-btn", // Общий класс для стиля
+                  }}
                 />
                 <Button
                   type="primary"
                   onClick={navigateToNewOrganization}
                   icon={<LibraryAddOutlinedIcon />}
-                  style={{ backgroundColor: "#1B232A",marginRight: "15px" }}
+                  className="add-transport-btn" // Общий класс для стиля
                 >
-                  {!isMobile && 'Создать организацию'}
+                  {!isMobile && "Создать организацию"}
                 </Button>
-                
+
+
               </Row>
             </Col>
           </Row>

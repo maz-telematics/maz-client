@@ -342,46 +342,67 @@ const OrganizationDetails: React.FC = () => {
   };
   const isMobile = window.innerWidth < 768;
 
- 
+
   const operations: { [key: string]: JSX.Element } = {
     1: (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'flex-end' }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <DownloadButton
             url="/api/organization_transport/download"
             filename="organization_transport.pdf"
             buttonText="Скачать транспорт"
-            icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
+            icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
             buttonProps={{
-              // className: 'bg-[#1b232a] text-white',
               style: {
-                border: 'none', // Убираем рамку
-                outline: 'none', // Убираем обводку при фокусе
-                cursor: 'pointer', // Курсор в виде указателя
-                backgroundColor: "#1B232A",
-              }
+                border: "none", // Убираем рамку
+                outline: "none", // Убираем обводку при фокусе
+                cursor: "pointer", // Курсор в виде указателя
+                backgroundColor: "#1B232A", // Исходный фон
+                color: "#fff", // Цвет текста
+                transition: "all 0.3s ease", // Плавный переход
+              },
+              onMouseOver: (e) => {
+                e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
+                e.currentTarget.style.borderColor = "red"; // Красный бордер при наведении
+              },
+              onMouseOut: (e) => {
+                e.currentTarget.style.backgroundColor = "#1B232A"; // Исходный фон при убирании мыши
+                e.currentTarget.style.borderColor = "none"; // Убираем бордер
+              },
             }}
           />
 
           <Button
             onClick={() => setVisible(true)}
             style={{
-              marginLeft: '10px',
-              backgroundColor: '#1b232a', // Фон кнопки
-              color: '#fff', // Цвет текста
-              padding: '0 16px', // Отступы
-              display: 'flex',
-              alignItems: 'center', // Центрируем иконку и текст
-              height: 'auto', // Автоматическая высота
-              border: 'none', // Убираем рамки
-              outline: 'none', // Убираем контур при фокусе
-              textDecoration: 'none', // Убираем подчеркивание текста
+              marginLeft: "10px",
+              backgroundColor: "#1b232a", // Фон кнопки
+              color: "#fff", // Цвет текста
+              padding: "0 16px", // Отступы
+              display: "flex",
+              alignItems: "center", // Центрируем иконку и текст
+              height: "auto", // Автоматическая высота
+              border: "none", // Убираем рамки
+              outline: "none", // Убираем контур при фокусе
+              textDecoration: "none", // Убираем подчеркивание текста
+              transition: "all 0.3s ease", // Плавный переход
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
+              e.currentTarget.style.borderColor = "red"; // Красный бордер при наведении
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = "#1B232A"; // Исходный фон при убирании мыши
+              e.currentTarget.style.borderColor = "none"; // Убираем бордер
             }}
           >
             {/* Иконка */}
-            <DownloadIcon style={{ fontSize: 18, color: 'white', marginRight: '8px' }} />
+            <DownloadIcon
+              style={{ fontSize: 18, color: "white", marginRight: "8px" }}
+            />
             Добавить транспорт
           </Button>
+
 
 
     </div>
@@ -392,48 +413,79 @@ const OrganizationDetails: React.FC = () => {
         url="/api/organization_subscriptions/download"
         filename="organization_subscriptions.pdf"
         buttonText="Скачать подписки"
-        icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
+        icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
         buttonProps={{
-          
           style: {
-            border: 'none', // Убираем рамку
-            outline: 'none', // Убираем обводку при фокусе
-            cursor: 'pointer', // Курсор в виде указателя
-            backgroundColor: "#1B232A",
-          }
+            border: "none", // Убираем рамку
+            outline: "none", // Убираем обводку при фокусе
+            cursor: "pointer", // Курсор в виде указателя
+            backgroundColor: "#1B232A", // Исходный фон
+            color: "#fff", // Цвет текста
+            transition: "all 0.3s ease", // Плавный переход
+          },
+          onMouseOver: (e) => {
+            e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
+            e.currentTarget.style.borderColor = "red"; // Красный бордер при наведении
+          },
+          onMouseOut: (e) => {
+            e.currentTarget.style.backgroundColor = "#1B232A"; // Исходный фон при убирании мыши
+            e.currentTarget.style.borderColor = "none"; // Убираем бордер
+          },
         }}
       />
+
 
     ),
     3: (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'flex-end' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <DownloadButton 
-  url="/api/organization_subscriptions/download"
-  filename="organization_subscriptions.pdf"
-  buttonText="Скачать подписки"
-  icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
-  buttonProps={{ 
-    
-    style: {
-      border: 'none', // Убираем рамку
-      outline: 'none', // Убираем обводку при фокусе
-      cursor: 'pointer', // Курсор в виде указателя
-      backgroundColor: "red",
-    } 
-  }}
-/>
+          <DownloadButton
+            url="/api/organization_subscriptions/download"
+            filename="organization_subscriptions.pdf"
+            buttonText="Скачать подписки"
+            icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
+            buttonProps={{
+              style: {
+                border: "none", // Убираем рамку
+                outline: "none", // Убираем обводку при фокусе
+                cursor: "pointer", // Курсор в виде указателя
+                backgroundColor: "#1B232A", // Исходный фон
+                color: "#fff", // Цвет текста
+                transition: "all 0.3s ease", // Плавный переход
+              },
+              onMouseOver: (e) => {
+                e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
+              },
+              onMouseOut: (e) => {
+                e.currentTarget.style.backgroundColor = "#1B232A"; // Исходный фон при убирании мыши
+              },
+            }}
+          />
 
-     <Button
-        disabled={true}
-        style={{ fontSize: isMobile ? '12px' : '16px',   marginLeft: '10px', width: isMobile ? '100%' : '200px', backgroundColor: "#1b232a  ", color: "#fff" }}
-        
-        onClick={() => {
-          setEditingEmployee(null);
-          setIsEmployeeModalVisible(true);
-        }}
-      > Добавить сотрудника
-       </Button>
+          <Button
+            disabled={true}
+            style={{
+              fontSize: isMobile ? "12px" : "16px",
+              marginLeft: "10px",
+              width: isMobile ? "100%" : "200px",
+              backgroundColor: "#1B232A", // Исходный фон
+              color: "#fff", // Цвет текста
+              transition: "all 0.3s ease", // Плавный переход
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = "#1B232A"; // Исходный фон при убирании мыши
+            }}
+            onClick={() => {
+              setEditingEmployee(null);
+              setIsEmployeeModalVisible(true);
+            }}
+          >
+            Добавить сотрудника
+          </Button>
+
       </div>
     </div>
     ),

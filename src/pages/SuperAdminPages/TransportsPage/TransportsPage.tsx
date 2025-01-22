@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Modal, Button, Row, Col, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { Car } from "../../../types/transportListTypes";
@@ -8,6 +8,7 @@ import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
 import axiosInstance from "../../../services/axiosInstance";
 import DownloadButton from "../../../Components/DownloadButton";
 import DownloadIcon from '@mui/icons-material/Download';
+import moment from "moment"; // Импортируем moment для форматирования дат
 
 const TransportsPage = () => {
   const [cars, setCars] = useState<Car[]>([]);
@@ -65,14 +66,14 @@ const TransportsPage = () => {
       key: "model",
       render: (model: string, record: Car) => (
         <a
-        onClick={() => {
-          // Сохраняем VIN или id в sessionStorage
-          sessionStorage.setItem("id", record.id);
-          
-          // Перенаправляем на страницу
-          navigate(`/master/transport?id=${record.id}`);
-        }}
-        style={{ color: "#1890ff", fontWeight: 500 }}
+          onClick={() => {
+            // Сохраняем VIN или id в sessionStorage
+            sessionStorage.setItem("id", record.id);
+            
+            // Перенаправляем на страницу
+            navigate(`/master/transport?id=${record.id}`);
+          }}
+          style={{ color: "red", fontWeight: 500 }}
         >
           {model}
         </a>
@@ -100,7 +101,14 @@ const TransportsPage = () => {
     },
     { title: "Тип транспорта", dataIndex: "vehicleType", key: "vehicleType" },
     { title: "Тип двигателя", dataIndex: "engineType", key: "engineType" },
-    { title: "Год выпуска", dataIndex: "yearRelease", key: "yearRelease" },
+    {
+      title: "Год выпуска",
+      dataIndex: "yearRelease",
+      key: "yearRelease",
+      render: (yearRelease: string | Date) => {
+        return moment(yearRelease).format("YYYY-MM-DD"); // Форматируем дату в YYYY-MM-DD
+      }
+    },
     {
       title: "Блок телематики",
       dataIndex: "telemetryBlock",
@@ -117,11 +125,17 @@ const TransportsPage = () => {
           <Button
             size="middle"
             onClick={() => navigate(`/master/edit-transport?id=${record.id}`)}
-            style={{ backgroundColor: "#1B232A", color: "#fff" }}
+            style={{
+              backgroundColor: "#1B232A",
+              color: "#fff",
+              border: "none", // Убираем стандартные границы
+            }}
             icon={<ModeEditOutlinedIcon />}
+            className="edit-button" // Добавляем класс для применения стилей
           >
             Изменить
           </Button>
+
           <Button
             size="middle"
             onClick={() => handleDelete(record.id, record.organization_id)}
@@ -138,7 +152,6 @@ const TransportsPage = () => {
   const isMobile = window.innerWidth < 768;
 
   return (
-
     <div style={{
       display: "flex",
       flexDirection: "column",
@@ -148,7 +161,7 @@ const TransportsPage = () => {
       <Row style={{
         padding: "0 40px",
       }}>
-           <Col xs={24}>
+        <Col xs={24}>
           <Row justify="space-between" style={{ marginBottom: 16, alignItems: 'flex-end' }}>
             <Col>
               <h1
@@ -158,50 +171,57 @@ const TransportsPage = () => {
                 }}
               >Транспорт</h1>
             </Col>
-         <Col>
-               <Row align="middle" wrap={false} style={{ gap: "16px" }}>
+            <Col>
+              <Row align="middle" wrap={false} style={{ gap: "16px" }}>
                 <Button
                   type="primary"
                   onClick={() => navigate("/master/create-transport")}
                   icon={<LibraryAddOutlinedIcon />}
-                  style={{ backgroundColor: "#3A5F73" }}
+                  style={{
+                    backgroundColor: "#1B232A", // Исходный цвет фона
+                    border: "none", // Убираем стандартные границы
+                  }}
+                  className="add-transport-btn"
                 >
                   {!isMobile && 'Добавить транспорт'}
                 </Button>
+
                 <DownloadButton
                   url="/api/transports/download"
                   filename="transports.pdf"
                   buttonText="Скачать таблицу"
                   icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
-                  buttonProps={{ className: 'bg-blue-500 text-white hover:bg-blue-600' }}
+                  buttonProps={{ className: 'download-btn' }}
                 />
-              </Row> 
+
+
+              </Row>
             </Col>
           </Row>
-      <Table
-        columns={columns}
-        dataSource={cars}
-        rowKey={(record) => record.id}
-        components={{
-          header: {
-            cell: (props: any) => (
-              <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff", border: "none" }}>
-                {props.children}
-              </th>
-            ),
-          },
-        }}
-        bordered
-        style={{
-          backgroundColor: "#F7F9FB",
-          borderRadius: "8px",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-        }}
-        pagination={false}
-        scroll={{ x: "max-content" }}
-      />
-       </Col>
-       </Row>
+          <Table
+            columns={columns}
+            dataSource={cars}
+            rowKey={(record) => record.id}
+            components={{
+              header: {
+                cell: (props: any) => (
+                  <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff", border: "none" }}>
+                    {props.children}
+                  </th>
+                ),
+              },
+            }}
+            bordered
+            style={{
+              backgroundColor: "#F7F9FB",
+              borderRadius: "8px",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+            }}
+            pagination={false}
+            scroll={{ x: "max-content" }}
+          />
+        </Col>
+      </Row>
       <Modal
         title="Подтверждение архивирования"
         visible={deleteModalVisible}
