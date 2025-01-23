@@ -14,6 +14,7 @@ const TransportDashboard = () => {
   });
 
   const [activeTab, setActiveTab] = useState("params");
+  const [hoveredButton, setHoveredButton] = useState<string | null>(null); // Состояние для наведения на кнопки
 
   const onTabChange = (e: any) => {
     setActiveTab(e.target.value);
@@ -27,86 +28,112 @@ const TransportDashboard = () => {
   const disableFutureDates = (current: Dayjs | null): boolean => {
     return current ? current.isAfter(dayjs().endOf("day")) : false;
   };
+
   const isMobile = window.innerWidth <= 768;
+
+  // Функция для определения фона кнопки
+  const getButtonBackgroundColor = (value: string) => {
+    if (hoveredButton === value) return "#FF0000"; // Красный при наведении
+    if (activeTab === value) return "#FF0000"; // Красный, если кнопка активна
+    return "#1B232A"; // Стандартный фон
+  };
+
   return (
-    <div style={{ display: "flex", padding: "0 40px", overflowX: "hidden", flexDirection: "column", width: "100%",  backgroundColor: "#E1E1E1" }}>
-      <div
+    <div
       style={{
         display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "20px",
-        flexDirection: isMobile ? "column" : "row", 
+        padding: "0 40px",
+        overflowX: "hidden",
+        flexDirection: "column",
+        width: "100%",
+        backgroundColor: "#E1E1E1",
       }}
     >
-      <Radio.Group
-        value={activeTab}
-        onChange={onTabChange}
+      <div
         style={{
           display: "flex",
-          flexWrap: isMobile ? "wrap" : "nowrap", 
-          marginBottom: isMobile ? "10px" : "0", 
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+          flexDirection: isMobile ? "column" : "row",
         }}
       >
-        <Radio.Button
-          value="params"
+        <Radio.Group
+          value={activeTab}
+          onChange={onTabChange}
           style={{
-            backgroundColor: activeTab === "params" ? "#1B232A" : "#F7F9FB",
-            color: activeTab === "params" ? "#fff" : "#1B232A",
-            borderColor: "#1B232A",
-            borderRadius: "4px",
-            margin: "0 5px",
-            transition: "background-color 0.3s, color 0.3s",
-            fontSize: isMobile ? "12px" : "14px",
+            display: "flex",
+            flexWrap: isMobile ? "wrap" : "nowrap",
+            marginBottom: isMobile ? "10px" : "0",
           }}
         >
-          Параметры
-        </Radio.Button>
+          <Radio.Button
+            value="params"
+            style={{
+              backgroundColor: getButtonBackgroundColor("params"),
+              color: "#fff",
+              border: "none",
+              borderRadius: "4px",
+              margin: "0 5px",
+              transition: "background-color 0.3s, color 0.3s",
+              fontSize: isMobile ? "12px" : "14px",
+            }}
+            onMouseEnter={() => setHoveredButton("params")}
+            onMouseLeave={() => setHoveredButton(null)}
+          >
+            Параметры
+          </Radio.Button>
 
-        <Radio.Button
-          value="map"
-          style={{
-            backgroundColor: activeTab === "map" ? "#1B232A" : "#F7F9FB",
-            color: activeTab === "map" ? "#fff" : "#1B232A",
-            borderColor: "#1B232A",
-            borderRadius: "4px",
-            margin: "0 5px",
-            transition: "background-color 0.3s, color 0.3s",
-            fontSize: isMobile ? "12px" : "14px", 
-          }}
-        >
-          Карта
-        </Radio.Button>
-        
-        <Radio.Button
-          value="errors"
-          style={{
-            backgroundColor: activeTab === "errors" ? "#1B232A" : "#F7F9FB",
-            color: activeTab === "errors" ? "#fff" : "#1B232A",
-            borderColor: "#1B232A",
-            borderRadius: "4px",
-            margin: "0 5px",
-            transition: "background-color 0.3s, color 0.3s",
-            fontSize: isMobile ? "12px" : "14px",
-          }}
-        >
-          Ошибки
-        </Radio.Button>
-      </Radio.Group>
-      <ConfigProvider locale={locale}>
-        <DatePicker
-          placeholder="Выбрать дату"
-          format="YYYY-MM-DD"
-          value={selectedDate}
-          onChange={(date) => date && onSelectDate(date)}
-          style={{
-            width: isMobile ? "100%" : "270px", 
-            fontSize: isMobile ? "12px" : "14px", 
-          }}
-          disabledDate={disableFutureDates}
-        />
-      </ConfigProvider>
-    </div>
+          <Radio.Button
+            value="map"
+            style={{
+              backgroundColor: getButtonBackgroundColor("map"),
+              color: "#fff",
+              border: "none",
+              borderRadius: "4px",
+              margin: "0 5px",
+              transition: "background-color 0.3s, color 0.3s",
+              fontSize: isMobile ? "12px" : "14px",
+            }}
+            onMouseEnter={() => setHoveredButton("map")}
+            onMouseLeave={() => setHoveredButton(null)}
+          >
+            Карта
+          </Radio.Button>
+
+          <Radio.Button
+            value="errors"
+            style={{
+              backgroundColor: getButtonBackgroundColor("errors"),
+              color: "#fff",
+              border: "none",
+              borderRadius: "4px",
+              margin: "0 5px",
+              transition: "background-color 0.3s, color 0.3s",
+              fontSize: isMobile ? "12px" : "14px",
+            }}
+            onMouseEnter={() => setHoveredButton("errors")}
+            onMouseLeave={() => setHoveredButton(null)}
+          >
+            Ошибки
+          </Radio.Button>
+        </Radio.Group>
+
+        <ConfigProvider locale={locale}>
+          <DatePicker
+            placeholder="Выбрать дату"
+            format="YYYY-MM-DD"
+            value={selectedDate}
+            onChange={(date) => date && onSelectDate(date)}
+            style={{
+              width: isMobile ? "100%" : "270px",
+              fontSize: isMobile ? "12px" : "14px",
+            }}
+            disabledDate={disableFutureDates}
+          />
+        </ConfigProvider>
+      </div>
+
       {activeTab === "map" && (
         <div style={{ width: "100%", height: "75vh", borderRadius: "8px", overflow: "hidden" }}>
           <Map selectedDate={selectedDate} />

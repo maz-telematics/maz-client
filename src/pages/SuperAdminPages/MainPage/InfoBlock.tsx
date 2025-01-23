@@ -11,7 +11,7 @@ const InfoBlock: React.FC<InfoBlockProps> = ({ icon, count, label }) => (
   <Row className="items-center h-full">
     <Col
       span={1}
-      className="flex items-center justify-center text-blue-500 text-4xl bg-gray-100 rounded-full"
+      className="flex items-center justify-center text-red-500 text-4xl bg-gray-100 rounded-full"
     >
       {icon}
     </Col>

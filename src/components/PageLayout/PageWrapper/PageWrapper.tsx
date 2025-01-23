@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Grid, Col, Row, Layout, Divider, Badge, Spin } from "antd";
 import { MessageOutlined } from "@ant-design/icons";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { RootState } from "../../../Store/store";
 import { useGetCurrentUserQuery, useLogoutMutation } from "../../../Store/apis/authApi";
@@ -63,7 +63,6 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
           right: 0,
           zIndex: 100,
         }}
-        
       >
         {menu && (
           <Row
@@ -92,7 +91,6 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
                     marginRight: "10px",
                     flexShrink: 0,
                     cursor: "pointer",
-                  
                   }}
                 />
               </Link>
@@ -136,7 +134,6 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
               <Badge count={0} showZero>
                 <MessageOutlined style={{ fontSize: "24px", color: "white" }} />
               </Badge>
-             
               <div
                 style={{
                   display: "flex",
@@ -159,7 +156,7 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
                     lineHeight: "1.2",
                   }}
                 >
-                  {user?.name || "Никитка "}
+                  {user?.name || "Никитка " }
                 </span>
               </div>
               <div
@@ -202,7 +199,6 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
             marginLeft: slidebarState ?  94: 250,
             overflow: "hidden",
             backgroundColor: "#E1E1E1",
-
           }}
         >
           {isFetchingUser ? <Spin /> : children}
@@ -221,7 +217,7 @@ const MobileWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
       <div>
         <Header
           style={{
-            backgroundColor: "white",
+            backgroundColor: "#1B232A",  // Changed from white to match the desktop theme
             padding: "0 20px",
             position: "fixed",
             top: 0,
@@ -265,7 +261,7 @@ const MobileWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
                     style={{
                       fontSize: "16px",
                       fontWeight: "600",
-                      color: "#1B232A",
+                      color: "white",
                       margin: 0,
                       letterSpacing: "1px",
                       whiteSpace: "nowrap",

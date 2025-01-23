@@ -286,7 +286,8 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
   return (
     <>
       {processedParameters.length > 0 && (
-        <Tabs defaultActiveKey="transport_lighting" tabPosition="top" type="card" style={{ width: "100%" }}>
+        <Tabs defaultActiveKey="transport_lighting" tabPosition="top" type="card" style={{ width: "100%" }} className="custom-tabs">
+          
           <TabPane key="transport_lighting" tab="Освещение транспорта">
             <Row gutter={[16, 16]}>
               <Col span={24}>

@@ -110,3 +110,53 @@
 .custom-add-transport-btn:hover {
   background-color: #f87171;  /* Красный фон при наведении */
 }
+
+/* Стили для вкладок */  /*это финальный варик для вкладки mainpage, и этих штук транспорт, ошибки и тд, это цвет */
+.custom-tabs .ant-tabs-tab {
+  color: #1b232a; /* Цвет текста для всех вкладок */
+  
+  transition: color 0.3s ease;
+}
+
+/* Активная вкладка */
+.custom-tabs .ant-tabs-tab-active {
+  color: red; /* Цвет текста активной вкладки */
+}
+
+/* При наведении */
+.custom-tabs .ant-tabs-tab:hover {
+  color: red; /* Цвет текста при наведении */
+}
+/* Стили для кнопки     ЭТО КНОПКИ ВО ВКЛАДКЕ ТРАНСПОРТ*/ 
+.edit-button {
+  transition: background-color 0.3s ease; /* Плавный переход фона */
+}
+
+.edit-button:hover {
+  background-color: red !important; /* При наведении фон становится красным */
+  border: none; /* Убираем синий контур при фокусе */
+}
+/* Стили для кнопки "Добавить транспорт"  ВОТ ЭТУ ШТУКУ ИСПОЛЬЗЗЖУЕМ В ГЛАВНЫХ СТРАНИЦАХ И ДОБАВИТЬ И ТАК ДАЛЕЕ СПРАВА СВЕРХУ*/
+.add-transport-btn {
+  
+  background-color: #1B232a;
+  transition: background-color 0.3s ease; /* Плавный переход фона */
+}
+
+.add-transport-btn:hover {
+  background-color: red !important; /* При наведении фон становится красным */
+  border: none; /* Убираем синий контур при фокусе */
+}
+
+/* Стили для кнопки "Скачать таблицу" */
+.download-btn {
+  background-color: #1B232A;
+  transition: background-color 0.3s ease; /* Плавный переход фона */
+}
+
+.download-btn:hover {
+  background-color: red !important; /* При наведении фон становится красным */
+  border: none; /* Убираем синий контур при фокусе */
+}
+
+/* Для всех кнопок А КОНКРЕТНО КОГДА ТАЧКУ ВЫБИРАЕМ И ТАМ УЖЕ ПАРАМЕТРЫ ОШИБКИ И ТАК */

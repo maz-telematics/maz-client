@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Row, Col, Carousel, Tabs } from 'antd';
 import ErrorsTab from './ErrorsTab';
 import SubscriptionTab from './SubscriptionTab';
@@ -25,14 +25,21 @@ const MainPage: React.FC = () => {
       });
   }, [dispatch]);
 
-
-
   return (
     <div className="flex flex-col w-full h-[91vh] bg-gray-200" style={{ margin: '-20px' }}>
       <Row className="w-full h-full">
         <Col span={5} className="bg-white px-5 py-2 border-gray-300 h-full">
           <Carousel dots={false} infinite>
-            <Tabs defaultActiveKey="1" tabPosition="top" tabBarStyle={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
+            <Tabs
+              defaultActiveKey="1"
+              tabPosition="top"
+              tabBarStyle={{
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                
+              }}
+              className="custom-tabs"  // Добавляем свой класс для кастомных стилей
+            >
               <Tabs.TabPane tab="Ошибки" key="1">
                 <ErrorsTab />
               </Tabs.TabPane>
@@ -58,4 +65,3 @@ const MainPage: React.FC = () => {
 };
 
 export default MainPage;
-

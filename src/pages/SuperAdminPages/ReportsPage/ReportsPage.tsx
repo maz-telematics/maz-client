@@ -108,73 +108,105 @@ const ReportsPage: React.FC = () => {
           </Select.Option>
         ))}
       </Select>
-      <Select
-        placeholder="Выберите организацию"
-        style={{ width: '200px', minWidth: '150px' }}
-        onChange={value => setSelectedOrganization(value)}
-      >
-        {organizationReports.map(report => (
-          <Select.Option key={report.id} value={report.id}>
-            {report.name}
-          </Select.Option>
-        ))}
-      </Select>
-    </div>
-    <div style={{ marginBottom: '20px' }}>
-    <Col>
-  <Row align="middle" justify="space-between" wrap={false} style={{ gap: "16px" }}>
-    <h3 style={{ marginBottom: "15px", fontSize: isMobile ? "18px" : "24px" }}>
-      Отчеты по транспорту
-    </h3>
-    <DownloadButton
-      url="/api/transports_report/download"
-      filename="transports_report.pdf"
-      buttonText="Скачать отчёт"
-      icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
-      buttonProps={{ className: "bg-blue-500 text-white hover:bg-blue-600" }}
-    />
-  </Row>
-</Col>
-  <Table
-    dataSource={filteredTransportReports.length > 0 ? filteredTransportReports : transportReports}
-    columns={transportColumns}
-    rowKey="id"
-    onRow={record => ({
-      onClick: () => showDetail(record),
-    })}
-    components={{
-      header: {
-        cell: (props: any) => (
-          <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff", border: "none" }}>
-            {props.children}
-          </th>
-        ),
-      },
-    }}
-    style={{
-      borderRadius: "8px",
-      overflow: "hidden",
-      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-      backgroundColor: "#F7F9FB",
-    }}
-    scroll={{ x: 'max-content' }}
-    pagination={false}
-  />
-</div>
+            <Select
+              placeholder="Выберите организацию"
+              style={{ width: '200px', minWidth: '150px' }}
+              onChange={value => setSelectedOrganization(value)}
+            >
+              {organizationReports.map(report => (
+                <Select.Option key={report.id} value={report.id}>
+                  {report.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
+          <div style={{ marginBottom: '20px' }}>
+            <Col>
+              <Row align="middle" justify="space-between" wrap={false} style={{ gap: "16px" }}>
+                <h3 style={{ marginBottom: "15px", fontSize: isMobile ? "18px" : "24px" }}>
+                  Отчеты по транспорту
+                </h3>
+                <DownloadButton
+                  url="/api/transports_report/download"
+                  filename="transports_report.pdf"
+                  buttonText="Скачать отчёт"
+                  icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
+                  buttonProps={{
+                    style: {
+                      border: "none", // Убираем рамку
+                      outline: "none", // Убираем обводку при фокусе
+                      cursor: "pointer", // Курсор в виде указателя
+                      backgroundColor: "#1B232A", // Исходный фон
+                      color: "#fff", // Цвет текста
+                      transition: "all 0.3s ease", // Плавный переход
+                    },
+                    onMouseOver: (e) => {
+                      e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
+                    },
+                    onMouseOut: (e) => {
+                      e.currentTarget.style.backgroundColor = "#1B232A"; // Исходный фон при убирании мыши
+                    },
+                  }}
+                />
 
-<div >
-  <Col>
-  <Row align="middle" justify="space-between" wrap={false} style={{ gap: "16px" }}>
-    <h3 style={{ marginBottom: "15px", fontSize: isMobile ? "18px" : "24px" }}>
-      Отчеты по организациям
-    </h3>
-    <DownloadButton
-      url="/api/organizations_report/download"
-      filename="organizations_report.pdf"
-      buttonText="Скачать отчёт"
-      icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
-      buttonProps={{ className: "bg-blue-500 text-white hover:bg-blue-600" }}
-    />
+              </Row>
+            </Col>
+            <Table
+              dataSource={filteredTransportReports.length > 0 ? filteredTransportReports : transportReports}
+              columns={transportColumns}
+              rowKey="id"
+              onRow={record => ({
+                onClick: () => showDetail(record),
+              })}
+              components={{
+                header: {
+                  cell: (props: any) => (
+                    <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff", border: "none" }}>
+                      {props.children}
+                    </th>
+                  ),
+                },
+              }}
+              style={{
+                borderRadius: "8px",
+                overflow: "hidden",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                backgroundColor: "#F7F9FB",
+              }}
+              scroll={{ x: 'max-content' }}
+              pagination={false}
+            />
+          </div>
+
+          <div >
+            <Col>
+              <Row align="middle" justify="space-between" wrap={false} style={{ gap: "16px" }}>
+                <h3 style={{ marginBottom: "15px", fontSize: isMobile ? "18px" : "24px" }}>
+                  Отчеты по организациям
+                </h3>
+                <DownloadButton
+                  url="/api/organizations_report/download"
+                  filename="organizations_report.pdf"
+                  buttonText="Скачать отчёт"
+                  icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
+                  buttonProps={{
+                    style: {
+                      border: "none", // Убираем рамку
+                      outline: "none", // Убираем обводку при фокусе
+                      cursor: "pointer", // Курсор в виде указателя
+                      backgroundColor: "#1B232A", // Исходный фон
+                      color: "#fff", // Цвет текста
+                      transition: "all 0.3s ease", // Плавный переход
+                    },
+                    onMouseOver: (e) => {
+                      e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
+                    },
+                    onMouseOut: (e) => {
+                      e.currentTarget.style.backgroundColor = "#1B232A"; // Исходный фон при убирании мыши
+                    },
+                  }}
+                />
+
   </Row>
 </Col>
   <Table
