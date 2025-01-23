@@ -165,14 +165,22 @@ const ProfilePage = () => {
               />
             </Form.Item>
             <Row style={{ marginTop: "20px", display: "flex", justifyContent: "flex-start" }}>
-                              <Button
-                                disabled={true}
-                                style={{ fontSize: isMobile ? '12px' : '16px',   width: isMobile ? '100%' : '200px', backgroundColor: "#3A5F73", color: "#fff",
-                                }}
-                                htmlType="submit" 
-                              >
-                                 Сохранить изменения
-                              </Button>
+              <Button
+                disabled={true}
+                style={{
+                  fontSize: isMobile ? '12px' : '16px',
+                  width: isMobile ? '100%' : '200px',
+                  backgroundColor: "#1B232A",
+                  color: "#fff",
+                  border: "none",  // Убираем стандартные границы, если они есть
+                  transition: "background-color 0.3s ease",  // Плавный переход фона
+                }}
+                htmlType="submit"
+                className="custom-button" // Добавляем класс для стилизации
+              >
+                Сохранить изменения
+              </Button>
+
 
               {/* <Button type="primary"    style={{
                   backgroundColor: "#3A5F73",

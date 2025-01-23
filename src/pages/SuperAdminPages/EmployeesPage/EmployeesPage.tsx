@@ -90,22 +90,23 @@ const EmployeesPage: React.FC = () => {
             key: "name",
         },
         {
-            title: "Email",
-            dataIndex: "email",
-            key: "email",
-        },
-        {
             title: "Телефон",
             dataIndex: "phone",
             key: "phone",
         },
+        {
+            title: "Email",
+            dataIndex: "email",
+            key: "email",
+        },
+        
         {
             title: "Роль",
             dataIndex: "role",
             key: "role",
         },
         {
-            title: "Место работы",
+            title: "Организация",
             dataIndex: "workplace",
             key: "workplace",
         },
@@ -249,6 +250,11 @@ const EmployeesPage: React.FC = () => {
                                 <Input />
                             </Form.Item>
                             <Form.Item
+                                name="phone"
+                                label="Телефон"
+                                rules={[{ required: true, message: "Введите телефон" }]}
+                            >
+                            <Form.Item
                                 name="email"
                                 label="Email"
                                 rules={[
@@ -258,11 +264,7 @@ const EmployeesPage: React.FC = () => {
                             >
                                 <Input />
                             </Form.Item>
-                            <Form.Item
-                                name="phone"
-                                label="Телефон"
-                                rules={[{ required: true, message: "Введите телефон" }]}
-                            >
+                            
                                 <Input />
                             </Form.Item>
                             <Form.Item
@@ -278,8 +280,8 @@ const EmployeesPage: React.FC = () => {
                             </Form.Item>
                             <Form.Item
                                 name="workplace"
-                                label="Место работы"
-                                rules={[{ required: true, message: "Введите место работы" }]}
+                                label="Организация"
+                                rules={[{ required: true, message: "Введите место организации" }]}
                             >
                                 <Input />
                             </Form.Item>

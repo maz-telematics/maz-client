@@ -580,14 +580,14 @@ const OrganizationDetails: React.FC = () => {
                 </Col>
               </Row>
             </Typography.Paragraph>
-            <Row>
+            {/* <Row>
               <Col span={22}>
                 <Typography.Title level={5} >
                   Продлить доступ к системе:
                 </Typography.Title>
                 <RangePicker onChange={showConfirmExtend} disabledDate={disabledDate} />
               </Col>
-            </Row>
+            </Row> */}
             <Tabs
               defaultActiveKey="1"
               activeKey={activeKey}
