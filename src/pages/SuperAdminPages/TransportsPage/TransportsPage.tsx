@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Table, Modal, Button, Row, Col, message } from "antd";
+import { Table, Modal, Button, Row, Col, message, Pagination } from "antd";
 import { useNavigate } from "react-router-dom";
 import { Car } from "../../../types/transportListTypes";
 import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
@@ -11,23 +11,36 @@ import DownloadIcon from '@mui/icons-material/Download';
 
 const TransportsPage = () => {
   const [cars, setCars] = useState<Car[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleteVin, setDeleteVin] = useState<string | undefined>();
   const [deleteOrganizationId, setDeleteOrganizationId] = useState<number | undefined>();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchCars = async () => {
-      try {
-        const response = await axiosInstance.get<Car[]>("/transport/list-transport");
-        setCars(response.data);
-      } catch (error) {
-        console.error(error);
-        message.error("Ошибка загрузки данных транспорта.");
+  const fetchCars = async (page: number, size: number) => {
+    try {
+      const response = await axiosInstance.get<{
+        cars: Car[];
+        total: number;
+      }>("/transport/list-transport"
+        , {
+        params: { page, size },
       }
-    };
-    fetchCars();
-  }, []);
+    );
+      setCars(response.data);
+      setTotalCount(response.data.total);
+      setCurrentPage(page);
+    } catch (error) {
+      console.error(error);
+      message.error("Ошибка загрузки данных транспорта.");
+    }
+  };
+
+  useEffect(() => {
+    fetchCars(currentPage, pageSize);
+  }, [currentPage, pageSize]);
 
   const handleDelete = (vin: string, organizationId: number) => {
     setDeleteVin(vin);
@@ -212,6 +225,21 @@ const TransportsPage = () => {
       >
         <p>Вы уверены, что хотите переместить транспорт в архив?</p>
       </Modal>
+      <div
+  style={{
+    display: "flex",
+    justifyContent: "center",
+    marginTop: "16px",
+    paddingBottom: "16px",
+  }}
+>
+<Pagination
+              current={currentPage}
+              total={totalCount}
+              pageSize={pageSize}
+              onChange={(page) => fetchCars(page, pageSize)}
+            />
+</div>
     </div>
   );
 };

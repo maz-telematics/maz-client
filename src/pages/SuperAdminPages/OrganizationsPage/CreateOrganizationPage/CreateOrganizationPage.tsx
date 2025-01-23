@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Row, Col, Steps, DatePicker, Select, message, InputNumber } from 'antd';
+import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import axiosInstance from '../../../../services/axiosInstance';
 const { RangePicker } = DatePicker;
 const { Step } = Steps;
 
@@ -30,10 +32,18 @@ const typeOptions = [
   { label: 'Премиум план', value: '6month' },
   
 ];
+interface Vehicle {
+  vin: string;
+}
 
+interface VinStatus {
+  [vin: string]: boolean;
+}
 const CreateOrganization: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [vinStatus, setVinStatus] = useState<VinStatus>({});
+  const [loading, setLoading] = useState<boolean>(false);
   const [form] = Form.useForm();
 
   const showConfirmExtend = (dates: any) => {
@@ -54,6 +64,8 @@ const CreateOrganization: React.FC = () => {
     },
   });
 
+
+  
   const handleSubmit = async (values: any) => {
     const vehicles = values.vehicles || [];
     if (vehicles.length === 0) {
@@ -80,6 +92,39 @@ const CreateOrganization: React.FC = () => {
       message.error('Ошибка при обращении к серверу');
     }
   };
+  const checkVins = async (vinList: string[]): Promise<void> => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get<VinStatus>("/transport/check-organization", {
+        params: {
+          transports: vinList,  // Передаем транспорты как параметр URL
+        },
+      });
+
+      setVinStatus(response.data);
+    } catch (error) {
+      console.error("Ошибка при проверке VIN номеров:", error);
+      message.error("Ошибка проверки VIN номеров. Попробуйте снова.");
+    } finally {
+      setLoading(false);
+    }
+  };
+ 
+  const handleFinishVin = async (): Promise<void> => {
+    const values = form.getFieldValue("vehicles") || [];
+    const vinList = values.map((vehicle: Vehicle) => vehicle.vin);
+
+    await checkVins(vinList);
+
+    const invalidVins = Object.keys(vinStatus).filter((vin) => !vinStatus[vin]);
+
+    if (invalidVins.length > 0) {
+      message.error(`Эти VIN номера не соответствуют организации: ${invalidVins.join(", ")}`);
+    } else {
+      message.success("Все VIN номера валидны!");
+    }
+  };
+
 
   const handleFinish = async () => {
     try {
@@ -348,62 +393,141 @@ const CreateOrganization: React.FC = () => {
         );
       case 2:
         return (
-          <Form form={form} layout="vertical" onFinish={handleSubmit}>
-            <Form.List
-              name="vehicles"
-              initialValue={['']} // Начальное значение для одного VIN
-              rules={[
-                {
-                  validator: async (_, vehicles) => {
-                    if (!vehicles || vehicles.length < 1) {
-                      return Promise.reject(new Error('Добавьте хотя бы одно транспортное средство'));
-                    }
-                  },
+          <Form form={form} layout="vertical" onFinish={handleFinishVin}>
+          <Form.List
+            name="vehicles"
+            initialValue={[{ vin: "" }]}
+            rules={[
+              {
+                validator: async (_, vehicles: Vehicle[]) => {
+                  if (!vehicles || vehicles.length < 1) {
+                    return Promise.reject(new Error("Добавьте хотя бы одно транспортное средство"));
+                  }
                 },
-              ]}
-            >
-              {(fields, { add, remove }) => (
-                <>
-                  {fields.map(({ key, name, fieldKey }) => (
+              },
+            ]}
+          >
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map(({ key, name, fieldKey }) => {
+                  const vin = form.getFieldValue(["vehicles", name, "vin"]);
+                  return (
                     <Row gutter={16} key={key} align="middle">
-                      <Col xs={24} sm={12}> 
+                      <Col xs={20} sm={16}>
                         <Form.Item
                           {...(fieldKey ? { fieldKey } : {})}
-                          name={[name, 'vin']}
+                          name={[name, "vin"]}
                           label="VIN номер"
                           rules={[
-                            { required: true, message: 'Введите VIN номер' },
+                            { required: true, message: "Введите VIN номер" },
                             {
                               pattern: /^[A-HJ-NPR-Z0-9]{17}$/,
-                              message: 'VIN номер должен содержать 17 символов, цифры и латинские буквы в верхнем регистре!',
+                              message: "VIN номер должен содержать 17 символов, цифры и латинские буквы в верхнем регистре!",
                             },
                           ]}
                         >
-                          <Input placeholder="Введите VIN номер" style={{ width: '100%' }} />
+                          <Input
+                            placeholder="Введите VIN номер"
+                            style={{
+                              width: "100%",
+                              borderColor: vinStatus[vin] === false ? "red" : undefined,
+                            }}
+                          />
                         </Form.Item>
                       </Col>
-                      <Col span={1}>
+                      <Col span={2}>
+                        {vinStatus[vin] !== undefined && (
+                          vinStatus[vin] ? (
+                            <CheckCircleOutlined style={{ color: "green", fontSize: "20px" }} />
+                          ) : (
+                            <CloseCircleOutlined style={{ color: "red", fontSize: "20px" }} />
+                          )
+                        )}
+                      </Col>
+                      <Col span={2}>
                         <Button
                           type="link"
                           danger
                           onClick={() => remove(name)}
-                          style={{ width: '100%', textAlign: 'right' }}
+                          style={{ width: "100%", textAlign: "right" }}
                         >
                           Удалить
                         </Button>
                       </Col>
                     </Row>
-                  ))}
+                  );
+                })}
+    
+                <Form.Item>
+                  <Button type="dashed" onClick={() => add()} block>
+                    Добавить транспорт
+                  </Button>
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={loading} block>
+              Проверить VIN номера
+            </Button>
+          </Form.Item>
+        </Form>
+          // <Form form={form} layout="vertical" onFinish={handleSubmit}>
+          //   <Form.List
+          //     name="vehicles"
+          //     initialValue={['']} // Начальное значение для одного VIN
+          //     rules={[
+          //       {
+          //         validator: async (_, vehicles) => {
+          //           if (!vehicles || vehicles.length < 1) {
+          //             return Promise.reject(new Error('Добавьте хотя бы одно транспортное средство'));
+          //           }
+          //         },
+          //       },
+          //     ]}
+          //   >
+          //     {(fields, { add, remove }) => (
+          //       <>
+          //         {fields.map(({ key, name, fieldKey }) => (
+          //           <Row gutter={16} key={key} align="middle">
+          //             <Col xs={24} sm={12}> 
+          //               <Form.Item
+          //                 {...(fieldKey ? { fieldKey } : {})}
+          //                 name={[name, 'vin']}
+          //                 label="VIN номер"
+          //                 rules={[
+          //                   { required: true, message: 'Введите VIN номер' },
+          //                   {
+          //                     pattern: /^[A-HJ-NPR-Z0-9]{17}$/,
+          //                     message: 'VIN номер должен содержать 17 символов, цифры и латинские буквы в верхнем регистре!',
+          //                   },
+          //                 ]}
+          //               >
+          //                 <Input placeholder="Введите VIN номер" style={{ width: '100%' }} />
+          //               </Form.Item>
+          //             </Col>
+          //             <Col span={1}>
+          //               <Button
+          //                 type="link"
+          //                 danger
+          //                 onClick={() => remove(name)}
+          //                 style={{ width: '100%', textAlign: 'right' }}
+          //               >
+          //                 Удалить
+          //               </Button>
+          //             </Col>
+          //           </Row>
+          //         ))}
 
-                  <Form.Item>
-                    <Button type="dashed" onClick={() => add()} block style={{ width: '200px', margin: '0 auto' }}>
-                      Добавить транспорт
-                    </Button>
-                  </Form.Item>
-                </>
-              )}
-            </Form.List>
-          </Form>
+          //         <Form.Item>
+          //           <Button type="dashed" onClick={() => add()} block style={{ width: '200px', margin: '0 auto' }}>
+          //             Добавить транспорт
+          //           </Button>
+          //         </Form.Item>
+          //       </>
+          //     )}
+          //   </Form.List>
+          // </Form>
         );
       case 3:
         return (
