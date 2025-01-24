@@ -19,6 +19,12 @@ export type Parameters = {
   dbkOutputs: DbkOutputs | {};
 };
 
+export interface ParametersResponce{
+   data: Parameters[];
+   totalPages: number;
+   currentPage:number;
+}
+
 type BzpCommands = {
   id: number,
   time:string,

@@ -4,6 +4,7 @@ import { ErrorData, ErrorDataResponse } from "../../../../types/carTrackingTypes
 import dayjs, { Dayjs } from "dayjs";
 import axiosInstance from "../../../../services/axiosInstance";
 import { getErrorColumns } from "./ErrorsColumns";
+import { getErrors } from "../../../../Store/apis/transportError";
 
 interface ErrorsProps {
   selectedDate: Dayjs | null;
@@ -103,21 +104,25 @@ const ErrorTable: React.FC<ErrorsProps> = ({ selectedDate }) => {
     if (!id) return;
 
     if (isCurrentDay(selectedDate)) {
-      if (!websocketRef.current) {
-        initializeWebSocket(id);
-      }
+      // if (!websocketRef.current) {
+        // initializeWebSocket(id);
+      // }
+      getErrors(id, currentPage)
+      .then((errorData) => {
+        setErrors(errorData.data);
+      })
     } else {
-      closeWebSocket();
+      // closeWebSocket();
       fetchErrors(id, selectedDate, currentPage);
     }
 
-    return () => {
-      closeWebSocket();
-    };
+    // return () => {
+    //   closeWebSocket();
+    // };
   }, [selectedDate, currentPage]);
 
   const errorColumns = getErrorColumns(isPlusUser, showModal);
-
+console.log("errors",errors)
   return (
     <>
       <Table

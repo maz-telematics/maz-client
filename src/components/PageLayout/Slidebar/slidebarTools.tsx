@@ -5,6 +5,7 @@ import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
 import CommuteOutlinedIcon from "@mui/icons-material/CommuteOutlined";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import StoreOutlinedIcon from "@mui/icons-material/StoreOutlined";
+import TuneIcon from '@mui/icons-material/Tune';
 import type { MenuProps } from "antd";
 
 import { Link } from "react-router-dom";
@@ -35,31 +36,6 @@ export const superAdminItems = (): MenuItem[] => {
 
   const isActive = (path: string) => location.pathname === path;
   
-  const handleMenuClick = (e: { key: string }) => {
-    setSelectedKey(e.key); // Обновляем выбранный пункт
-    setView(e.key); // Обновляем состояние view
-    const dispatch = useDispatch();
-    switch (e.key) {
-      case "main":
-        dispatch(showSuperAdminMain());
-        break;
-      case "transports":
-        dispatch(showSuperAdminTransports());
-        break;
-      case "organizations":
-        dispatch(showSuperAdminOrganizations());
-        break;
-      case "employees":
-        dispatch(showSuperAdminEmpoyess());
-        break;
-      case "reports":
-        dispatch(showSuperAdminReports());
-        break;
-      case "archive":
-        dispatch(showSuperAdminArchive());
-        break;
-    }
-  };
 
   return [
     getItem(
@@ -120,6 +96,16 @@ export const superAdminItems = (): MenuItem[] => {
         style={{
           fontSize: 25,
           color: isActive("/master/archive") ? "black" : "white",
+        }}
+      />
+    ),
+    getItem(
+      <Link to="/master/firmwares" style={{ color: "white" }}>Прошивки</Link>,
+      "firmwares",
+      <TuneIcon
+        style={{
+          fontSize: 25,
+          color: isActive("/master/firmware") ? "black" : "white",
         }}
       />
     ),

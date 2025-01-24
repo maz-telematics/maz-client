@@ -8,7 +8,7 @@ import TransportsPage from "../../pages/SuperAdminPages/TransportsPage/Transport
 import OrganizationsPage from "../../pages/SuperAdminPages/OrganizationsPage/OrganizationsPage";
 import EmployeesPage from "../../pages/SuperAdminPages/EmployeesPage/EmployeesPage";
 
-import { showSuperAdminArchive, showSuperAdminCreateOrganization, showSuperAdminCreateTransport, showSuperAdminEditTransport, showSuperAdminEmpoyess, showSuperAdminFirmware, showSuperAdminMain, showSuperAdminOrganization, showSuperAdminOrganizations, showSuperAdminProfile, showSuperAdminReports, showSuperAdminTransport, showSuperAdminTransports } from "../../Store/utils/superAdminModuleViewSlice";
+import { showSuperAdminArchive, showSuperAdminCreateOrganization, showSuperAdminCreateTransport, showSuperAdminEditTransport, showSuperAdminEmpoyess,showSuperAdminFirmwares, showSuperAdminFirmware, showSuperAdminMain, showSuperAdminOrganization, showSuperAdminOrganizations, showSuperAdminProfile, showSuperAdminReports, showSuperAdminTransport, showSuperAdminTransports } from "../../Store/utils/superAdminModuleViewSlice";
 import { Typography } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -20,6 +20,7 @@ import OrganizationDetails from "./OrganizationsPage/Organization";
 import CreateTransportPage from "./TransportsPage/CreateTransportPage/CreateTransportPage";
 import ProfilePage from "../shared/EditProfilePage/ProfilePage";
 import FirmwarePage from "./Firmware/Firmware";
+import FirmwareDetailsPage from "./Firmware/FirmwareDetails";
 
 export default function SuperAdmin() {
   const view = useSelector((state: RootState) => state.superAdminView.view);
@@ -62,6 +63,9 @@ export default function SuperAdmin() {
     if((urlView === "profile")) {
       dispatch(showSuperAdminProfile());
     }
+    if((urlView === "firmwares")) {
+      dispatch(showSuperAdminFirmwares());
+    }
     if((urlView === "firmware")) {
       dispatch(showSuperAdminFirmware());
     }
@@ -93,8 +97,10 @@ export default function SuperAdmin() {
           return <CreateTransportPage/>
       case "profile":
           return <ProfilePage/>
-      case "firmware":
+      case "firmwares":
           return <FirmwarePage/>
+      case "firmware":
+          return <FirmwareDetailsPage />          
     }
   };
   return (

@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { Location } from "../../../types/carTrackingTypes";
 import dayjs, { Dayjs } from "dayjs";
 import axiosInstance from "../../../services/axiosInstance";
-import { useUser } from "../../../services/auth";
+import { fetchTransportLocations } from "../../../Store/apis/transportLocations";
 
 interface MapProps {
   selectedDate: Dayjs | null;
@@ -18,12 +18,13 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null); 
   const [mapZoom, setMapZoom] = useState<number>(10); 
   const id = sessionStorage.getItem("id");
+  
   const isCurrentDay = (date: Dayjs | null): boolean => {
     return date ? date.isSame(dayjs(), "day") : false;
   };
-  const websocketRef = useRef<WebSocket | null>(null);
-  const apiUrl = import.meta.env.VITE_API_URL;
-  console.log(id)
+  // const websocketRef = useRef<WebSocket | null>(null);
+
+  console.log("locations",locations)
   const getLocations = async (id: string, date: Dayjs | null): Promise<Location[]> => {
     try {
       if (!date) {
@@ -41,47 +42,47 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
     }
   };
 
-  const initializeWebSocket = (id: string) => {
-    if (!id || websocketRef.current) return; // Предотвращаем повторное открытие
+  // const initializeWebSocket = (id: string) => {
+  //   if (!id || websocketRef.current) return; // Предотвращаем повторное открытие
 
-    websocketRef.current = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
-    websocketRef.current.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("Полученные данные:", data);
-      if (data) {
-        setLocations((prev) => [...prev, ...data]);
-      }
-    };
+  //   websocketRef.current = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
+  //   websocketRef.current.onmessage = (event) => {
+  //     const data = JSON.parse(event.data);
+  //     console.log("Полученные данные:", data);
+  //     if (data) {
+  //       setLocations((prev) => [...prev, ...data]);
+  //     }
+  //   };
 
-    websocketRef.current.onerror = (error) => console.error("WebSocket Error:", error);
+  //   websocketRef.current.onerror = (error) => console.error("WebSocket Error:", error);
 
-    websocketRef.current.onclose = () => {
-      console.log("WebSocket connection closed");
-      websocketRef.current = null;
-    };
+  //   websocketRef.current.onclose = () => {
+  //     console.log("WebSocket connection closed");
+  //     websocketRef.current = null;
+  //   };
 
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    if (!user.token) {
-      console.error("Токен отсутствует");
-      return;
-    }
-    const message =  JSON.stringify({
-      transportVin: id,
-      messageType: "locations",
-      token: user.token
-    });
-    websocketRef.current.onopen = () => {
-      console.log("WebSocket подключен", message);
-      websocketRef.current?.send(message);
-    };
-  };
+  //   const user = JSON.parse(localStorage.getItem("user") || "{}");
+  //   if (!user.token) {
+  //     console.error("Токен отсутствует");
+  //     return;
+  //   }
+  //   const message =  JSON.stringify({
+  //     transportVin: id,
+  //     messageType: "locations",
+  //     token: user.token
+  //   });
+  //   websocketRef.current.onopen = () => {
+  //     console.log("WebSocket подключен", message);
+  //     websocketRef.current?.send(message);
+  //   };
+  // };
 
-  const closeWebSocket = () => {
-    if (websocketRef.current) {
-      websocketRef.current.close();
-      websocketRef.current = null;
-    }
-  };
+  // const closeWebSocket = () => {
+  //   if (websocketRef.current) {
+  //     websocketRef.current.close();
+  //     websocketRef.current = null;
+  //   }
+  // };
 
   useEffect(() => {
     const id = sessionStorage.getItem("id");
@@ -89,19 +90,25 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
     if (!id) return;
 
     if (isCurrentDay(selectedDate)) {
-      if (!websocketRef.current) {
-        initializeWebSocket(id);
-      }
+      // if (!websocketRef.current) {
+        fetchTransportLocations(id)
+        .then((data) => {
+          setLocations(data as Location[]);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      // }
     } else {
-      closeWebSocket();
+      // closeWebSocket();
       getLocations(id, selectedDate).then((locationsData) => {
         setLocations(locationsData);
       });
     }
 
-    return () => {
-      closeWebSocket();
-    };
+    // return () => {
+    //   closeWebSocket();
+    // };
     
   }, [id, selectedDate]);
 
@@ -156,15 +163,15 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
     } 
 
     waypoints.forEach((point, index) => {
-      const popupContent = 
-        <div>
-          // <strong>Точка ${index + 1}</strong><br />
-          Широта: ${locations[index].latitude}<br />
-          Долгота: ${locations[index].longitude}<br />
-          Скорость: ${locations[index].speed ?? "N/A"} км/ч<br />
-          Дата: ${locations[index].date ? new Date(locations[index].date).toLocaleString() : "N/A"}<br />
-        </div>
-      ;
+      const popupContent = `
+      <div>
+        <strong>Точка ${index + 1}</strong><br />
+        Широта: ${locations[index].latitude}<br />
+        Долгота: ${locations[index].longitude}<br />
+        Скорость: ${locations[index].speed ?? "N/A"} км/ч<br />
+        Дата: ${locations[index].date ? new Date(locations[index].date).toLocaleString() : "N/A"}<br />
+      </div>
+    `;
 
       const iconUrl =
         index === 0
