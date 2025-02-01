@@ -42,6 +42,7 @@ const processParameters = (parameters: Parameters[]): Parameters[] => {
       transportAirConditioning: { ...parameter.transportAirConditioning, time: date },
       transportLighting: { ...parameter.transportLighting, time: date },
       bzpCommands: { ...parameter.bzpCommands, time: date },
+      dbkOutputs: { ...parameter.dbkOutputs, time: date },
     };
   });
 };
@@ -49,13 +50,13 @@ const processParameters = (parameters: Parameters[]): Parameters[] => {
 
 const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
   const [processedParameters, setProcessedParameters] = useState<any[]>([]);
-  const [totalPages, setTotalPages] = useState<number>(0); 
-  const [currentPage, setCurrentPage] = useState(1); 
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const id = sessionStorage.getItem("id");
   const isCurrentDay = (date: Dayjs | null): boolean => {
     return date ? date.isSame(dayjs(), "day") : false;
   };
-  
+
   const getParameters = async (
     id: string,
     date: string,
@@ -66,7 +67,7 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
       if (!id || !date) {
         return { data: [], totalPages: 0, currentPage: 0 };
       }
-  
+
       // Указываем тип данных, ожидаемых от axios
       const response = await axiosInstance.get<ParametersResponce>(
         `/transport/parameters/${id}`,
@@ -78,42 +79,42 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
       return response.data;
     } catch (error) {
       console.error("Error fetching parameters:", error);
-  
+
       // Возвращаем пустой объект ParametersResponce в случае ошибки
-      return { data: [], totalPages: 0, currentPage: 0 };
+      return { transportData: [], totalPages: 0, currentPage: 0 };
     }
   };
-  
+
   const fetchAndProcessParameters = async () => {
     if (!id || !selectedDate) return;
-  
+
     try {
       const dateStr = selectedDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ");
-  
+
       // Используем состояние currentPage
-      const { data, totalPages } = await getParameters(id, dateStr, currentPage);
-  
-      console.log("data", data);
+      const { transportData, totalPages } = await getParameters(id, dateStr, currentPage);
+
+      console.log("data", transportData);
       console.log("totalPages", totalPages);
-  
+
       setTotalPages(totalPages); // Обновляем общее количество страниц
-      const processed = processParameters(data); // Обрабатываем данные
+      const processed = processParameters(transportData); // Обрабатываем данные
       setProcessedParameters(processed);
       console.log("processedParameters", processed);
     } catch (error) {
       console.error("Error fetching or processing parameters:", error);
     }
   };
-  
+
   useEffect(() => {
     if (!id) return;
-  
+
     if (isCurrentDay(selectedDate)) {
       fetchTransportParameters(currentPage, id)
         .then((data) => {
           setTotalPages(data.totalPages);
-          const processed = processParameters(data.data);
-          console.log("data",data)
+          const processed = processParameters(data.transportData);
+          console.log("data", data)
           setProcessedParameters(processed);
         })
         .catch((err) => {
@@ -125,14 +126,24 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
   }, [id, selectedDate, currentPage]);
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page); 
+    setCurrentPage(page);
   };
-
+  const isMobile = window.innerWidth < 768;
   return (
     <>
       {processedParameters.length > 0 && (
-        <Tabs defaultActiveKey="transport_lighting" tabPosition="top" type="card" style={{ width: "100%" }} className="custom-tabs">
-          
+        <Tabs
+          defaultActiveKey="transport_lighting"
+          tabPosition="top"
+          type="card"
+          style={{ width: "100%", overflowX: isMobile ? "auto" : "visible" }}
+          className="custom-tabs"
+          tabBarStyle={{
+            fontSize: isMobile ? "12px" : "14px",
+            whiteSpace: isMobile ? "nowrap" : "normal",
+            overflowX: isMobile ? "auto" : "visible",
+          }}
+        >
           <TabPane key="transport_lighting" tab="Освещение транспорта">
             <Row gutter={[16, 16]}>
               <Col span={24}>
@@ -140,19 +151,21 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
                   data={processedParameters.map(parameter => ({
                     ...parameter.transportLighting,
                     date: parameter.date,
-                  }))} />
+                  }))}
+                />
               </Col>
             </Row>
           </TabPane>
 
-          <TabPane key="transport_air_conditioning" tab="Система кондиционирования транспорта">
+          <TabPane key="transport_air_conditioning" tab="Система кондиционирования">
             <Row gutter={[16, 16]}>
               <Col span={24}>
                 <DescriptionsAirConditioningParameters
                   data={processedParameters.map(parameter => ({
                     ...parameter.transportAirConditioning,
                     date: parameter.date,
-                  }))} />
+                  }))}
+                />
               </Col>
             </Row>
           </TabPane>
@@ -164,7 +177,8 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
                   data={processedParameters.map(parameter => ({
                     ...parameter.batteryParameters,
                     date: parameter.date,
-                  }))} />
+                  }))}
+                />
               </Col>
             </Row>
           </TabPane>
@@ -176,7 +190,8 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
                   data={processedParameters.map(parameter => ({
                     ...parameter.electricSystemParameters,
                     date: parameter.date,
-                  }))} />
+                  }))}
+                />
               </Col>
             </Row>
           </TabPane>
@@ -188,7 +203,8 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
                   data={processedParameters.map(parameter => ({
                     ...parameter.powertrainSystemParameters,
                     date: parameter.date,
-                  }))} />
+                  }))}
+                />
               </Col>
             </Row>
           </TabPane>
@@ -200,7 +216,8 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
                   data={processedParameters.map(parameter => ({
                     ...parameter.bzpCommands,
                     date: parameter.date,
-                  }))} />
+                  }))}
+                />
               </Col>
             </Row>
           </TabPane>
@@ -212,28 +229,44 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
                   data={processedParameters.map(parameter => ({
                     ...parameter.dbkOutputs,
                     date: parameter.date,
-                  }))} />
+                  }))}
+                />
               </Col>
             </Row>
           </TabPane>
         </Tabs>
-      )}
 
+      )}
       <div
         style={{
           display: "flex",
           justifyContent: "center",
           marginTop: "16px",
           paddingBottom: "16px",
+          width: "100%",
         }}
       >
-       <Pagination
-  current={currentPage}
-  total={totalPages * 10}
-  onChange={handlePageChange}
-  pageSize={10}
-  style={{ marginTop: 20, textAlign: "center" }}
-/>
+        <Pagination
+          current={currentPage}
+          total={totalPages * 10}
+          onChange={handlePageChange}
+          pageSize={10}
+          showSizeChanger={false}
+          style={{
+            marginTop: 20,
+            textAlign: "center",
+            fontSize: isMobile ? "12px" : "14px", // Уменьшаем шрифт на мобильных
+          }}
+          responsive={true} // Адаптивный режим
+          showLessItems={isMobile} // Меньше кнопок на мобильных
+          itemRender={(page, type, originalElement) => {
+            if (isMobile) {
+              if (type === "prev") return <span>«</span>;
+              if (type === "next") return <span>»</span>;
+            }
+            return originalElement;
+          }}
+        />
       </div>
     </>
   );

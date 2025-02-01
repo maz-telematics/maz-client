@@ -9,7 +9,7 @@ import { MenuInfo } from "rc-menu/lib/interface";
 import { useDispatch, useSelector } from "react-redux";
 import { OpenSlideBarButton } from "./slidebar.styles";
 import SlidebarHeader from "./SlidebarHeader/SlidebarHeader";
-import { directorItems, superAdminItems } from "./slidebarTools";
+import { adminItems, directorItems, superAdminItems } from "./slidebarTools";
 import { useUser } from "../../../services/auth";
 import { showDirectorMain, showDirectorTransports, showDirectorEmpoyess, showDirectorReports } from "../../../Store/utils/directorModuleViewSlice";
 
@@ -62,6 +62,30 @@ const Slidebar: React.FC = () => {
             dispatch(showSuperAdminFirmware());
               break;
         }
+        case "ROLE_ADMIN":
+          switch (e.key) {
+            case "main":
+              dispatch(showSuperAdminMain());
+              break;
+            case "transports":
+              dispatch(showSuperAdminTransports());
+              break;
+            case "organizations":
+              dispatch(showSuperAdminOrganizations());
+              break;
+            case "employees":
+              dispatch(showSuperAdminEmpoyess());
+              break;
+            case "reports":
+              dispatch(showSuperAdminReports());
+              break;
+            case "archive":
+              dispatch(showSuperAdminArchive());
+              break;
+            case "firmware":
+              dispatch(showSuperAdminFirmware());
+                break;
+          }
         break;
         case "ROLE_DIRECTOR":
           switch (e.key) {
@@ -86,6 +110,8 @@ const Slidebar: React.FC = () => {
     switch (user?.role) {
       case "ROLE_SUPERADMIN":
         return superAdminItems();
+        case "ROLE_ADMIN":
+          return adminItems();
         case "ROLE_DIRECTOR":
         return directorItems();
       default:

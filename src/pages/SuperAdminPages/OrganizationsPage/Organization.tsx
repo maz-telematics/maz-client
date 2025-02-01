@@ -67,10 +67,31 @@ const OrganizationDetails: React.FC = () => {
   const [employees, setEmployees] = useState<EmployeeType[]>([]);
   const [isEmployeeModalVisible, setIsEmployeeModalVisible] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
+  const [subscriptions, setSubscriptions] = useState(organizationData?.subscriptions);
+  
+  // Функция для изменения статуса подписки
+  const toggleSubscriptionStatus = () => {
+    const updatedSubscriptions = subscriptions?.map(sub => {
+      if (sub.status === "active") {
+        // Если статус "active", меняем на "inactive"
+        return { ...sub, status: "inactive" };
+      } else if (sub.status === "inactive") {
+        // Если статус "inactive", меняем на "active"
+        return { ...sub, status: "active" };
+      }
+      return sub;
+    });
 
+    setSubscriptions(updatedSubscriptions);
+    message.success("Статус подписки изменен.");
+  };
+
+  const showConfirmBlockAccess = (checked: boolean) => {
+    toggleSubscriptionStatus();
+  };
   const fetchVehicles = async (id: number) => {
     try {
-      const response = await axiosInstance.get(`/transport/manufacturer/${id}`);
+      const response = await axiosInstance.get(`/organizations/${id}/transports`);
       setVehicles(response.data);
     } catch (error) {
       console.error("Ошибка при получении транспортных средств:", error);
@@ -80,11 +101,16 @@ const OrganizationDetails: React.FC = () => {
   const fetchOrganization = async (id: number) => {
     try {
       const response = await axiosInstance.get(`/organizations/${id}`);
-      setOrganizationData(response.data[0]);
+      setOrganizationData(response.data);
     } catch (error) {
       console.error("Ошибка при получении транспортных средств:", error);
     }
   };
+
+const activeSubscription = organizationData?.subscriptions.find(sub => sub.status === 'active');
+const lastSubscription = organizationData?.subscriptions.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())[0];
+
+const subscriptionToDisplay = activeSubscription || lastSubscription;
 
   const addEmployee = async (employeeData: any) => {
     try {
@@ -121,7 +147,7 @@ const OrganizationDetails: React.FC = () => {
 
   const fetchSubscriptionHistory = async (id: number) => {
     try {
-      const response = await axiosInstance.get(`/organizations/subscription/list/${id}`);
+      const response = await axiosInstance.get(`organizations/${id}/subscriptions/list`);
       setSubscriptionHistory(response.data);
     } catch (error) {
       console.error("Ошибка при получении истории подписок:", error);
@@ -130,7 +156,7 @@ const OrganizationDetails: React.FC = () => {
 
   const fetchEmployees = async (orgId: number) => {
     try {
-      const response = await axiosInstance.get(`/organizations/${orgId}/employees`);
+      const response = await axiosInstance.get(`organizations/${1}/employees`);
       setEmployees(response.data);
     } catch (error) {
       console.error("Ошибка при получении списка сотрудников:", error);
@@ -225,28 +251,11 @@ const OrganizationDetails: React.FC = () => {
     }
   };
 
-  const showConfirmBlockAccess = (checked: boolean) => {
-    const action = checked ? "разблокировать" : "заблокировать";
-    Modal.confirm({
-      title: `Подтверждение ${action} доступа к мониторингу`,
-      content: `Вы уверены, что хотите ${action} доступ к мониторингу транспортных средств?`,
-      onOk: async () => {
-        const response = await axiosInstance.patch(`/organizations/status/${idOrganization}`);
-        if (response) {
-          fetchOrganization(Number(id));
-        }
-      },
-      onCancel() {
-        console.log("Отмена изменения доступа");
-      },
-    });
-  };
-
   const columnsVehicles = [
     {
       title: "Тип",
-      dataIndex: "vehicle_type",
-      key: "vehicle_type",
+      dataIndex: "vehicleType",
+      key: "vehicleType",
     },
     {
       title: "Модель",
@@ -257,11 +266,6 @@ const OrganizationDetails: React.FC = () => {
       title: "VIN",
       dataIndex: "vin",
       key: "vin",
-    },
-    {
-      title: "Договор",
-      dataIndex: "agreement",
-      key: "agreement_type",
     },
     {
       title: "Действия",
@@ -292,13 +296,14 @@ const OrganizationDetails: React.FC = () => {
       key: "end_date",
       render: (text: string) => moment(text).format("YYYY-MM-DD"),
     },
+    
     {
       title: "Статус",
       dataIndex: "status",
       key: "status",
       render: (text: 'active' | 'completed') => (
         <span style={{ color: text === "active" ? "blue" : "black" }}>
-          {text === "active" ? "Активная" : "Завершенная"}
+          {text === "active" ? "Активная" : "Неактивная"}
         </span>
       ),
     },
@@ -338,7 +343,7 @@ const OrganizationDetails: React.FC = () => {
 
   const disabledDate = (current: Dayjs) => {
     if (!organizationData) return false;
-    return current.isBefore(dayjs(organizationData.subscription_end), 'day');
+    // return current.isBefore(dayjs(organizationData.subscription_end), 'day');
   };
   const isMobile = window.innerWidth < 768;
 
@@ -350,7 +355,7 @@ const OrganizationDetails: React.FC = () => {
           <DownloadButton
             url="/api/organization_transport/download"
             filename="organization_transport.pdf"
-            buttonText="Скачать транспорт"
+            buttonText="Скачать таблицу"
             icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
             buttonProps={{
               style: {
@@ -412,7 +417,7 @@ const OrganizationDetails: React.FC = () => {
       <DownloadButton
         url="/api/organization_subscriptions/download"
         filename="organization_subscriptions.pdf"
-        buttonText="Скачать подписки"
+        buttonText="Скачать таблицу"
         icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
         buttonProps={{
           style: {
@@ -442,7 +447,7 @@ const OrganizationDetails: React.FC = () => {
           <DownloadButton
             url="/api/organization_subscriptions/download"
             filename="organization_subscriptions.pdf"
-            buttonText="Скачать подписки"
+            buttonText="Скачать таблицу"
             icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
             buttonProps={{
               style: {
@@ -503,7 +508,8 @@ const OrganizationDetails: React.FC = () => {
       <Row style={{
         padding: "0 40px",
         flex: "1",
-        maxHeight: '50px'
+        maxHeight: '50px',
+        marginBottom:"10px"
       }}>
         <h1
           style={{
@@ -512,7 +518,7 @@ const OrganizationDetails: React.FC = () => {
             height: "10px",
             fontSize: isMobile ? '24px' : '32px',
           }}
-        >{organizationData?.organization_name || "Название компании"}</h1>
+        >{organizationData?.organizationName || "Название компании"}</h1>
       </Row>
 
       <Card
@@ -529,28 +535,52 @@ const OrganizationDetails: React.FC = () => {
       >
         <Row gutter={16}>
           <Col span={24}>
-            <Typography.Paragraph>  <Row>    <Col xs={24} sm={4}>
-              <strong>Дата начала подписки:</strong></Col> <Col xs={24} sm={4} style={{
-                color: "#1890f",
-                fontWeight: "bold"
-              }}>
-                {moment(organizationData?.subscription_start).format("YYYY-MM-DD")}</Col> </Row>
-            </Typography.Paragraph>
-            <Typography.Paragraph> <Row> <Col xs={24} sm={4}>
-              <strong>Дата окончания подписки:</strong></Col>
-              <Col xs={24} sm={4} style={{
-                color: "#1890f",
-                fontWeight: "bold"
-              }}> {moment(organizationData?.subscription_end).format("YYYY-MM-DD")}</Col> </Row>
-            </Typography.Paragraph>
-            <Typography.Paragraph>
-              <Row>
-                <Col xs={24} sm={4}>
-                  <strong>Статус подписки:</strong> </Col> <Col xs={24} sm={4}>
-                  <span style={{ fontWeight: 500, color: organizationData?.status ? 'black' : 'red' }}>
-                    {organizationData?.status ? "Активна" : "Заблокирована"}
-                  </span> </Col> </Row>
-            </Typography.Paragraph>
+          <Typography.Paragraph>
+      <Row>
+        <Col xs={24} sm={4}>
+          <strong>Дата начала подписки:</strong>
+        </Col>
+        <Col xs={24} sm={4} style={{ color: "#1890f", fontWeight: "bold" }}>
+          {moment(subscriptionToDisplay?.startDate).format("YYYY-MM-DD")}
+        </Col>
+      </Row>
+    </Typography.Paragraph>
+
+    <Typography.Paragraph>
+      <Row>
+        <Col xs={24} sm={4}>
+          <strong>Дата окончания подписки:</strong>
+        </Col>
+        <Col xs={24} sm={4} style={{ color: "#1890f", fontWeight: "bold" }}>
+          {moment(subscriptionToDisplay?.endDate).format("YYYY-MM-DD")}
+        </Col>
+      </Row>
+    </Typography.Paragraph>
+
+    <Typography.Paragraph>
+      <Row>
+        <Col xs={24} sm={4}>
+          <strong>Статус подписки:</strong>
+        </Col>
+        <Col xs={24} sm={4}>
+          <span style={{ fontWeight: 500, color: subscriptionToDisplay?.status === 'active' ? 'black' : 'red' }}>
+            {subscriptionToDisplay?.status === 'active' ? "Активна" : "Заблокирована"}
+          </span>
+        </Col>
+      </Row>
+    </Typography.Paragraph>
+    <Typography.Paragraph>
+        <Row>
+          <Col xs={24} sm={4}>
+            <strong>План подписки:</strong>
+          </Col>
+          <Col xs={24} sm={4}>
+            <span style={{ fontWeight: 500, color: subscriptionToDisplay?.status === 'active' ? 'black' : 'red' }}>
+              {subscriptionToDisplay?.type} {/* Отображаем тип подписки */}
+            </span>
+          </Col>
+        </Row>
+      </Typography.Paragraph>
             
             <Typography.Paragraph style={{ marginBottom: 0 }}>
               <Row>
@@ -561,7 +591,7 @@ const OrganizationDetails: React.FC = () => {
                   color: "#1890f",
                   fontWeight: "bold"
                 }}>
-                  {moment(organizationData?.created_at).format("YYYY-MM-DD")}
+                  {moment(organizationData?.registrationDate).format("YYYY-MM-DD")}
                 </Col>
               </Row>
             </Typography.Paragraph>
@@ -574,20 +604,20 @@ const OrganizationDetails: React.FC = () => {
                 </Col>
                 <Col xs={24} sm={12} md={8}>
                   <Switch
-                    checked={organizationData?.status}
+                    // checked={organizationData?.status}
                     onChange={showConfirmBlockAccess}
                   />
                 </Col>
               </Row>
             </Typography.Paragraph>
-            {/* <Row>
+            <Row>
               <Col span={22}>
                 <Typography.Title level={5} >
                   Продлить доступ к системе:
                 </Typography.Title>
-                <RangePicker onChange={showConfirmExtend} disabledDate={disabledDate} />
+                {/* <RangePicker onChange={showConfirmExtend} disabledDate={disabledDate} /> */}
               </Col>
-            </Row> */}
+            </Row>
             <Tabs
               defaultActiveKey="1"
               activeKey={activeKey}

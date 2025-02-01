@@ -105,12 +105,12 @@ const ErrorTable: React.FC<ErrorsProps> = ({ selectedDate }) => {
 
     if (isCurrentDay(selectedDate)) {
       // if (!websocketRef.current) {
-        // initializeWebSocket(id);
+      // initializeWebSocket(id);
       // }
       getErrors(id, currentPage)
-      .then((errorData) => {
-        setErrors(errorData.data);
-      })
+        .then((errorData) => {
+          setErrors(errorData.data);
+        })
     } else {
       // closeWebSocket();
       fetchErrors(id, selectedDate, currentPage);
@@ -122,7 +122,7 @@ const ErrorTable: React.FC<ErrorsProps> = ({ selectedDate }) => {
   }, [selectedDate, currentPage]);
 
   const errorColumns = getErrorColumns(isPlusUser, showModal);
-console.log("errors",errors)
+  console.log("errors", errors)
   return (
     <>
       <Table
@@ -150,13 +150,15 @@ console.log("errors",errors)
           paddingBottom: "16px",
         }}
       >
-        <Pagination
-          current={currentPage}
-          total={totalCount}
-          pageSize={pageSize}
-          onChange={(page) => setCurrentPage(page)}
-          style={{ marginTop: 16, textAlign: "right" }}
-        />
+        {totalCount > pageSize && (
+          <Pagination
+            current={currentPage}
+            total={totalCount}
+            pageSize={pageSize}
+            onChange={(page) => setCurrentPage(page)}
+            style={{ marginTop: 16, textAlign: "right" }}
+          />
+        )}
       </div>
       <Modal
         title="Детали ошибки"

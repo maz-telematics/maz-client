@@ -36,25 +36,54 @@ const DescriptionsLightingParameters: React.FC<DescriptionsLightingParametersPro
   );
 
   // Создаем колонки для таблицы
-  const columns = [
-    {
-      title: "Параметры",
-      dataIndex: "parameter",
-      key: "parameter",
-      fixed: "left" as const,
-      render: (text: string) => <b>{text}</b>,
-    },
-    ...times.map((time, index) => ({
-      title: (
-        <Tag icon={<ClockCircleOutlined />} color="processing">
-          {time}
-        </Tag>
-      ),
-      dataIndex: `time${index}`,
-      key: `time${index}`,
-      align: "center" as const,
-    })),
-  ];
+  const isMobile = window.innerWidth < 768;
+  const columns = isMobile
+    ? [
+        {
+          title: "Параметр",
+          dataIndex: "parameter",
+          key: "parameter",
+          align: "left" as const,
+          render: (text: string) => (
+            <Tooltip title={text}>
+              <div style={{ textAlign: "left" }}>{text}</div>
+            </Tooltip>
+          ),
+          onCell: () => ({ style: { textAlign: "left" } }) as React.TdHTMLAttributes<HTMLTableCellElement>,
+        },
+        ...times.map((time, index) => ({
+          title: (
+            <Tag icon={<ClockCircleOutlined />} color="processing">
+              {time}
+            </Tag>
+          ),
+          dataIndex: `time${index}`,
+          key: `time${index}`,
+          align: "center" as const,
+        })),
+      ]
+    : [
+        {
+          title: "Параметры",
+          dataIndex: "parameter",
+          key: "parameter",
+          fixed: "left" as const,
+          render: (text: string) => (
+            <b style={{ textAlign: "left", display: "block" }}>{text}</b>
+          ),
+          onCell: () => ({ style: { textAlign: "left" } }) as React.TdHTMLAttributes<HTMLTableCellElement>,
+        },
+        ...times.map((time, index) => ({
+          title: (
+            <Tag icon={<ClockCircleOutlined />} color="processing">
+              {time}
+            </Tag>
+          ),
+          dataIndex: `time${index}`,
+          key: `time${index}`,
+          align: "center" as const,
+        })),
+      ];
 
   // Создаем данные для таблицы
   const tableData = [
@@ -70,15 +99,16 @@ const DescriptionsLightingParameters: React.FC<DescriptionsLightingParametersPro
                 <Tag icon={<CheckCircleOutlined />} color="success">
                   {parameter.daytimeRunningLights}
                 </Tag>
-              ) : (
+              ) : parameter.daytimeRunningLights === "off" ? (
                 <Tag icon={<CloseCircleOutlined />} color="error">
                   {parameter.daytimeRunningLights}
                 </Tag>
+              ) : (
+                <Tag color="default"> </Tag> // Пустое значение
               )}
             </Tooltip>
           ),
         }),
-        {}
       ),
     },
     {
@@ -93,15 +123,16 @@ const DescriptionsLightingParameters: React.FC<DescriptionsLightingParametersPro
                 <Tag icon={<CheckCircleOutlined />} color="success">
                   {parameter.lowBeam}
                 </Tag>
-              ) : (
+              ) : parameter.lowBeam === "off" ? (
                 <Tag icon={<CloseCircleOutlined />} color="error">
                   {parameter.lowBeam}
                 </Tag>
+              ) : (
+                <Tag color="default"> </Tag> // Пустое значение
               )}
             </Tooltip>
           ),
         }),
-        {}
       ),
     },
     {
@@ -116,15 +147,16 @@ const DescriptionsLightingParameters: React.FC<DescriptionsLightingParametersPro
                 <Tag icon={<CheckCircleOutlined />} color="success">
                   {parameter.highBeam}
                 </Tag>
-              ) : (
+              ) : parameter.highBeam === "off" ? (
                 <Tag icon={<CloseCircleOutlined />} color="error">
                   {parameter.highBeam}
                 </Tag>
+              ) : (
+                <Tag color="default"> </Tag> // Пустое значение
               )}
             </Tooltip>
           ),
         }),
-        {}
       ),
     },
     {
@@ -139,15 +171,16 @@ const DescriptionsLightingParameters: React.FC<DescriptionsLightingParametersPro
                 <Tag icon={<CheckCircleOutlined />} color="success">
                   {parameter.frontLogLights}
                 </Tag>
-              ) : (
+              ) : parameter.frontLogLights === "off" ? (
                 <Tag icon={<CloseCircleOutlined />} color="error">
                   {parameter.frontLogLights}
                 </Tag>
+              ) : (
+                <Tag color="default"> </Tag> // Пустое значение
               )}
             </Tooltip>
           ),
         }),
-        {}
       ),
     },
     {
@@ -162,15 +195,16 @@ const DescriptionsLightingParameters: React.FC<DescriptionsLightingParametersPro
                 <Tag icon={<CheckCircleOutlined />} color="success">
                   {parameter.rightTurnSignal}
                 </Tag>
-              ) : (
+              ) : parameter.rightTurnSignal === "off" ? (
                 <Tag icon={<CloseCircleOutlined />} color="error">
                   {parameter.rightTurnSignal}
                 </Tag>
+              ) : (
+                <Tag color="default"> </Tag> // Пустое значение
               )}
             </Tooltip>
           ),
         }),
-        {}
       ),
     },
     {
@@ -185,15 +219,16 @@ const DescriptionsLightingParameters: React.FC<DescriptionsLightingParametersPro
                 <Tag icon={<CheckCircleOutlined />} color="success">
                   {parameter.leftTurnSignal}
                 </Tag>
-              ) : (
+              ) : parameter.leftTurnSignal === "off" ? (
                 <Tag icon={<CloseCircleOutlined />} color="error">
                   {parameter.leftTurnSignal}
                 </Tag>
+              ) : (
+                <Tag color="default"> </Tag> // Пустое значение
               )}
             </Tooltip>
           ),
         }),
-        {}
       ),
     },
     {
@@ -208,15 +243,16 @@ const DescriptionsLightingParameters: React.FC<DescriptionsLightingParametersPro
                 <Tag icon={<CheckCircleOutlined />} color="success">
                   {parameter.sideMakerLights}
                 </Tag>
-              ) : (
+              ) : parameter.sideMakerLights === "off" ? (
                 <Tag icon={<CloseCircleOutlined />} color="error">
                   {parameter.sideMakerLights}
                 </Tag>
+              ) : (
+                <Tag color="default"> </Tag> // Пустое значение
               )}
             </Tooltip>
           ),
         }),
-        {}
       ),
     },
     {
@@ -231,15 +267,16 @@ const DescriptionsLightingParameters: React.FC<DescriptionsLightingParametersPro
                 <Tag icon={<CheckCircleOutlined />} color="success">
                   {parameter.rearFogLights}
                 </Tag>
-              ) : (
+              ) : parameter.rearFogLights === "off" ? (
                 <Tag icon={<CloseCircleOutlined />} color="error">
                   {parameter.rearFogLights}
                 </Tag>
+              ) : (
+                <Tag color="default"> </Tag> // Пустое значение
               )}
             </Tooltip>
           ),
         }),
-        {}
       ),
     },
     {
@@ -254,15 +291,16 @@ const DescriptionsLightingParameters: React.FC<DescriptionsLightingParametersPro
                 <Tag icon={<CheckCircleOutlined />} color="success">
                   {parameter.reverseLights}
                 </Tag>
-              ) : (
+              ) : parameter.reverseLights === "off" ? (
                 <Tag icon={<CloseCircleOutlined />} color="error">
                   {parameter.reverseLights}
                 </Tag>
+              ) : (
+                <Tag color="default"> </Tag> // Пустое значение
               )}
             </Tooltip>
           ),
         }),
-        {}
       ),
     },
     {
@@ -277,15 +315,16 @@ const DescriptionsLightingParameters: React.FC<DescriptionsLightingParametersPro
                 <Tag icon={<CheckCircleOutlined />} color="success">
                   {parameter.rightBrakeLights}
                 </Tag>
-              ) : (
+              ) : parameter.rightBrakeLights === "off" ? (
                 <Tag icon={<CloseCircleOutlined />} color="error">
                   {parameter.rightBrakeLights}
                 </Tag>
+              ) : (
+                <Tag color="default"> </Tag> // Пустое значение
               )}
             </Tooltip>
           ),
         }),
-        {}
       ),
     },
     {
@@ -300,17 +339,18 @@ const DescriptionsLightingParameters: React.FC<DescriptionsLightingParametersPro
                 <Tag icon={<CheckCircleOutlined />} color="success">
                   {parameter.leftBrakeLights}
                 </Tag>
-              ) : (
+              ) : parameter.leftBrakeLights === "off" ? (
                 <Tag icon={<CloseCircleOutlined />} color="error">
                   {parameter.leftBrakeLights}
                 </Tag>
+              ) : (
+                <Tag color="default"> </Tag> // Пустое значение
               )}
             </Tooltip>
           ),
         }),
-        {}
       ),
-    },
+    },    
   ];
 
   return (

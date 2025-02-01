@@ -133,6 +133,83 @@ export const directorItems = (): MenuItem[] =>  [
     "reports",
     <AssessmentOutlinedIcon style={{ fontSize: 25 ,color:"white"}} />
   ),
-
 ];
 
+export const adminItems = (): MenuItem[] => {
+  const location = useLocation();
+  const [view, setView] = useState("main");
+  const isActive = (path: string) => location.pathname === path;
+  return [
+    getItem(
+      <Link to="/admin/main" style={{ color: "white" }}>Главная</Link>,
+      "main",
+      <DashboardIcon
+        style={{
+          fontSize: 25,
+          color: isActive("/admin/main") ? "black" : "white",
+        }}
+      />
+    ),
+    
+    getItem(
+      <Link to="/admin/transports" style={{ color: "white" }}>Транспорт</Link>,
+      "transports",
+      <CommuteOutlinedIcon
+        style={{
+          fontSize: 25,
+          color: isActive("/admin/transports") ? "black" : "white",
+        }}
+      />
+    ),
+    getItem(
+      <Link to="/admin/organizations" style={{ color: "white" }}>Организации</Link>,
+      "organizations",
+      <StoreOutlinedIcon
+        style={{
+          fontSize: 25,
+          color: isActive("/admin/organizations") ? "black" : "white",
+        }}
+      />
+    ),
+    getItem(
+      <Link to="/admin/employees" style={{ color: "white" }}>Сотрудники</Link>,
+      "employees",
+      <PeopleAltOutlinedIcon
+        style={{
+          fontSize: 25,
+          color: isActive("/admin/employees") ? "black" : "white",
+        }}
+      />
+    ),
+    getItem(
+      <Link to="/admin/reports" style={{ color: "white" }}>Отчёты</Link>,
+      "reports",
+      <AssessmentOutlinedIcon
+        style={{
+          fontSize: 25,
+          color: isActive("/admin/reports") ? "black" : "white",
+        }}
+      />
+    ),
+    getItem(
+      <Link to="/admin/archive" style={{ color: "white" }}>Архив</Link>,
+      "archive",
+      <ArchiveOutlinedIcon
+        style={{
+          fontSize: 25,
+          color: isActive("/admin/archive") ? "black" : "white",
+        }}
+      />
+    ),
+    getItem(
+      <Link to="/admin/firmwares" style={{ color: "white" }}>Прошивки</Link>,
+      "firmwares",
+      <TuneIcon
+        style={{
+          fontSize: 25,
+          color: isActive("/admin/firmwares") ? "black" : "white",
+        }}
+      />
+    ),
+  ];
+};

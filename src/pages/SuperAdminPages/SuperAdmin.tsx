@@ -4,9 +4,7 @@ import PageWrapper from "../../Components/PageLayout/PageWrapper/PageWrapper";
 import SuperAdminMainPage from "../../pages/SuperAdminPages/MainPage/MainPage";
 import SuperAdminArchivePage from "../../pages/SuperAdminPages/ArchivePage/ArchivePage";
 import SuperAdminReportsPage from "../../pages/SuperAdminPages/ReportsPage/ReportsPage";
-import TransportsPage from "../../pages/SuperAdminPages/TransportsPage/TransportsPage";
-import OrganizationsPage from "../../pages/SuperAdminPages/OrganizationsPage/OrganizationsPage";
-import EmployeesPage from "../../pages/SuperAdminPages/EmployeesPage/EmployeesPage";
+import SuperAdminTransportsPage from "./TransportsPage/TransportsPage";
 
 import { showSuperAdminArchive, showSuperAdminCreateOrganization, showSuperAdminCreateTransport, showSuperAdminEditTransport, showSuperAdminEmpoyess,showSuperAdminFirmwares, showSuperAdminFirmware, showSuperAdminMain, showSuperAdminOrganization, showSuperAdminOrganizations, showSuperAdminProfile, showSuperAdminReports, showSuperAdminTransport, showSuperAdminTransports } from "../../Store/utils/superAdminModuleViewSlice";
 import { Typography } from "antd";
@@ -21,6 +19,8 @@ import CreateTransportPage from "./TransportsPage/CreateTransportPage/CreateTran
 import ProfilePage from "../shared/EditProfilePage/ProfilePage";
 import FirmwarePage from "./Firmware/Firmware";
 import FirmwareDetailsPage from "./Firmware/FirmwareDetails";
+import SuperAdminOrganizationsPage from "../../pages/SuperAdminPages/OrganizationsPage/OrganizationsPage";
+import SuperAdminEmployeesPage from "../../pages/SuperAdminPages/EmployeesPage/EmployeesPage";
 
 export default function SuperAdmin() {
   const view = useSelector((state: RootState) => state.superAdminView.view);
@@ -76,11 +76,11 @@ export default function SuperAdmin() {
       case "main":
         return <SuperAdminMainPage />;
       case "transports":
-        return <TransportsPage />;
+        return <SuperAdminTransportsPage />;
       case "organizations":
-        return <OrganizationsPage />;
+        return <SuperAdminOrganizationsPage />;
       case "employees":
-        return <EmployeesPage />;
+        return <SuperAdminEmployeesPage />;
       case "reports":
         return <SuperAdminReportsPage />;
       case "archive":

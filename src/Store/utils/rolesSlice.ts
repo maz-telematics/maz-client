@@ -1,20 +1,15 @@
-// src/redux/rolesSlice.ts
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { fetchRoles } from './rolesActions';
-
 interface Role {
   organizationName: string;
-
   directors: number;
   managers: number;
   manufactorers: number;
-  
-  superadmins: number;
+  superAdmins: number;
   admins: number;
   operators: number;
 }
-
 interface RolesState {
   roles: Role[];
   isLoading: boolean;

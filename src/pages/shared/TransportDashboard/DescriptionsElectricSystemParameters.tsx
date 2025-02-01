@@ -4,10 +4,9 @@ import { ClockCircleOutlined } from "@ant-design/icons";
 
 // Тип данных для параметров электрической системы
 interface ElectricSystemParameter {
-  gurPowerConsumption: string;
   enablingTransportTerminal15: string;
-  mainPowerOnRelay2Status: string;
   mainPowerOnRelay1Status: string;
+  mainPowerOnRelay2Status: string;
   time: string;
   powerConsumptionHydraulic: number;
   powerConsumptionAirCompressor: number;
@@ -23,6 +22,7 @@ const DescriptionsElectricSystemParameters: React.FC<DescriptionsElectricSystemP
   data,
 }) => {
   // Получаем список уникальных временных меток
+  console.log("data",data)
   const sortedData = [...data].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
 
   // Получаем список уникальных временных меток
@@ -34,41 +34,66 @@ const DescriptionsElectricSystemParameters: React.FC<DescriptionsElectricSystemP
     })
   );
 
-  // Определяем колонки таблицы
-  const columns = [
-    {
-      title: "Параметры",
-      dataIndex: "parameter",
-      key: "parameter",
-      fixed: "left" as const,
-      render: (text: string) => <b>{text}</b>,
-    },
-    ...times.map((time, index) => ({
-      title: (
-        <Tag icon={<ClockCircleOutlined />} color="processing">
-          {time}
-        </Tag>
-      ),
-      dataIndex: `time${index}`,
-      key: `time${index}`,
-      align: "center" as const,
-    })),
-  ];
-
+      const isMobile = window.innerWidth < 768;
+      const columns= isMobile
+    ? [
+        {
+          title: "Параметр",
+          dataIndex: "parameter",
+          key: "parameter",
+          align: "left" as const,
+          render: (text: string) => (
+            <div style={{ textAlign: "left" }}>{text}</div>
+          ),
+          onCell: () => ({ style: { textAlign: "left" } }) as React.TdHTMLAttributes<HTMLTableCellElement>,
+        },
+        ...times.map((time, index) => ({
+          title: (
+            <Tag icon={<ClockCircleOutlined />} color="processing">
+              {time}
+            </Tag>
+          ),
+          dataIndex: `time${index}`,
+          key: `time${index}`,
+          align: "center" as const,
+        })),
+      ]
+    : [
+        {
+          title: "Параметры",
+          dataIndex: "parameter",
+          key: "parameter",
+          fixed: "left" as const,
+          render: (text: string) => (
+            <b style={{ textAlign: "left", display: "block" }}>{text}</b>
+          ),
+          onCell: () => ({ style: { textAlign: "left" } }) as React.TdHTMLAttributes<HTMLTableCellElement>,
+        },
+        ...times.map((time, index) => ({
+          title: (
+            <Tag icon={<ClockCircleOutlined />} color="processing">
+              {time}
+            </Tag>
+          ),
+          dataIndex: `time${index}`,
+          key: `time${index}`,
+          align: "center" as const,
+        })),
+      ];
   // Подготавливаем данные для таблицы
   const tableData = [
     {
       key: "1",
-      parameter: "Расход энергии гидроусилителем руля (кВт)",
+      parameter: "Расход энергии гидроусилителем руля (Ампер)",
       ...sortedData.reduce(
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
             <Tooltip
-              title={`Расход энергии гидроусилителем руля: ${parameter.powerConsumptionHydraulic !== undefined ? parameter.powerConsumptionHydraulic : ''} кВт`}
+              title={`Расход энергии гидроусилителем руля: ${parameter.powerConsumptionHydraulic !== undefined ? parameter.powerConsumptionHydraulic : ''} Ампер`}
             >
               <Tag color={parameter.powerConsumptionHydraulic && parameter.powerConsumptionHydraulic > 12 ? "error" : "green"}>
-                {parameter.powerConsumptionHydraulic !== undefined ? `${parameter.powerConsumptionHydraulic} кВт` : "кВт"}
+                {parameter.powerConsumptionHydraulic !== undefined ? `${parameter.powerConsumptionHydraulic} Ампер` : "Ампер"}
               </Tag>
             </Tooltip>
           ),
@@ -77,16 +102,16 @@ const DescriptionsElectricSystemParameters: React.FC<DescriptionsElectricSystemP
     },
     {
       key: "2",
-      parameter: "Расход энергии воздушным компрессором (кВт)",
+      parameter: "Расход энергии воздушным компрессором (Ампер)",
       ...sortedData.reduce(
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
             <Tooltip
-              title={`Расход энергии воздушным компрессором: ${parameter.powerConsumptionAirCompressor !== undefined ? parameter.powerConsumptionAirCompressor : ''} кВт`}
+              title={`Расход энергии воздушным компрессором: ${parameter.powerConsumptionAirCompressor !== undefined ? parameter.powerConsumptionAirCompressor : ''} Ампер`}
             >
               <Tag color={parameter.powerConsumptionAirCompressor && parameter.powerConsumptionAirCompressor > 12 ? "error" : "green"}>
-                {parameter.powerConsumptionAirCompressor !== undefined ? `${parameter.powerConsumptionAirCompressor} кВт` : "кВт"}
+                {parameter.powerConsumptionAirCompressor !== undefined ? `${parameter.powerConsumptionAirCompressor} Ампер` : "Ампер"}
               </Tag>
             </Tooltip>
           ),
@@ -95,16 +120,16 @@ const DescriptionsElectricSystemParameters: React.FC<DescriptionsElectricSystemP
     },    
     {
       key: "3",
-      parameter: "Расход энергии DC-DC преобразователем (кВт)",
+      parameter: "Расход энергии DC-DC преобразователем (Ампер)",
       ...sortedData.reduce(
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
             <Tooltip
-              title={`Расход энергии DC-DC преобразователем: ${parameter.powerConsumptionDcdc !== undefined ? parameter.powerConsumptionDcdc : ''} кВт`}
+              title={`Расход энергии DC-DC преобразователем: ${parameter.powerConsumptionDcdc !== undefined ? parameter.powerConsumptionDcdc : ''} Ампер`}
             >
               <Tag color={parameter.powerConsumptionDcdc && parameter.powerConsumptionDcdc > 8 ? "error" : "green"}>
-                {parameter.powerConsumptionDcdc !== undefined ? `${parameter.powerConsumptionDcdc} кВт` : "кВт"}
+                {parameter.powerConsumptionDcdc !== undefined ? `${parameter.powerConsumptionDcdc} Ампер` : "Ампер"}
               </Tag>
             </Tooltip>
           ),
@@ -113,14 +138,14 @@ const DescriptionsElectricSystemParameters: React.FC<DescriptionsElectricSystemP
     },
     {
       key: "4",
-      parameter: "Расход энергии двигателем (кВт)",
+      parameter: "Расход энергии двигателем (Ампер)",
       ...sortedData.reduce(
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Расход энергии двигателем: ${parameter.powerConsumptionEngine || 'неизвестно'} кВт`}>
+            <Tooltip title={`Расход энергии двигателем: ${parameter.powerConsumptionEngine || 'неизвестно'} Ампер`}>
               <Tag color={parameter.powerConsumptionEngine && parameter.powerConsumptionEngine > 15 ? "error" : "green"}>
-                {parameter.powerConsumptionEngine !== undefined ? `${parameter.powerConsumptionEngine} кВт` : "неизвестно"}
+                {parameter.powerConsumptionEngine !== undefined ? `${parameter.powerConsumptionEngine} Ампер` : "неизвестно"}
               </Tag>
             </Tooltip>
           ),
@@ -135,9 +160,13 @@ const DescriptionsElectricSystemParameters: React.FC<DescriptionsElectricSystemP
           ...acc,
           [`time${index}`]: (
             <Tooltip title={`Состояние реле питания 1: ${parameter.mainPowerOnRelay1Status || 'неизвестно'}`}>
-              <Tag color={parameter.mainPowerOnRelay1Status === "on" ? "success" : "error"}>
-                {parameter.mainPowerOnRelay1Status || "неизвестно"}
-              </Tag>
+              {parameter.mainPowerOnRelay1Status === "on" ? (
+                <Tag color="success">Активно</Tag>
+              ) : parameter.mainPowerOnRelay1Status === "off" ? (
+                <Tag color="error">Неактивно</Tag>
+              ) : (
+                <Tag color="default"> </Tag> // Пустое значение
+              )}
             </Tooltip>
           ),
         }),
@@ -151,9 +180,13 @@ const DescriptionsElectricSystemParameters: React.FC<DescriptionsElectricSystemP
           ...acc,
           [`time${index}`]: (
             <Tooltip title={`Состояние реле питания 2: ${parameter.mainPowerOnRelay2Status || 'неизвестно'}`}>
-              <Tag color={parameter.mainPowerOnRelay2Status === "on" ? "success" : "error"}>
-                {parameter.mainPowerOnRelay2Status || "неизвестно"}
-              </Tag>
+              {parameter.mainPowerOnRelay2Status === "on" ? (
+                <Tag color="success">Активно</Tag>
+              ) : parameter.mainPowerOnRelay2Status === "off" ? (
+                <Tag color="error">Неактивно</Tag>
+              ) : (
+                <Tag color="default"> </Tag> // Пустое значение
+              )}
             </Tooltip>
           ),
         }),
@@ -161,36 +194,24 @@ const DescriptionsElectricSystemParameters: React.FC<DescriptionsElectricSystemP
     },
     {
       key: "7",
-      parameter: "Состояние терминала транспорта",
+      parameter: "Состояние клемы 15",
       ...sortedData.reduce(
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Состояние терминала транспорта 15: ${parameter.enablingTransportTerminal15 || 'неизвестно'}`}>
-              <Tag color={parameter.enablingTransportTerminal15 === "on" ? "success" : "error"}>
-                {parameter.enablingTransportTerminal15 || "неизвестно"}
-              </Tag>
+            <Tooltip title={`Состояние клемы 15: ${parameter.enablingTransportTerminal15 || 'неизвестно'}`}>
+              {parameter.enablingTransportTerminal15 === "on" ? (
+                <Tag color="success">Активно</Tag>
+              ) : parameter.enablingTransportTerminal15 === "off" ? (
+                <Tag color="error">Неактивно</Tag>
+              ) : (
+                <Tag color="default"> </Tag> // Пустое значение
+              )}
             </Tooltip>
           ),
         }),
       ),
-    },
-    {
-      key: "8",
-      parameter: "Расход энергии ГУР",
-      ...sortedData.reduce(
-        (acc, parameter, index) => ({
-          ...acc,
-          [`time${index}`]: (
-            <Tooltip title={`Расход энергии ГУР: ${parameter.gurPowerConsumption || 'неизвестно'} кВт`}>
-              <Tag color={parameter.gurPowerConsumption ? "green" : "error"}>
-                {parameter.gurPowerConsumption ? `${parameter.gurPowerConsumption} кВт` : "неизвестно"}
-              </Tag>
-            </Tooltip>
-          ),
-        }),
-      ),
-    },
+    },    
   ];
 
   return (

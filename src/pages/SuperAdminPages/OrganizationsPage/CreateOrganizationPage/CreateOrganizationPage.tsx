@@ -1,638 +1,380 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Row, Col, Steps, DatePicker, Select, message, InputNumber } from 'antd';
+import React, { useState, useEffect } from "react";
+import { Form, Input, InputNumber, Button, Row, Col, Select, DatePicker, Steps, notification, Space } from "antd";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
-import axiosInstance from '../../../../services/axiosInstance';
-const { RangePicker } = DatePicker;
+import axiosInstance from "../../../../services/axiosInstance";
+import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 const { Step } = Steps;
 
-type OrganizationData = {
-  companyInfo: { name: string; address: string } | null;
-  employees: {
-    adminCount: number;
-    managerCount: number;
-    mechanicCount: number;
-  };
-  vehicles: { id: string; model: string }[];
-  subscription: {
-    startDate: string | null;  // Дата начала подписки
-    type: string | null; // Тип подписки, например: "месяц", "квартал", "год"
-  } | null;
-};
-
 const subscriptionOptions = [
-  { label: '1 месяц', value: '1month' },
-  { label: '3 месяца', value: '3month' },
-  { label: '6 месяцев', value: '6month' },
-  { label: '9 месяцев', value: '9month' },
-  { label: '12 месяцев', value: '6month' },
+  { value: "basic", label: "Базовая" },
+  { value: "extended", label: "Расширенная" },
+  { value: "premium", label: "Премиум" },
 ];
-const typeOptions = [
-  { label: 'Базоый план ', value: '1month' },
-  { label: 'Расширенный план', value: '3month' },
-  { label: 'Премиум план', value: '6month' },
-  
-];
-interface Vehicle {
-  vin: string;
-}
 
-interface VinStatus {
-  [vin: string]: boolean;
-}
-const CreateOrganization: React.FC = () => {
+const subscriptionPeriodOptions = [
+  { value: "1_month", label: "Месяц" },
+  { value: "3_months", label: "Три месяца" },
+  { value: "quarter", label: "Квартал" },
+  { value: "year", label: "Год" },
+];
+
+const CreateOrganization = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [vinStatus, setVinStatus] = useState<VinStatus>({});
-  const [loading, setLoading] = useState<boolean>(false);
   const [form] = Form.useForm();
+  const [vinStatus, setVinStatus] = useState<Record<string, boolean>>({});
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const showConfirmExtend = (dates: any) => {
-    console.log(dates);
+  // Проверка валидности текущего шага
+  const isStepFormValid = () => {
+    const formData = form.getFieldsValue();
+    if (currentStep === 0) {
+      return (
+        formData.organizationName &&
+        formData.organizationAddres &&
+        formData.organizationEmail &&
+        formData.organizationContactNumber &&
+        formData.organizationContactPerson 
+      );
+    }
+    if (currentStep === 1) {
+      return (
+        formData.adminCount !== undefined &&
+        formData.managerCount !== undefined &&
+        formData.mechanicCount !== undefined
+      );
+    }
+    if (currentStep === 2) {
+      const vehicles = form.getFieldValue("vehicles") || [];
+      const hasVehicles = vehicles.length > 0;
+      const allVinsValid = Object.values(vinStatus).length === vehicles.length && Object.values(vinStatus).every((status) => status === true);
+      return hasVehicles && allVinsValid;
+    }
+    if (currentStep === 3) {
+      return (
+        formData.subscriptionPeriod &&
+        formData.subscriptionType &&
+        formData.subscriptionDuration
+      );
+    }
+    return false;
   };
 
-  const disabledDate = (current: any) => {
-    return current && current < Date.now();
+  // Проверка VIN номеров
+  const validateVinNumbers = async (vinList: string[]) => {
+    try {
+      const response = await axiosInstance.post("/transport/check-organization", { transports: vinList });
+      return response.data; // Объект с результатами проверки
+    } catch (error) {
+      notification.error({
+        message: "Ошибка проверки VIN номеров",
+        description: "Не удалось проверить VIN номера. Попробуйте снова.",
+      });
+      return {}; // Возвращаем пустой объект в случае ошибки
+    }
   };
 
-  const [organizationData, setOrganizationData] = useState<OrganizationData>({
-    companyInfo: null,
-    employees: { adminCount: 1, managerCount: 1, mechanicCount: 1 },
-    vehicles: [],
-    subscription: {
-      startDate: null, // Начальное значение для даты начала подписки
-      type: null, // Начальное значение для типа подписки
-    },
-  });
+  const handleFinishVin = async () => {
+    setLoading(true);
+    const vehicles = form.getFieldValue("vehicles") || [];
+    const vinList = vehicles.map((v: { vin: string }) => v.vin);
 
-
-  
-  const handleSubmit = async (values: any) => {
-    const vehicles = values.vehicles || [];
-    if (vehicles.length === 0) {
-      message.error('Добавьте хотя бы одно транспортное средство');
+    if (vinList.length === 0) {
+      setLoading(false);
+      notification.warning({
+        message: "Список VIN номеров пуст",
+        description: "Добавьте хотя бы один VIN номер для проверки.",
+      });
       return;
     }
 
-    try {
-      const vehicleData = await Promise.all(
-        vehicles.map(async (vin: string) => {
-          const response = await fetch(`/api/vehicle/${vin}`);
-          if (response.ok) {
-            return await response.json();
-          } else {
-            message.error(`Не удалось найти транспорт для VIN: ${vin}`);
-            return null;
-          }
-        })
-      );
-      console.log('Vehicle data:', vehicleData);
+    const validationResults = await validateVinNumbers(vinList);
+    setVinStatus(validationResults); // Обновляем статусы VIN
+    setLoading(false);
 
-      message.success('Транспортные средства успешно добавлены');
-    } catch (error) {
-      message.error('Ошибка при обращении к серверу');
-    }
-  };
-  const checkVins = async (vinList: string[]): Promise<void> => {
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get<VinStatus>("/transport/check-organization", {
-        params: {
-          transports: vinList,  // Передаем транспорты как параметр URL
-        },
-      });
-
-      setVinStatus(response.data);
-    } catch (error) {
-      console.error("Ошибка при проверке VIN номеров:", error);
-      message.error("Ошибка проверки VIN номеров. Попробуйте снова.");
-    } finally {
-      setLoading(false);
-    }
-  };
- 
-  const handleFinishVin = async (): Promise<void> => {
-    const values = form.getFieldValue("vehicles") || [];
-    const vinList = values.map((vehicle: Vehicle) => vehicle.vin);
-
-    await checkVins(vinList);
-
-    const invalidVins = Object.keys(vinStatus).filter((vin) => !vinStatus[vin]);
-
+    const invalidVins = Object.entries(validationResults).filter(([_, isValid]) => !isValid);
     if (invalidVins.length > 0) {
-      message.error(`Эти VIN номера не соответствуют организации: ${invalidVins.join(", ")}`);
+      notification.warning({
+        message: "Некоторые VIN номера недействительны",
+        description: `Недействительные VIN: ${invalidVins.map(([vin]) => vin).join(", ")}`,
+      });
     } else {
-      message.success("Все VIN номера валидны!");
+      notification.success({
+        message: "Проверка завершена",
+        description: "Все VIN номера действительны.",
+      });
     }
   };
 
+  const handleNextStep = () => {
+    if (isFormValid) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handlePrevStep = () => {
+    setCurrentStep(currentStep - 1);
+  };
 
   const handleFinish = async () => {
     try {
-      const values = await form.validateFields();
-      saveStepData(currentStep, values);
+      // Собираем данные из формы
+      const formData = form.getFieldsValue();
+      const vinList = form.getFieldValue("vehicles") || [];
 
-      // Отображение сообщения о добавлении организации
-      message.success("Организация добавлена!");
-      setIsSubmitted(true); // Устанавливаем состояние завершения
-      setCurrentStep(4);
+      // Формируем тело запроса
+      const requestData = {
+        organization: {
+          organizationName: formData.organizationName,
+          organizationAddres: formData.organizationAddres,
+          organizationEmail: formData.organizationEmail,
+          organizationContactNumber: formData.organizationContactNumber,
+          organizationContactPerson: formData.organizationContactPerson || "", // Если есть поле контактного лица
+        },
+        employees: {
+          adminsQuantity: formData.adminCount,
+          managersQuantity: formData.managerCount,
+          mechanicsQuantity: formData.mechanicCount,
+        },
+        idTransports: vinList.map((vehicle: any) => vehicle.vin), // Получаем все VIN номера
+        subscription: {
+          startDate: formData.subscriptionPeriod ? formData.subscriptionPeriod.format("YYYY-MM-DD") : "", // Форматируем дату
+          type: formData.subscriptionType, // Тип подписки (ежемесячно, ежегодно и т.д.)
+        },
+      };
+
+      // Отправляем запрос
+      const response = await axiosInstance.post("/organizations/create-organization", requestData);
+
+      if (response.status === 200) {
+        notification.success({
+          message: "Регистрация завершена",
+          description: "Организация успешно зарегистрирована!",
+        });
+        // Можно добавить дополнительные действия по завершению регистрации
+      } else {
+        notification.error({
+          message: "Ошибка регистрации",
+          description: "Не удалось зарегистрировать организацию. Попробуйте снова.",
+        });
+      }
     } catch (error) {
-      message.error("Пожалуйста, заполните все обязательные поля!");
-    }
-  };
-
-  const nextStep = async () => {
-    try {
-      // Проверяем валидность текущих полей
-      const values = await form.validateFields();
-      // Сохраняем данные текущего шага
-      saveStepData(currentStep, values);
-
-      // Переходим к следующему шагу
-      setCurrentStep((prev) => {
-        const nextStep = prev + 1;
-
-        // Загружаем данные для следующего шага
-        form.resetFields();
-        form.setFieldsValue(getStepData(nextStep));
-
-        return nextStep;
+      console.error("Error during registration:", error);
+      notification.error({
+        message: "Ошибка",
+        description: "Произошла ошибка при отправке данных. Попробуйте снова.",
       });
-    } catch (error) {
-      message.error("Пожалуйста, заполните все обязательные поля!");
     }
   };
 
-  const prevStep = async () => {
-    try {
-      // Получаем текущие значения формы и сохраняем их
-      const values = form.getFieldsValue();
-      saveStepData(currentStep, values);
-
-      // Переходим к предыдущему шагу
-      setCurrentStep((prev) => {
-        const previousStep = prev - 1;
-
-        // Загружаем данные для предыдущего шага
-        form.resetFields();
-        form.setFieldsValue(getStepData(previousStep));
-
-        return previousStep;
-      });
-    } catch (error) {
-      message.error("Ошибка при сохранении данных перед возвратом!");
-    }
-  };
-
-  const getStepData = (step: number) => {
-    console.log()
-    switch (step) {
-      case 0:
-        return organizationData.companyInfo;
-      case 1:
-        return organizationData.employees;
-      case 2:
-        return organizationData.vehicles ; 
-      case 3:
-        return organizationData.subscription || {};
-      default:
-        return {};
-    }
-  };
-
-  const saveStepData = (step: number, data: any) => {
-    console.log('Saving step data:', step, data); // Debugging line
-    switch (step) {
-      case 0:
-        setOrganizationData((prev) => ({ ...prev, companyInfo: data }));
-        break;
-      case 1:
-        setOrganizationData((prev) => ({
-          ...prev,
-          employees: {
-            adminCount: data.adminCount,
-            managerCount: data.managerCount,
-            mechanicCount: data.mechanicCount,
-          },
-        }));
-        break;
-      case 2:
-        setOrganizationData((prev) => ({
-          ...prev,
-          vehicles: [...prev.vehicles, data],
-        }));
-        break;
-      case 3:
-        setOrganizationData((prev) => ({
-          ...prev,
-          subscription: {
-            startDate: data.startDate ? data.startDate.format("YYYY-MM-DD") : null,
-            type: data.type,
-          },
-        }));
-        break;
-      default:
-        break;
-    }
-  };
 
   useEffect(() => {
-    form.setFieldsValue(getStepData(currentStep));
-  }, [currentStep, form]);
-  const renderForm = () => {
-    switch (currentStep) {
-      case 0:
-        return (
-          <Form form={form} layout="vertical">
-            <Col>
-              <Col xs={24} sm={12} md={8}>
-                <Form.Item
-                  name="name"
-                  label="Название организации"
-                  rules={[{ required: true, message: "Введите название организации!" }]}
-                >
-                  <Input />
-                </Form.Item>
-              </Col>
+    setIsFormValid(isStepFormValid());
+  }, [vinStatus, currentStep, form]);
 
-              <Col xs={24} sm={12} md={8}>
-                <Form.Item
-                  name="address"
-                  label="Адрес"
-                  rules={[{ required: true, message: "Введите адрес!" }]}
-                >
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={12} md={8}>
-                <Form.Item
-                  name="email"
-                  label="Электронная почта"
-                  rules={[
-                    { required: true, message: "Введите электронную почту!" },
-                    { type: 'email', message: "Введите корректный адрес электронной почты!" },
-                  ]}
-                >
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={12} md={8}>
-                <Form.Item
-                  name="contact"
-                  label="Контактный телефон"
-                  rules={[
-                    { required: true, message: "Введите контактный телефон!" },
-                    {
-                      pattern: /^\+375\s?(25|29|33|44)\s?\d{3}(-?\d{2}){2}$/,
-                      message: "Введите корректный номер телефона в формате +375 XX XXX-XX-XX",
-                    },
-                  ]}
-                >
-                  <Input placeholder="+375 XX XXX-XX-XX" />
-                </Form.Item>
-              </Col>
-              <Col xs={24} sm={12} md={8}>
-                <Form.Item
-                  name="person"
-                  label="Контактное лицо"
-                  rules={[{ required: true, message: "Введите контактное лицо!" }]}
-                >
-                  <Input />
-                </Form.Item>
-              </Col>
-              {/* <Col xs={24} sm={12} md={8}>
-                <Form.Item
-                  name="password"
-                  label="Пароль"
-                  rules={[{ required: true, message: "Введите пароль!" }]}
-                >
-                  <Input.Password />
-                </Form.Item>
-              </Col> */}
-            </Col>
-          </Form>
-
-        );
-      case 1:
-        return (
-          <Form form={form} layout="vertical">
-            <Row gutter={16}>
-              <Col xs={24} sm={12}>
-                <Form.Item
-                  name="adminCount"
-                  label="Количество администраторов"
-                  rules={[
-                    { required: true, message: "Введите количество администраторов!" },
-                    {
-                      type: "number",
-                      min: 0,
-                      message: "Количество должно быть неотрицательным числом!",
-                    },
-                  ]}
-                >
-                  <InputNumber
-                    placeholder="1"
-                    min={1}
-                    style={{ width: "100%" }}
-                    formatter={(value) => (value ? `${value}`.replace(/\D/g, "") : "")} // Убирает все символы, кроме цифр
-                    onKeyPress={(event) => {
-                      if (!/^\d$/.test(event.key)) {
-                        event.preventDefault(); // Блокирует ввод символов, кроме цифр
-                      }
-                    }}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row gutter={16}>
-              <Col xs={24} sm={12}>
-                <Form.Item
-                  name="managerCount"
-                  label="Количество менеджеров"
-                  rules={[
-                    { required: true, message: "Введите количество менеджеров!" },
-                    {
-                      type: "number",
-                      min: 1,
-                      message: "Количество должно быть неотрицательным числом!",
-                    },
-                  ]}
-                >
-                  <InputNumber
-                    placeholder="1"
-                    min={0}
-                    style={{ width: "100%" }}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row gutter={16}>
-              <Col xs={24} sm={12}>
-                <Form.Item
-                  name="mechanicCount"
-                  label="Количество механиков"
-                  rules={[
-                    { required: true, message: "Введите количество механиков!" },
-                    {
-                      type: "number",
-                      min: 0,
-                      message: "Количество должно быть неотрицательным числом!",
-                    },
-                  ]}
-                >
-                  <InputNumber
-                    placeholder="1"
-                    min={1}
-                    style={{ width: "100%" }}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-          </Form>
-        );
-      case 2:
-        return (
-          <Form form={form} layout="vertical" onFinish={handleFinishVin}>
-          <Form.List
-            name="vehicles"
-            initialValue={[{ vin: "" }]}
-            rules={[
-              {
-                validator: async (_, vehicles: Vehicle[]) => {
-                  if (!vehicles || vehicles.length < 1) {
-                    return Promise.reject(new Error("Добавьте хотя бы одно транспортное средство"));
-                  }
-                },
-              },
-            ]}
-          >
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map(({ key, name, fieldKey }) => {
-                  const vin = form.getFieldValue(["vehicles", name, "vin"]);
-                  return (
-                    <Row gutter={16} key={key} align="middle">
-                      <Col xs={20} sm={16}>
-                        <Form.Item
-                          {...(fieldKey ? { fieldKey } : {})}
-                          name={[name, "vin"]}
-                          label="VIN номер"
-                          rules={[
-                            { required: true, message: "Введите VIN номер" },
-                            {
-                              pattern: /^[A-HJ-NPR-Z0-9]{17}$/,
-                              message: "VIN номер должен содержать 17 символов, цифры и латинские буквы в верхнем регистре!",
-                            },
-                          ]}
-                        >
-                          <Input
-                            placeholder="Введите VIN номер"
-                            style={{
-                              width: "100%",
-                              borderColor: vinStatus[vin] === false ? "red" : undefined,
-                            }}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={2}>
-                        {vinStatus[vin] !== undefined && (
-                          vinStatus[vin] ? (
-                            <CheckCircleOutlined style={{ color: "green", fontSize: "20px" }} />
-                          ) : (
-                            <CloseCircleOutlined style={{ color: "red", fontSize: "20px" }} />
-                          )
-                        )}
-                      </Col>
-                      <Col span={2}>
-                        <Button
-                          type="link"
-                          danger
-                          onClick={() => remove(name)}
-                          style={{ width: "100%", textAlign: "right" }}
-                        >
-                          Удалить
-                        </Button>
-                      </Col>
-                    </Row>
-                  );
-                })}
-    
-                <Form.Item>
-                  <Button type="dashed" onClick={() => add()} block>
-                    Добавить транспорт
-                  </Button>
-                </Form.Item>
-              </>
-            )}
-          </Form.List>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" loading={loading} block>
-              Проверить VIN номера
-            </Button>
-          </Form.Item>
-        </Form>
-          // <Form form={form} layout="vertical" onFinish={handleSubmit}>
-          //   <Form.List
-          //     name="vehicles"
-          //     initialValue={['']} // Начальное значение для одного VIN
-          //     rules={[
-          //       {
-          //         validator: async (_, vehicles) => {
-          //           if (!vehicles || vehicles.length < 1) {
-          //             return Promise.reject(new Error('Добавьте хотя бы одно транспортное средство'));
-          //           }
-          //         },
-          //       },
-          //     ]}
-          //   >
-          //     {(fields, { add, remove }) => (
-          //       <>
-          //         {fields.map(({ key, name, fieldKey }) => (
-          //           <Row gutter={16} key={key} align="middle">
-          //             <Col xs={24} sm={12}> 
-          //               <Form.Item
-          //                 {...(fieldKey ? { fieldKey } : {})}
-          //                 name={[name, 'vin']}
-          //                 label="VIN номер"
-          //                 rules={[
-          //                   { required: true, message: 'Введите VIN номер' },
-          //                   {
-          //                     pattern: /^[A-HJ-NPR-Z0-9]{17}$/,
-          //                     message: 'VIN номер должен содержать 17 символов, цифры и латинские буквы в верхнем регистре!',
-          //                   },
-          //                 ]}
-          //               >
-          //                 <Input placeholder="Введите VIN номер" style={{ width: '100%' }} />
-          //               </Form.Item>
-          //             </Col>
-          //             <Col span={1}>
-          //               <Button
-          //                 type="link"
-          //                 danger
-          //                 onClick={() => remove(name)}
-          //                 style={{ width: '100%', textAlign: 'right' }}
-          //               >
-          //                 Удалить
-          //               </Button>
-          //             </Col>
-          //           </Row>
-          //         ))}
-
-          //         <Form.Item>
-          //           <Button type="dashed" onClick={() => add()} block style={{ width: '200px', margin: '0 auto' }}>
-          //             Добавить транспорт
-          //           </Button>
-          //         </Form.Item>
-          //       </>
-          //     )}
-          //   </Form.List>
-          // </Form>
-        );
-      case 3:
-        return (
-          <Form form={form} layout="vertical" style={{ flexDirection: "column" }}>
-  <Col xs={24} sm={12} md={8}>
-    <Form.Item
-      name="subscriptionPeriod"
-      label="Начало подписки"
-      rules={[{ required: true, message: "Выберите период начала подписки!" }]}
-    >
-      <DatePicker
-        onChange={showConfirmExtend}
-        disabledDate={disabledDate}
-        style={{ width: "100%" }}
-      />
-    </Form.Item>
-  </Col>
-
-  <Col xs={24} sm={12} md={8}>
-    <Form.Item
-      name="subscriptionType"
-      label="Период подписки"
-      rules={[{ required: true, message: "Выберите тип подписки!" }]}
-    >
-      <Select placeholder="Выберите тип подписки" style={{ width: "100%" }}>
-        {subscriptionOptions.map((option) => (
-          <Select.Option key={option.value} value={option.value}>
-            {option.label}
-          </Select.Option>
-        ))}
-      </Select>
-    </Form.Item>
-  </Col>
-
-  <Col xs={24} sm={12} md={8}>
-    <Form.Item
-      name="typeOptions"
-      label="Тип подписки"
-      rules={[{ required: true, message: "Выберите тип подписки!" }]}
-    >
-      <Select placeholder="Выберите тип подписки" style={{ width: "100%" }}>
-        {typeOptions.map((option) => (
-          <Select.Option key={option.value} value={option.value}>
-            {option.label}
-          </Select.Option>
-        ))}
-      </Select>
-    </Form.Item>
-  </Col>
-</Form>
-
-        );
-    }
-  };
-  const isMobile = window.innerWidth < 768;
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      width: "100%",
-      minHeight: '100vh',
-      backgroundColor: "#E1E1E1",
-    }}>
-      <Row style={{
-        padding: "0 40px",
-        flex: "1",
-      }}>
-        <Col xs={24} >
-          <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
-            <Col>
-              <h1 style={{ margin: 0, fontSize: isMobile ? '24px' : '32px', }}>Регистрация организации</h1>
-            </Col>
-          </Row>
-          <Steps current={currentStep}  >
-            <Step title="Информация о компании" />
-            <Step title="Сотрудники" />
-            <Step title="Транспорт" />
-            <Step title="Подписка" />
-          </Steps>
-          <div style={{ marginTop: 20 }}>{renderForm()}</div>
-          <div style={{ marginTop: 20  }}>
-            {/* <Button disabled={currentStep === 0} onClick={prevStep} style={{ marginRight: 10 }}>
-              Назад
-            </Button>
-            <Button type="primary" onClick={nextStep} style={{ backgroundColor: "#3A5F73" }}>
-              {currentStep === 3 ? 'Завершить' : 'Далее'}
-            </Button> */}
-            {!isSubmitted && (
-              <>
-                <Button disabled={currentStep === 0} onClick={prevStep} style={{ marginRight: 10 }}>
-                  Назад
-                </Button>
-                {currentStep === 3 ? (
-                  <Button type="primary" onClick={handleFinish} style={{backgroundColor: "#1B232A"}}>
-                    Сохранить
+    <div style={{ padding: "40px" }}>
+      <h1>Регистрация организации</h1>
+      <Steps current={currentStep}>
+        <Step title="Информация о компании" />
+        <Step title="Сотрудники" />
+        <Step title="Транспорт" />
+        <Step title="Подписка" />
+      </Steps>
+      <Form
+        form={form}
+        layout="vertical"
+        onValuesChange={() => setIsFormValid(isStepFormValid())}
+        style={{ marginTop: 20 }}
+      >
+{currentStep === 0 && (
+  <div style={{ display: "flex", flexDirection: "column", gap: "16px", maxWidth: "400px", margin: "0" }}>
+    <Form.Item
+      name="organizationName"
+      label="Название организации"
+      rules={[{ required: true, message: "Введите название организации!" }]}
+    >
+      <Input style={{ width: "100%", maxWidth: "100%" }} />
+    </Form.Item>
+    <Form.Item
+      name="organizationAddres"
+      label="Адрес"
+      rules={[{ required: true, message: "Введите адрес!" }]}
+    >
+      <Input style={{ width: "100%", maxWidth: "100%" }} />
+    </Form.Item>
+    <Form.Item
+      name="organizationEmail"
+      label="Электронная почта"
+      rules={[{ required: true, type: "email", message: "Введите корректный email!" }]}
+    >
+      <Input style={{ width: "100%", maxWidth: "100%" }} />
+    </Form.Item>
+    <Form.Item
+      name="organizationContactNumber"
+      label="Контактный телефон"
+      rules={[
+        { required: true, message: "Введите контактный телефон!" },
+        {
+          pattern: /^\+375(29|33|44|25)[0-9]{7}$/,
+          message: "Неверный формат телефона! Введите номер в формате +375XXXXXXXXX.",
+        },
+      ]}
+    >
+      <Input style={{ width: "100%", maxWidth: "100%" }} />
+    </Form.Item>
+    <Form.Item
+      name="organizationContactPerson"
+      label="Контактное лицо"
+      rules={[{ required: true, message: "Введите имя контактного лица!" }]}
+    >
+      <Input style={{ width: "100%", maxWidth: "100%" }} />
+    </Form.Item>
+  </div>
+)}
+{currentStep === 1 && (
+  <div style={{ maxWidth: "400px", width: "100%", margin: "0" }}>
+    <Space direction="vertical" size="large" style={{ width: "100%" }}>
+      <Form.Item
+        name="adminCount"
+        label="Администраторы"
+        rules={[{ required: true, message: "Введите количество администраторов!" }]}
+      >
+        <InputNumber min={0} max={10} style={{ width: "100%" }} />
+      </Form.Item>
+      <Form.Item
+        name="managerCount"
+        label="Менеджеры"
+        rules={[{ required: true, message: "Введите количество менеджеров!" }]}
+      >
+        <InputNumber min={0} max={10} style={{ width: "100%" }} />
+      </Form.Item>
+      <Form.Item
+        name="mechanicCount"
+        label="Механики"
+        rules={[{ required: true, message: "Введите количество механиков!" }]}
+      >
+        <InputNumber min={0} max={10} style={{ width: "100%" }} />
+      </Form.Item>
+    </Space>
+  </div>
+)}
+{currentStep === 2 && (
+  <div style={{ maxWidth: "400px", width: "100%", margin: "0" }}>
+    <Form.List name="vehicles" initialValue={[{ vin: "" }]}>
+      {(fields, { add, remove }) => (
+        <Space direction="vertical" size="small" style={{ width: "100%" }}>
+          {fields.map(({ key, name }) => {
+            const vin = form.getFieldValue(["vehicles", name, "vin"]);
+            return (
+              <Row key={key} gutter={8} align="middle" wrap>
+                <Col span={20}>
+                  <Form.Item
+                    name={[name, "vin"]}
+                    label="VIN номер"
+                    rules={[{ required: true, message: "Введите VIN номер!" }]}
+                  >
+                    <Input style={{ width: "100%" }} />
+                  </Form.Item>
+                </Col>
+                <Col span={1}>
+                  {vinStatus[vin] !== undefined &&
+                    (vinStatus[vin] ? (
+                      <CheckCircleOutlined style={{ color: "green" }} />
+                    ) : (
+                      <CloseCircleOutlined style={{ color: "red" }} />
+                    ))}
+                </Col>
+                <Col span={2}>
+                  <Button type="link" danger onClick={() => remove(name)}>
+                    Удалить
                   </Button>
-                ) : (
-                  <Button type="primary" onClick={nextStep } style={{backgroundColor: "#1B232A"}}>
-                    Далее
-                  </Button>
-                )}
-              </>
-            )}
-          </div>
-        </Col></Row>
+                </Col>
+              </Row>
+            );
+          })}
+          <Button
+            type="dashed"
+            onClick={add}
+            block
+            icon={<PlusOutlined />}
+            style={{
+              height: "32px",        // уменьшена высота
+              fontSize: "12px",      // уменьшен размер шрифта
+              padding: "0 10px",     // уменьшены отступы
+              width: "220px",         // убрана фиксированная ширина
+            }}
+          >
+            Добавить транспорт
+          </Button>
+        </Space>
+      )}
+    </Form.List>
+    <Button
+      type="primary"
+      onClick={handleFinishVin}
+      loading={loading}
+      icon={<SearchOutlined />}
+      style={{
+        marginTop: "16px",
+        height: "32px",         // уменьшена высота
+        fontSize: "12px",       // уменьшен размер шрифта
+        width: "220px",          // убрана фиксированная ширина
+        padding: "0 10px",      // уменьшены отступы
+      }}
+    >
+      Проверить VIN номера
+    </Button>
+  </div>
+)}
+      {currentStep === 3 && (
+  <div style={{ maxWidth: "400px", width: "100%", margin: "0" }}>
+    <Space direction="vertical" size="small" style={{ width: "100%" }}>
+      <Form.Item
+        name="subscriptionPeriod"
+        label="Начало подписки"
+        rules={[{ required: true, message: "Выберите начало подписки!" }]}
+      >
+        <DatePicker style={{ width: "100%" }} />
+      </Form.Item>
+      <Form.Item
+        name="subscriptionType"
+        label="Тип подписки"
+        rules={[{ required: true, message: "Выберите тип подписки!" }]}
+      >
+        <Select options={subscriptionOptions} placeholder="Выберите тип" />
+      </Form.Item>
+      <Form.Item
+        name="subscriptionDuration"
+        label="Период подписки"
+        rules={[{ required: true, message: "Выберите период подписки!" }]}
+      >
+        <Select
+          options={subscriptionPeriodOptions}
+          placeholder="Выберите период"
+          style={{ width: "100%" }}
+        />
+      </Form.Item>
+    </Space>
+  </div>
+)}
+
+
+      </Form>
+      <div style={{ marginTop: 20 }}>
+        <Button disabled={currentStep === 0} onClick={handlePrevStep} style={{ marginRight: 10 }}>
+          Назад
+        </Button>
+        {currentStep === 3 ? (
+          <Button type="primary" onClick={handleFinish} disabled={!isFormValid}>
+            Завершить
+          </Button>
+        ) : (
+          <Button type="primary" onClick={handleNextStep} disabled={!isFormValid}>
+            Далее
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

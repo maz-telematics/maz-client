@@ -30,25 +30,71 @@ const DescriptionsAirConditioningParameters: React.FC<DescriptionsAirConditionin
   );
 
   // Создаем колонки для таблицы
-  const columns = [
-    {
-      title: "Параметры",
-      dataIndex: "parameter",
-      key: "parameter",
-      fixed: "left" as const,
-      render: (text: string) => <b>{text}</b>,
-    },
-    ...times.map((time, index) => ({
-      title: (
-        <Tag icon={<ClockCircleOutlined />} color="processing">
-          {time}
-        </Tag>
-      ),
-      dataIndex: `time${index}`,
-      key: `time${index}`,
-      align: "center" as const,
-    })),
-  ];
+  // const columns = [
+  //   {
+  //     title: "Параметры",
+  //     dataIndex: "parameter",
+  //     key: "parameter",
+  //     fixed: "left" as const,
+  //     render: (text: string) => <b>{text}</b>,
+  //   },
+  //   ...times.map((time, index) => ({
+  //     title: (
+  //       <Tag icon={<ClockCircleOutlined />} color="processing">
+  //         {time}
+  //       </Tag>
+  //     ),
+  //     dataIndex: `time${index}`,
+  //     key: `time${index}`,
+  //     align: "center" as const,
+  //   })),
+  // ];
+      const isMobile = window.innerWidth < 768;
+      const columns= isMobile
+    ? [
+        {
+          title: "Параметр",
+          dataIndex: "parameter",
+          key: "parameter",
+          align: "left" as const,
+          render: (text: string) => (
+            <div style={{ textAlign: "left" }}>{text}</div>
+          ),
+          onCell: () => ({ style: { textAlign: "left" } }) as React.TdHTMLAttributes<HTMLTableCellElement>,
+        },
+        ...times.map((time, index) => ({
+          title: (
+            <Tag icon={<ClockCircleOutlined />} color="processing">
+              {time}
+            </Tag>
+          ),
+          dataIndex: `time${index}`,
+          key: `time${index}`,
+          align: "center" as const,
+        })),
+      ]
+    : [
+        {
+          title: "Параметры",
+          dataIndex: "parameter",
+          key: "parameter",
+          fixed: "left" as const,
+          render: (text: string) => (
+            <b style={{ textAlign: "left", display: "block" }}>{text}</b>
+          ),
+          onCell: () => ({ style: { textAlign: "left" } }) as React.TdHTMLAttributes<HTMLTableCellElement>,
+        },
+        ...times.map((time, index) => ({
+          title: (
+            <Tag icon={<ClockCircleOutlined />} color="processing">
+              {time}
+            </Tag>
+          ),
+          dataIndex: `time${index}`,
+          key: `time${index}`,
+          align: "center" as const,
+        })),
+      ];
 
   // Создаем данные для таблицы
   const tableData = [
@@ -64,10 +110,14 @@ const DescriptionsAirConditioningParameters: React.FC<DescriptionsAirConditionin
                 <Tag icon={<CheckCircleOutlined />} color="success">
                   {parameter.acOn}
                 </Tag>
-              ) : (
+              ) : parameter.acOn === "off" ? (
                 <Tag icon={<CloseCircleOutlined />} color="error">
                   {parameter.acOn}
                 </Tag>
+              ) : (
+                <Tag color="default">
+                  {" "}
+                </Tag> // Пустое значение, если не "on" и не "off"
               )}
             </Tooltip>
           ),
@@ -87,10 +137,14 @@ const DescriptionsAirConditioningParameters: React.FC<DescriptionsAirConditionin
                 <Tag icon={<CheckCircleOutlined />} color="success">
                   {parameter.frostSensor}
                 </Tag>
-              ) : (
-                <Tag icon={<CloseCircleOutlined />} color="error">
+              ) : parameter.frostSensor === "turn_on" ? (
+                <Tag icon={<CheckCircleOutlined />} color="processing">
                   {parameter.frostSensor}
                 </Tag>
+              ) : (
+                <Tag color="default">
+                  {" "}
+                </Tag> // Пустое значение, если не "on", "off" или "turn_on"
               )}
             </Tooltip>
           ),
@@ -98,6 +152,7 @@ const DescriptionsAirConditioningParameters: React.FC<DescriptionsAirConditionin
         {}
       ),
     },
+    
 
     {
       key: "3",
@@ -154,3 +209,4 @@ const DescriptionsAirConditioningParameters: React.FC<DescriptionsAirConditionin
 };
 
 export default DescriptionsAirConditioningParameters;
+

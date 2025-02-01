@@ -11,17 +11,22 @@ export interface Car {
   organization_id: number;
 }
 
-  
-  export interface Organization {
-    registration_date: number;
-    id: number;
-    contact_person: string;
-    organization_address: string;
-    organization_name: string;
-    email_contact_person: string;
-    contact_info: string;
-    status:boolean;
-    created_at: string;
-    subscription_start: string;
-    subscription_end: string;
-  }    
+export interface Subscription {
+  id: number;
+  startDate: string;
+  endDate: string;
+  status: string;
+  type: string;
+  id_organization: number;
+}
+
+export interface Organization {
+  id: number;
+  organizationAddress: string;
+  contactInfo: string;
+  contactPerson: string;
+  organizationName: string;
+  emailContactPerson: string;
+  registrationDate: string; // формат даты в виде строки
+  subscriptions: Subscription[]; // массив подписок
+}

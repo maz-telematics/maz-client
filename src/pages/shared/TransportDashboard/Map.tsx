@@ -9,22 +9,41 @@ import { fetchTransportLocations } from "../../../Store/apis/transportLocations"
 interface MapProps {
   selectedDate: Dayjs | null;
 }
+function removeDuplicateLocations(
+  locations: Array<{ latitude: number; longitude: number }>,
+  minDistance = 0.0001
+) {
+  const filteredLocations: Array<{ latitude: number; longitude: number }> = [];
 
+  locations.forEach((loc) => {
+    const isDuplicate = filteredLocations.some((filteredLoc) => {
+      const distance = Math.sqrt(
+        Math.pow(loc.latitude - filteredLoc.latitude, 2) +
+          Math.pow(loc.longitude - filteredLoc.longitude, 2)
+      );
+      return distance < minDistance;
+    });
+
+    if (!isDuplicate) {
+      filteredLocations.push(loc);
+    }
+  });
+
+  return filteredLocations;
+}
 const Map: React.FC<MapProps> = ({ selectedDate }) => {
   const [locations, setLocations] = useState<Location[]>([]);
   const mapRef = useRef<L.Map | null>(null);
   const polylineRef = useRef<L.Polyline | null>(null); 
   const markersRef = useRef<L.Marker[]>([]); 
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null); 
-  const [mapZoom, setMapZoom] = useState<number>(10); 
+  const [mapZoom, setMapZoom] = useState<number>(20); 
   const id = sessionStorage.getItem("id");
   
   const isCurrentDay = (date: Dayjs | null): boolean => {
     return date ? date.isSame(dayjs(), "day") : false;
   };
-  // const websocketRef = useRef<WebSocket | null>(null);
 
-  console.log("locations",locations)
   const getLocations = async (id: string, date: Dayjs | null): Promise<Location[]> => {
     try {
       if (!date) {
@@ -42,47 +61,6 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
     }
   };
 
-  // const initializeWebSocket = (id: string) => {
-  //   if (!id || websocketRef.current) return; // Предотвращаем повторное открытие
-
-  //   websocketRef.current = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
-  //   websocketRef.current.onmessage = (event) => {
-  //     const data = JSON.parse(event.data);
-  //     console.log("Полученные данные:", data);
-  //     if (data) {
-  //       setLocations((prev) => [...prev, ...data]);
-  //     }
-  //   };
-
-  //   websocketRef.current.onerror = (error) => console.error("WebSocket Error:", error);
-
-  //   websocketRef.current.onclose = () => {
-  //     console.log("WebSocket connection closed");
-  //     websocketRef.current = null;
-  //   };
-
-  //   const user = JSON.parse(localStorage.getItem("user") || "{}");
-  //   if (!user.token) {
-  //     console.error("Токен отсутствует");
-  //     return;
-  //   }
-  //   const message =  JSON.stringify({
-  //     transportVin: id,
-  //     messageType: "locations",
-  //     token: user.token
-  //   });
-  //   websocketRef.current.onopen = () => {
-  //     console.log("WebSocket подключен", message);
-  //     websocketRef.current?.send(message);
-  //   };
-  // };
-
-  // const closeWebSocket = () => {
-  //   if (websocketRef.current) {
-  //     websocketRef.current.close();
-  //     websocketRef.current = null;
-  //   }
-  // };
 
   useEffect(() => {
     const id = sessionStorage.getItem("id");
@@ -90,7 +68,7 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
     if (!id) return;
 
     if (isCurrentDay(selectedDate)) {
-      // if (!websocketRef.current) {
+    
         fetchTransportLocations(id)
         .then((data) => {
           setLocations(data as Location[]);
@@ -98,18 +76,11 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
         .catch((err) => {
           console.log(err);
         });
-      // }
     } else {
-      // closeWebSocket();
       getLocations(id, selectedDate).then((locationsData) => {
         setLocations(locationsData);
       });
     }
-
-    // return () => {
-    //   closeWebSocket();
-    // };
-    
   }, [id, selectedDate]);
 
   useEffect(() => {
@@ -150,8 +121,8 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
     }
 
     const waypoints = locations
-      .filter((loc) => loc.latitude !== undefined && loc.longitude !== undefined)
-      .map((loc) => L.latLng(loc.latitude, loc.longitude));
+    .filter((loc) => loc.latitude != null && loc.longitude != null)
+    .map((loc) => L.latLng(loc.latitude, loc.longitude));
 
     if (!polylineRef.current) {
       polylineRef.current = L.polyline(waypoints, {
@@ -196,7 +167,7 @@ const Map: React.FC<MapProps> = ({ selectedDate }) => {
       markersRef.current = [];
     };
   }, [locations, selectedDate]);
-
+ 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
       <div id="map" style={{ display: "flex", width: "100%", height: "100%" }}></div>

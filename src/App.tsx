@@ -10,6 +10,8 @@ import PrivacyPolicy from "./pages/shared/PrivacyPolicy";
 import AboutPage from "./pages/shared/AboutPage";
 import DirectorRoutes from "./routes/DirectorRoutes";
 import Director from "./pages/DirectorPages/DirectorPages";
+import AdminRoutes from "./routes/AdminRoutes";
+import Admin from "./pages/AdminPages/Admin";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -58,6 +60,11 @@ const App = () => {
               <Route element={<SuperAdminRoutes />}>
               <Route path="/master" element={<SuperAdmin />}>
                 <Route path="/master/:urlView" element={<SuperAdmin/>} />
+              </Route>
+            </Route>
+            <Route element={<AdminRoutes />}>
+              <Route path="/admin" element={<Admin />}>
+                <Route path="/admin/:urlView" element={<Admin/>} />
               </Route>
             </Route>
             <Route element={<DirectorRoutes />}>

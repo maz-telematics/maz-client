@@ -1,231 +1,296 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
-import { Button, Modal, Row, Col, Form, Input, message } from 'antd';
+import { Button, Row, Col, Form, Input, message } from 'antd';
+import { LockOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import axiosInstance from '../../../services/axiosInstance';
+
 export interface Organization {
-  organization_name: string,
-  contact_info: string,
-  contact_person: string,
-  email_contact_person: string,
-  organization_address: string,
-  registration_date: string
+  organization_name: string; // Название организации (нельзя редактировать)
+  contact_person: string; // Имя
+  position: string; // Должность
+  contact_info: string; // Телефон
+  email_contact_person: string; // Email
+  workplace: string; // Место работы
 }
 
 const ProfilePage = () => {
   const [form] = Form.useForm();
   const [editableFields, setEditableFields] = useState<Organization>();
-  const [visible, setVisible] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleOpenModal = () => {
-    setVisible(true);
-  };
-  const handleCancel = () => {
-    setVisible(false);
-  };
   const user = JSON.parse(localStorage.getItem('user') || '{"token":"","id":0}');
   const { id } = user;
 
   useEffect(() => {
-    if (id) {
-      axiosInstance.get('/organizations/${id}')
-        .then(response => setEditableFields(response.data[0]))
-        .catch(error => console.error('Ошибка при получении данных:', error));
-    }
-  }, [id]);
+    axiosInstance
+      .get('/user')
+      .then((response) => {
+        setEditableFields({
+          organization_name: response.data.organizationName,
+          contact_person: response.data.name,
+          position: response.data.position || '',
+          contact_info: response.data.phoneNumber || '',
+          email_contact_person: response.data.username, // Email приходит в username
+          workplace: response.data.workplace || '',
+        });
+        form.setFieldsValue({
+          organization_name: response.data.organizationName,
+          contact_person: response.data.name,
+          position: response.data.position || '',
+          contact_info: response.data.phoneNumber || '',
+          email_contact_person: response.data.username,
+          workplace: response.data.workplace || '',
+        });
+      })
+      .catch((error) => console.error('Ошибка при получении данных пользователя:', error));
+  }, [form]);
 
-
-  const handleSaveChanges = async () => {
-    if (newPassword !== confirmPassword) {
-      message.warning('Пароли не совпадают. Пожалуйста, проверьте введенные данные и попробуйте снова.');
-      console.error('Passwords do not match');
+  const handleSavePassword = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      message.warning('Пожалуйста, заполните все поля.');
       return;
     }
-    const response = await fetch(`/user/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        newPassword,
-      }),
-    });
-    if (response) {
-      message.success('Пароль изменен успешно!');
-      setVisible(false);
-    } else {
-      message.warning('Ошибка при изменении пароля');
+
+    if (newPassword !== confirmPassword) {
+      message.warning('Пароли не совпадают.');
+      return;
     }
-  };
 
-  const handleDeleteAccount = () => {
-  };
-
-
-  const handleRenewSubscription = () => {
-
-  };
-
-
-  const onFinish = async (values: Pick<Organization, keyof Organization>) => {
     try {
-      const changedFields = Object.keys(values).filter((key) => form.getFieldValue(key) !== undefined);
-      const changedFieldValues = changedFields.map((key) => {
-        return { name: key, value: form.getFieldValue(key) };
+      const response = await axios.patch(`/user/${id}/password`, {
+        currentPassword,
+        newPassword,
       });
-      if (Object.keys(changedFieldValues).length > 0) {
-        try {
-          const response = await axios.patch(`organizations/${id}`, changedFieldValues);
-          setEditableFields(response.data);
-          message.success('Авто обновлено!');
-          form.resetFields();
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
-        message.warning('Ничего не изменено');
+
+      if (response.status === 200) {
+        message.success('Пароль успешно изменен!');
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
       }
     } catch (error) {
       console.error(error);
+      message.error('Ошибка при изменении пароля.');
     }
   };
 
+  const handleEditToggle = () => {
+    // Если режим редактирования выключается, возвращаем исходные значения
+    if (isEditing) {
+      form.setFieldsValue(editableFields);
+    }
+    setIsEditing(!isEditing);
+  };
+
+  const handleSaveChanges = async (values: Pick<Organization, keyof Organization>) => {
+    try {
+      const response = await axios.patch(`/organizations/${id}`, values);
+      setEditableFields(response.data);
+      message.success('Данные успешно сохранены!');
+      setIsEditing(false);
+    } catch (error) {
+      console.error(error);
+      message.error('Ошибка при сохранении данных.');
+    }
+  };
 
   const formatDate = (date: any) => dayjs(date).format('YYYY');
   const isMobile = window.innerWidth < 768;
+
   return (
-    <div  style={{
-      display: "flex",
-      flexDirection: "column",
-      width: "100%",
-      backgroundColor: "#E1E1E1",
-    }}>
-      <Row style={{ padding: "0 40px", flex: "1" }}>
-        <Col xs={24} >
-        <Row justify="space-between" style={{ marginBottom: 16, alignItems: 'flex-end' }}>
-            <Col>
-              <h1
-                style={{
-                  margin: 0,
-                  fontSize: isMobile ? '24px' : '32px',
-                }}
-              >Настройки профиля</h1>
-            </Col>
-
-          </Row>
-          <Form form={form} onFinish={onFinish}>
-            <Form.Item
-              label={<label style={{ width: '160px', padding:0, margin:0, fontSize: "14px", fontWeight: 'bold', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
-              >Название организации</label>}
-              name="organization_name"
-            >
-              <Input
-                placeholder={editableFields?.organization_name}
-                style={{ fontSize: '14px', width: '240px' }}
-              />
-            </Form.Item>
-            <Form.Item
-              label={<label style={{ width: '160px', padding:0, margin:0, fontSize: "14px", fontWeight: 'bold', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
-              >Номер телефона</label>}
-              name="contact_info"
-            >
-              <Input
-                placeholder={editableFields?.contact_info}
-                style={{ width: '240px' }}
-              />
-            </Form.Item>
-            <Form.Item
-              label={<label style={{ width: '160px', padding:0, margin:0, fontSize: "14px", fontWeight: 'bold', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
-              >Контактное лицо</label>}
-              name="contact_person"
-            >
-              <Input
-                placeholder={editableFields?.contact_person}
-                style={{ width: '240px' }}
-              />
-            </Form.Item>
-            <Form.Item
-              label={<label style={{ width: '160px', padding:0, margin:0, fontSize: "14px", fontWeight: 'bold', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
-              >Электронная почта</label>}
-              name="email_contact_person"
-            >
-              <Input
-                placeholder={editableFields?.email_contact_person}
-                style={{ width: '240px' }}
-              />
-            </Form.Item>
-            <Form.Item
-              label={<label style={{ width: '160px', padding:0, margin:0, fontSize: "14px", fontWeight: 'bold', display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
-              >Адрес</label>}
-              name="organization_address"
-            >
-              <Input
-                placeholder={editableFields?.organization_address}
-                style={{ width: '240px' }}
-              />
-            </Form.Item>
-            <Row style={{ marginTop: "20px", display: "flex", justifyContent: "flex-start" }}>
-              <Button
-                disabled={true}
-                style={{
-                  fontSize: isMobile ? '12px' : '16px',
-                  width: isMobile ? '100%' : '200px',
-                  backgroundColor: "#1B232A",
-                  color: "#fff",
-                  border: "none",  // Убираем стандартные границы, если они есть
-                  transition: "background-color 0.3s ease",  // Плавный переход фона
-                }}
-                htmlType="submit"
-                className="custom-button" // Добавляем класс для стилизации
-              >
-                Сохранить изменения
-              </Button>
-
-
-              {/* <Button type="primary"    style={{
-                  backgroundColor: "#3A5F73",
-                }} onClick={handleDeleteAccount}>
-                Удалить
-              </Button> */}
-              {/* <Button type="primary"    style={{
-                  backgroundColor: "#3A5F73",
-                }} onClick={handleOpenModal}>
-                Изменить Пароль
-              </Button> */}
-              {/* <Button type="primary" onClick={handleRenewSubscription}>
-                Продлить подписку
-              </Button> */}
-            </Row>
-
-          </Form>
-          {/* <p style={{ fontSize: '18px' }}>
-            Дата окончания срока действия подписки: {"15.08.2024"}, {"23"} дней до истечения срока подписки
-          </p> */}
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        backgroundColor: '#E1E1E1',
+        padding: '0 20px', // уменьшены отступы
+        overflowY: 'auto', // убирает вертикальный скролл
+      }}
+    >
+      {/* Заголовок страницы */}
+      <Row style={{ marginBottom: '20px' }}>
+        <Col xs={24}>
+          <h1
+            style={{
+              marginBottom: '10px', // уменьшены отступы
+              fontSize: isMobile ? '24px' : '28px', // уменьшен размер шрифта
+            }}
+          >
+            Настройки
+          </h1>
         </Col>
       </Row>
-      <Modal
-        title="Изменение пароля"
-        visible={visible}
-        onCancel={handleCancel}
-        onOk={handleSaveChanges}
-      >
-        <Form>
-          <Form.Item label="Новый пароль">
-            <Input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-          </Form.Item>
-          <Form.Item label="Подтвердите новый пароль">
-            <Input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
+
+      <Row gutter={[16, 16]}>
+        {/* Personal Details Block */}
+        <Col xs={24} md={12}>
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: '8px',
+              padding: '16px', // уменьшены отступы
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+              maxHeight: '420px', // ограничена высота
+            }}
+          >
+            <h2 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '12px' }}>
+              Основная информация
+            </h2>
+            <Form
+              form={form}
+              initialValues={editableFields}
+              onFinish={handleSaveChanges}
+              layout="vertical"
+            >
+            <Form.Item label="Имя" name="contact_person">
+  <Input placeholder="Введите ваше имя" disabled={!isEditing} />
+</Form.Item>
+
+<Form.Item label="Должность" name="position">
+  <Input placeholder="Введите вашу должность" disabled={!isEditing} />
+</Form.Item>
+
+<Form.Item label="Организация" name="organization_name">
+  <Input placeholder="Организация" disabled={true} />
+</Form.Item>
+
+              {isEditing ? (
+                <>
+                  <Button type="primary" htmlType="submit" style={{ marginTop: '12px' }}>
+                    Сохранить изменения
+                  </Button>
+                  <Button
+                    style={{ marginTop: '12px', marginLeft: '8px' }}
+                    onClick={handleEditToggle}
+                  >
+                    Отменить
+                  </Button>
+                </>
+              ) : (
+                <Button style={{ marginTop: '12px' }} onClick={handleEditToggle}>
+                  Редактировать
+                </Button>
+              )}
+            </Form>
+          </div>
+        </Col>
+
+        {/* Contact Details Block */}
+        <Col xs={24} md={12}>
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: '8px',
+              padding: '16px', // уменьшены отступы
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+              height: '370px', // ограничена высота
+            }}
+          >
+            <h2 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '12px' }}>
+              Контактная информация
+            </h2>
+            <Form
+              form={form}
+              initialValues={editableFields}
+              onFinish={handleSaveChanges}
+              layout="vertical"
+            >
+           <Form.Item label="Электронная почта" name="email_contact_person">
+  <Input placeholder="Введите email" disabled={!isEditing} />
+</Form.Item>
+
+<Form.Item label="Телефон" name="contact_info">
+  <Input placeholder="Введите номер телефона" disabled={!isEditing} />
+</Form.Item>
+
+<Form.Item label="Место работы" name="workplace">
+  <Input placeholder="Введите место работы" disabled={!isEditing} />
+</Form.Item>
+            </Form>
+          </div>
+        </Col>
+
+        {/* Password Change Block */}
+        <Col xs={24}>
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: '8px',
+              padding: '16px', // уменьшены отступы
+              display: 'flex',
+              alignItems: 'center',
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+              justifyContent: 'center',
+              maxHeight: '400px', // ограничена высота
+              overflowY: 'auto', // убирает лишний скролл
+            }}
+          >
+            <div
+              style={{
+                fontSize: '48px', // уменьшен размер иконки
+                marginRight: '16px',
+                color: '#3A5F73',
+                flex: '1 1 33%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
+              }}
+            >
+              <LockOutlined />
+              <p style={{ fontSize: '12px', marginTop: '8px', color: '#3A5F73' }}>
+                Безопасность аккаунта
+              </p>
+            </div>
+            <div
+              style={{
+                flex: '2 1 67%',
+                borderLeft: '2px solid #ccc',
+                paddingLeft: '16px', // уменьшены отступы
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <h2 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '12px' }}>
+                Изменение пароля
+              </h2>
+              <Form layout="vertical" style={{ width: '100%', maxWidth: '350px' }}>
+                <Form.Item label="Текущий пароль">
+                  <Input.Password
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    style={{ maxWidth: '350px' }}
+                  />
+                </Form.Item>
+                <Form.Item label="Новый пароль">
+                  <Input.Password
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    style={{ maxWidth: '350px' }}
+                  />
+                </Form.Item>
+                <Form.Item label="Подтвердите новый пароль">
+                  <Input.Password
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    style={{ maxWidth: '350px' }}
+                  />
+                </Form.Item>
+                <Button type="primary" onClick={handleSavePassword}>
+                  Изменить пароль
+                </Button>
+              </Form>
+            </div>
+          </div>
+        </Col>
+      </Row>
     </div>
   );
 };

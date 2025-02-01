@@ -1,47 +1,32 @@
-import { useState, useEffect } from "react";
-import { Table, Modal, Button, Row, Col, message, Pagination } from "antd";
-import { useNavigate } from "react-router-dom";
-import { Car } from "../../../types/transportListTypes";
-import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
-import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
-import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
-import axiosInstance from "../../../services/axiosInstance";
-import DownloadButton from "../../../Components/DownloadButton";
-import DownloadIcon from '@mui/icons-material/Download';
-import moment from "moment"; // Импортируем moment для форматирования дат
+import { useState } from "react";
+import TransportsPage from "../../shared/TransportsPage";
+import { Button, Modal, message, Form, Input, Select, DatePicker } from "antd";
+import LibraryAddOutlinedIcon from "@mui/icons-material/LibraryAddOutlined";
+import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
+import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
+import { useAddCarMutation, useUpdateCarMutation } from "../../../Store/apis/transportApi"
+import dayjs from "dayjs";
+import { useGetCarsQuery } from "../../../Store/apis/transportApi"; // Import for refetch
 
-const TransportsPage = () => {
-  const [cars, setCars] = useState<Car[]>([]);
-  const [totalCount, setTotalCount] = useState<number>(0);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
+const { Option } = Select;
+
+const SuperAdminTransportsPage = () => {
+  const isMobile = window.innerWidth < 768;
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [deleteVin, setDeleteVin] = useState<string | undefined>();
-  const [deleteOrganizationId, setDeleteOrganizationId] = useState<number | undefined>();
-  const navigate = useNavigate();
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [addModalVisible, setAddModalVisible] = useState(false);
+  const [deleteVin, setDeleteVin] = useState<string | null>(null);
+  const [deleteOrganizationId, setDeleteOrganizationId] = useState<number | null>(null);
+  const [editingTransport, setEditingTransport] = useState<any>(null);
+  const [form] = Form.useForm();
+  const [addForm] = Form.useForm();
 
-  const fetchCars = async (page: number, size: number) => {
-    try {
-      const response = await axiosInstance.get<{
-        cars: Car[];
-        total: number;
-      }>("/transport/list-transport"
-        , {
-        params: { page, size },
-      }
-    );
-      setCars(response.data);
-      setTotalCount(response.data.total);
-      setCurrentPage(page);
-    } catch (error) {
-      console.error(error);
-      message.error("Ошибка загрузки данных транспорта.");
-    }
-  };
+  // Fetch cars data for the table
+  const { data, error, isLoading, refetch } = useGetCarsQuery({ page: 1, size: 10 });
 
-  useEffect(() => {
-    fetchCars(currentPage, pageSize);
-  }, [currentPage, pageSize]);
+  // Mutation hooks for add and update
+  const [addCar] = useAddCarMutation();
+  const [updateCar] = useUpdateCarMutation();
 
   const handleDelete = (vin: string, organizationId: number) => {
     setDeleteVin(vin);
@@ -49,219 +34,178 @@ const TransportsPage = () => {
     setDeleteModalVisible(true);
   };
 
-  const handleConfirmDelete = async () => {
-    if (!deleteVin || !deleteOrganizationId) return;
+  const handleEdit = (record: any) => {
+    setEditingTransport(record);
+    form.setFieldsValue({
+      ...record,
+      yearRelease: dayjs(record.yearRelease),
+    });
+    setEditModalVisible(true);
+  };
+
+  const handleSaveEdit = async (values: any) => {
     try {
-      const response = await axiosInstance.delete(`/transport/${deleteVin}`, {
-        params: { organization_id: deleteOrganizationId },
-      });
-      if (response.status === 200) {
-        message.success("Транспорт перемещён в архив успешно!");
-        setCars(response.data.remainingCars);
-        setDeleteModalVisible(false);
-      } else {
-        message.error("Ошибка архивирования транспорта.");
-      }
+      await updateCar({
+        ...values,
+        id: editingTransport.id, // передаем id транспорта для обновления
+        yearRelease: values.yearRelease.format("YYYY-MM-DD"),
+      }).unwrap();
+      message.success("Данные успешно обновлены!");
+      setEditModalVisible(false);
+      refetch();  // Refetch the data after edit
     } catch (error) {
       console.error(error);
-      message.error("Ошибка архивирования транспорта.");
+      message.error("Ошибка при сохранении данных.");
     }
   };
 
-  const handleCancelDelete = () => {
-    setDeleteModalVisible(false);
+  const handleAddTransport = async (values: any) => {
+    try {
+      await addCar({
+        ...values,
+        yearRelease: values.yearRelease.format("YYYY-MM-DD"),
+      }).unwrap();
+      message.success("Транспорт успешно добавлен!");
+      setAddModalVisible(false);
+      addForm.resetFields();
+      refetch();  // Refetch the data after adding
+    } catch (error) {
+      console.error(error);
+      message.error("Ошибка при добавлении транспорта.");
+    }
   };
 
-  const columns = [
-    {
-      title: "Модель",
-      dataIndex: "model",
-      key: "model",
-      render: (model: string, record: Car) => (
-        <a
-          onClick={() => {
-            // Сохраняем VIN или id в sessionStorage
-            sessionStorage.setItem("id", record.id);
-            
-            // Перенаправляем на страницу
-            navigate(`/master/transport?id=${record.id}`);
-          }}
-          style={{ color: "red", fontWeight: 500 }}
-        >
-          {model}
-        </a>
-      ),
-    },
-    { title: "VIN номер", dataIndex: "id", key: "id" },
-    {
-      title: "Регистрационный номер",
-      dataIndex: "reg_number",
-      key: "reg_number",
-      render: (model: string, record: Car) => (
-        <a
-          onClick={() => navigate(`/master/transport?id=${record.id}`)}
-          style={{ color: "#1890ff", fontWeight: 500 }}
-        >
-          {model}
-        </a>
-      ),
-    },
-    {
-      title: "Состояние",
-      dataIndex: "connectionStatus",
-      key: "connectionStatus",
-      render: (status: boolean | undefined) => (status ? "Связь есть" : "Нет связи"),
-    },
-    { title: "Тип транспорта", dataIndex: "vehicleType", key: "vehicleType" },
-    { title: "Тип двигателя", dataIndex: "engineType", key: "engineType" },
-    {
-      title: "Год выпуска",
-      dataIndex: "yearRelease",
-      key: "yearRelease",
-      render: (yearRelease: string | Date) => {
-        return moment(yearRelease).format("YYYY-MM-DD"); // Форматируем дату в YYYY-MM-DD
-      }
-    },
-    {
-      title: "Блок телематики",
-      dataIndex: "telemetryBlock",
-      key: "telemetryBlock",
-      render: (block: string | undefined) => block || "Не указано",
-    },
-    { title: "Организация", dataIndex: "organizationName", key: "organizationName" },
-    
-    {
-      title: "Действия",
-      key: "actions",
-      render: (_: any, record: Car) => (
-        <div style={{ display: "flex", gap: "8px" }}>
-          <Button
-            size="middle"
-            onClick={() => navigate(`/master/edit-transport?id=${record.id}`)}
-            style={{
-              backgroundColor: "#1B232A",
-              color: "#fff",
-              border: "none", // Убираем стандартные границы
-            }}
-            icon={<ModeEditOutlinedIcon />}
-            className="edit-button" // Добавляем класс для применения стилей
-          >
-            Изменить
-          </Button>
+  const extraControls = (
+    <Button
+      type="primary"
+      onClick={() => setAddModalVisible(true)}
+      icon={<LibraryAddOutlinedIcon />}
+      style={{ backgroundColor: "#1B232A", border: "none" }}
+    >
+      {!isMobile && "Добавить транспорт"}
+    </Button>
+  );
 
-          <Button
-            size="middle"
-            onClick={() => handleDelete(record.id, record.organization_id)}
-            style={{ backgroundColor: "#1B232A", color: "#fff" }}
-            icon={<ArchiveOutlinedIcon />}
-          >
-            Переместить в архив
-          </Button>
-        </div>
-      ),
-    },
-  ];
-
-  const isMobile = window.innerWidth < 768;
+  const extraActions = (record: any) => (
+    <div style={{ display: "flex", gap: "8px" }}>
+      <Button size="middle" onClick={() => handleEdit(record)} icon={<ModeEditOutlinedIcon />}>
+        Изменить
+      </Button>
+      <Button size="middle" onClick={() => handleDelete(record.id, record.organizationId)} icon={<ArchiveOutlinedIcon />}>
+        Переместить в архив
+      </Button>
+    </div>
+  );
 
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      width: "100%",
-      backgroundColor: "#E1E1E1",
-    }}>
-      <Row style={{
-        padding: "0 40px",
-      }}>
-        <Col xs={24}>
-          <Row justify="space-between" style={{ marginBottom: 16, alignItems: 'flex-end' }}>
-            <Col>
-              <h1
-                style={{
-                  margin: 0,
-                  fontSize: isMobile ? '24px' : '32px',
-                }}
-              >Транспорт</h1>
-            </Col>
-            <Col>
-              <Row align="middle" wrap={false} style={{ gap: "16px" }}>
-                <Button
-                  type="primary"
-                  onClick={() => navigate("/master/create-transport")}
-                  icon={<LibraryAddOutlinedIcon />}
-                  style={{
-                    backgroundColor: "#1B232A", // Исходный цвет фона
-                    border: "none", // Убираем стандартные границы
-                  }}
-                  className="add-transport-btn"
-                >
-                  {!isMobile && 'Добавить транспорт'}
-                </Button>
-
-                <DownloadButton
-                  url="/api/transports/download"
-                  filename="transports.pdf"
-                  buttonText="Скачать таблицу"
-                  icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}
-                  buttonProps={{ className: 'download-btn' }}
-                />
-
-
-              </Row>
-            </Col>
-          </Row>
-          <Table
-            columns={columns}
-            dataSource={cars}
-            rowKey={(record) => record.id}
-            components={{
-              header: {
-                cell: (props: any) => (
-                  <th {...props} style={{ backgroundColor: "#1B232A", color: "#fff", border: "none" }}>
-                    {props.children}
-                  </th>
-                ),
-              },
-            }}
-            bordered
-            style={{
-              backgroundColor: "#F7F9FB",
-              borderRadius: "8px",
-              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-            }}
-            pagination={false}
-            scroll={{ x: "max-content" }}
-          />
-        </Col>
-      </Row>
+    <>
+      <TransportsPage extraControls={extraControls} extraActions={extraActions} />
+      {/* Модальное окно для удаления */}
       <Modal
         title="Подтверждение архивирования"
-        visible={deleteModalVisible}
-        onOk={handleConfirmDelete}
-        onCancel={handleCancelDelete}
-        okText="Переместить в архив"
-        cancelText="Отменить"
+        open={deleteModalVisible}
+        onOk={() => setDeleteModalVisible(false)}
+        onCancel={() => setDeleteModalVisible(false)}
+        okText="Закрыть"
+        cancelText="Отмена"
       >
-        <p>Вы уверены, что хотите переместить транспорт в архив?</p>
+        <p>Функция архивирования транспорта временно недоступна.</p>
       </Modal>
-      <div
-  style={{
-    display: "flex",
-    justifyContent: "center",
-    marginTop: "16px",
-    paddingBottom: "16px",
-  }}
->
-<Pagination
-              current={currentPage}
-              total={totalCount}
-              pageSize={pageSize}
-              onChange={(page) => fetchCars(page, pageSize)}
+      {/* Модальное окно для добавления */}
+      <Modal
+        title="Добавление транспорта"
+        open={addModalVisible}
+        onCancel={() => setAddModalVisible(false)}
+        footer={null}
+      >
+        <Form form={addForm} layout="vertical" onFinish={handleAddTransport}>
+          <Form.Item label="VIN" name="id" rules={[{ required: true, pattern: /^[A-Z0-9]{17}$/, message: "VIN должен содержать 17 символов (заглавные буквы и цифры)" }]}>
+            <Input maxLength={17} />
+          </Form.Item>
+          <Form.Item label="Модель" name="model" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item label="Год выпуска" name="yearRelease" rules={[{ required: true }]}>
+            <DatePicker
+              picker="year"
+              style={{ width: "100%" }}
+              disabledDate={(current) => current && current.year() > dayjs().year()} // Ограничиваем выбор годом, не более текущего
             />
-</div>
-    </div>
+          </Form.Item>
+          <Form.Item label="Организация" name="organizationName">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Тип двигателя" name="engineType" rules={[{ required: true }]}>
+            <Select>
+              <Option value="Электрический">Электрический</Option>
+              <Option value="Бензиновый">Бензиновый</Option>
+              <Option value="Дизельный">Дизельный</Option>
+              <Option value="Газовый">Газовый</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Тип транспортного средства" name="vehicleType" rules={[{ required: true }]}>
+            <Select>
+              <Option value="Грузовик">Грузовик</Option>
+              <Option value="Тягач">Тягач</Option>
+              <Option value="Электротранспорт">Электротранспорт</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Тип блока" name="blockType" rules={[{ required: true }]}>
+            <Select>
+              <Option value="АГАТ">АГАТ</Option>
+              <Option value="ПРОТОК">ПРОТОК</Option>
+            </Select>
+          </Form.Item>
+          <Button type="primary" htmlType="submit">Добавить</Button>
+        </Form>
+      </Modal>
+      {/* Модальное окно для редактирования */}
+      <Modal
+        title="Редактирование транспорта"
+        open={editModalVisible}
+        onCancel={() => setEditModalVisible(false)}
+        footer={null}
+      >
+        <Form form={form} layout="vertical" onFinish={handleSaveEdit}>
+          <Form.Item label="Модель" name="model" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item label="Год выпуска" name="yearRelease" rules={[{ required: true }]}>
+            <DatePicker
+              picker="year"
+              style={{ width: "100%" }}
+              disabledDate={(current) => current && current.year() > dayjs().year()} // Ограничиваем выбор годом, не более текущего
+            />
+          </Form.Item>
+          <Form.Item label="Организация" name="organizationName">
+            <Input disabled />
+          </Form.Item>
+          <Form.Item label="Тип двигателя" name="engineType" rules={[{ required: true }]}>
+            <Select>
+              <Option value="Электрический">Электрический</Option>
+              <Option value="Бензиновый">Бензиновый</Option>
+              <Option value="Дизельный">Дизельный</Option>
+              <Option value="Газовый">Газовый</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Тип транспортного средства" name="vehicleType" rules={[{ required: true }]}>
+            <Select>
+              <Option value="Грузовик">Грузовик</Option>
+              <Option value="Тягач">Тягач</Option>
+              <Option value="Электротранспорт">Электротранспорт</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Тип блока" name="blockType" rules={[{ required: true }]}>
+            <Select>
+              <Option value="АГАТ">АГАТ</Option>
+              <Option value="ПРОТОК">ПРОТОК</Option>
+            </Select>
+          </Form.Item>
+          <Button type="primary" htmlType="submit">Сохранить</Button>
+        </Form>
+      </Modal>
+    </>
   );
 };
 
-export default TransportsPage;
+export default SuperAdminTransportsPage;

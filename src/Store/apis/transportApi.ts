@@ -1,30 +1,65 @@
-import { TransportResponse } from "../utils/transportSlice";  // Убедитесь, что импорт правильный
+import { createApi, BaseQueryFn } from '@reduxjs/toolkit/query/react';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axiosInstance from '../../services/axiosInstance';
 
-const apiUrl = import.meta.env.VITE_API_URL;
+export interface Car {
+  id: string;
+  model: string;
+  yearRelease: string;
+  organizationName: string;
+  engineType: string;
+  isMoving: boolean | null;
+  errors: string | null;
+  vehicleType: string;
+  status: string | null;
+  blockType: string | null;
+}
 
-// Функция для получения данных через WebSocket
-export const fetchTransportData = (): Promise<TransportResponse[]> => {
-  return new Promise((resolve, reject) => {
-    const socket = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
-
-    socket.onopen = () => {
-      socket.send(JSON.stringify({
-        messageType: 'mainVehicle',
-        token: 'your-jwt-token-here',
-      }));
-    };
-
-    socket.onmessage = (event) => {
-      try {
-        const response: TransportResponse[] = JSON.parse(event.data);
-        resolve(response);  // Убедитесь, что ответ имеет тип TransportResponse[]
-      } catch (error) {
-        reject('Ошибка при парсинге данных');
-      }
-    };
-
-    socket.onerror = (error) => {
-      reject(error);
-    };
-  });
+// Создаем базовый запрос с использованием axiosInstance
+const axiosBaseQuery: BaseQueryFn<AxiosRequestConfig, unknown, unknown> = async ({ url, method, data, params }) => {
+  try {
+    const response: AxiosResponse = await axiosInstance({
+      url,
+      method,
+      data,
+      params,
+    });
+    return { data: response.data };
+  } catch (axiosError) {
+    return { error: axiosError }; // Обрабатываем ошибки
+  }
 };
+
+export const transportApi = createApi({
+  reducerPath: 'transportApi',
+  baseQuery: axiosBaseQuery, // Используем axiosBaseQuery вместо fetchBaseQuery
+  endpoints: (builder) => ({
+    // Получение списка транспорта с пагинацией
+    getCars: builder.query<Car[], { page: number; size: number }>({
+      query: ({ page, size }) => ({
+        url: '/transport/list-transport',
+        method: 'GET',
+        params: { page, size },
+      }),
+    }),
+    // Добавление нового транспорта
+    addCar: builder.mutation<void, Car>({
+      query: (newCar) => ({
+        url: '/transport/create-transport',
+        method: 'POST',
+        data: newCar,
+      }),
+    }),
+    // Обновление данных о транспорте
+    updateCar: builder.mutation<void, Car>({
+      query: (updatedCar) => ({
+        url: `/transport/${updatedCar.id}`,
+        method: 'PATCH',
+        data: updatedCar,
+      }),
+    }),
+  }),
+});
+
+// Экспортируем хуки для использования в компонентах
+export const { useGetCarsQuery, useAddCarMutation, useUpdateCarMutation } = transportApi;

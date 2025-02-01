@@ -10,20 +10,20 @@ interface BatteryParameter {
   batterySoc: number;
   batteryVoltage: number;
   batteryCharging: string;
-  battery_activation_status: string;
-  min_battery_cell_voltage:number;
-  max_battery_cell_voltage:number;
-  battery_charge_error_counter:number;
-  successful_battery_charging_counter:number;
-  charging_low_voltage_batteries:string;
-  charging_error_battery_not_enabled:string;
-  charging_error_dcdc_not_enabled:string;
-  charging_error_battery_not_disabled:string;
-  charging_error_dcdc_not_disabled:string;
-  error_counter_battery_not_enabled:number;
-  error_counter_dcdc_not_enabled:number;
-  error_counter_battery_not_disabled:number;
-  error_counter_dcdc_not_disabled:number;
+  batteryActivationStatus: string;
+  minBatteryCellVoltage:number;
+  maxBatteryCellVoltage:number;
+  batteryChargeErrorCounter:number;
+  successfulBatteryChargingCounter:number;
+  chargingLowVoltageBatteries:string;
+  chargingErrorBatteryNotEnabled:string;
+  chargingErrorDcDcNotEnabled:string;
+  chargingErrorBatteryNotDisabled:string;
+  chargingErrorDcDcNotDisabled:string;
+  errorCounterBatteryNotEnabled:number;
+  errorCounterDcDcNotEnabled:number;
+  errorCounterBatteryNotDisabled:number;
+  errorCounterDcDcNotDisabled:number;
 }
 
 interface DescriptionsBatteryParametersProps {
@@ -45,25 +45,53 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
 
 
   // Создаем колонки для таблицы
-  const columns = [
-    {
-      title: "Параметры",
-      dataIndex: "parameter",
-      key: "parameter",
-      fixed: "left" as const,
-      render: (text: string) => <b>{text}</b>,
-    },
-    ...times.map((time, index) => ({
-      title: (
-        <Tag icon={<ClockCircleOutlined />} color="processing">
-          {time}
-        </Tag>
-      ),
-      dataIndex: `time${index}`,
-      key: `time${index}`,
-      align: "center" as const,
-    })),
-  ];
+    const isMobile = window.innerWidth < 768;
+    const columns= isMobile
+  ? [
+      {
+        title: "Параметр",
+        dataIndex: "parameter",
+        key: "parameter",
+        align: "left" as const,
+        render: (text: string) => (
+          <div style={{ textAlign: "left" }}>{text}</div>
+        ),
+        onCell: () => ({ style: { textAlign: "left" } }) as React.TdHTMLAttributes<HTMLTableCellElement>,
+      },
+      ...times.map((time, index) => ({
+        title: (
+          <Tag icon={<ClockCircleOutlined />} color="processing">
+            {time}
+          </Tag>
+        ),
+        dataIndex: `time${index}`,
+        key: `time${index}`,
+        align: "center" as const,
+      })),
+    ]
+  : [
+      {
+        title: "Параметры",
+        dataIndex: "parameter",
+        key: "parameter",
+        fixed: "left" as const,
+        render: (text: string) => (
+          <b style={{ textAlign: "left", display: "block" }}>{text}</b>
+        ),
+        onCell: () => ({ style: { textAlign: "left" } }) as React.TdHTMLAttributes<HTMLTableCellElement>,
+      },
+      ...times.map((time, index) => ({
+        title: (
+          <Tag icon={<ClockCircleOutlined />} color="processing">
+            {time}
+          </Tag>
+        ),
+        dataIndex: `time${index}`,
+        key: `time${index}`,
+        align: "center" as const,
+      })),
+    ];
+
 
   // Создаем данные для таблицы
   const tableData = [
@@ -154,7 +182,9 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
                   ? "Батарея заряжается"
                   : parameter.batteryCharging === "completed"
                   ? "Зарядка завершена"
-                  : "Батарея не заряжается"
+                  : parameter.batteryCharging === "not charging"
+                  ? "Батарея не заряжается"
+                  : "" 
               }
             >
               {parameter.batteryCharging === "charging" ? (
@@ -165,16 +195,16 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
                 <Tag icon={<CheckCircleOutlined />} color="success">
                   Зарядка завершена
                 </Tag>
-              ) : (
+              ) : parameter.batteryCharging === "not charging" ? (
                 <Tag icon={<CloseCircleOutlined />} color="error">
                   Не заряжается
                 </Tag>
-              )}
+              ) : null} 
             </Tooltip>
           ),
         }),
       ),
-    }, 
+    },    
     {
       key: "6",
       parameter: "Состояние активации батареи",
@@ -183,12 +213,20 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
           ...acc,
           [`time${index}`]: (
             <Tooltip
-              title={`Состояние активации: ${parameter.battery_activation_status === "on" ? "Включена" : "Выключена"}`}
+              title={`Состояние активации: ${
+                parameter.batteryActivationStatus === "on"
+                  ? "Включена"
+                  : parameter.batteryActivationStatus === "off"
+                  ? "Выключена"
+                  : ""
+              }`}
             >
-              {parameter.battery_activation_status === "on" ? (
+              {parameter.batteryActivationStatus === "on" ? (
                 <Tag color="success">Включена</Tag>
-              ) : (
+              ) : parameter.batteryActivationStatus === "off" ? (
                 <Tag color="error">Выключена</Tag>
+              ) : (
+                <Tag color="default"> </Tag> 
               )}
             </Tooltip>
           ),
@@ -203,9 +241,9 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Минимальное напряжение ячейки: ${parameter.min_battery_cell_voltage ? parameter.min_battery_cell_voltage : "—"} V`}>
-              <Tag color={parameter.min_battery_cell_voltage && parameter.min_battery_cell_voltage < 3.0 ? "error" : "green"}>
-                {parameter.min_battery_cell_voltage ? `${parameter.min_battery_cell_voltage} V` : "— V"}
+            <Tooltip title={`Минимальное напряжение ячейки: ${parameter.minBatteryCellVoltage ? parameter.minBatteryCellVoltage : "—"} V`}>
+              <Tag color={parameter.minBatteryCellVoltage && parameter.minBatteryCellVoltage < 3.0 ? "error" : "green"}>
+                {parameter.minBatteryCellVoltage ? `${parameter.minBatteryCellVoltage} V` : "— V"}
               </Tag>
             </Tooltip>
           ),
@@ -220,9 +258,9 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Максимальное напряжение ячейки: ${parameter.max_battery_cell_voltage ? parameter.max_battery_cell_voltage : "—"} V`}>
-              <Tag color={parameter.max_battery_cell_voltage && parameter.max_battery_cell_voltage > 4.2 ? "error" : "green"}>
-                {parameter.max_battery_cell_voltage ? `${parameter.max_battery_cell_voltage} V` : "— V"}
+            <Tooltip title={`Максимальное напряжение ячейки: ${parameter.maxBatteryCellVoltage ? parameter.maxBatteryCellVoltage : "—"} V`}>
+              <Tag color={parameter.maxBatteryCellVoltage && parameter.maxBatteryCellVoltage > 4.2 ? "error" : "green"}>
+                {parameter.maxBatteryCellVoltage ? `${parameter.maxBatteryCellVoltage} V` : "— V"}
               </Tag>
             </Tooltip>
           ),
@@ -237,9 +275,9 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Ошибки зарядки батареи: ${parameter.battery_charge_error_counter ? parameter.battery_charge_error_counter : "—"}`}>
-              <Tag color={parameter.battery_charge_error_counter && parameter.battery_charge_error_counter > 0 ? "error" : "green"}>
-                {parameter.battery_charge_error_counter ? `${parameter.battery_charge_error_counter}` : "—"}
+            <Tooltip title={`Ошибки зарядки батареи: ${parameter.batteryChargeErrorCounter ? parameter.batteryChargeErrorCounter : "—"}`}>
+              <Tag color={parameter.batteryChargeErrorCounter && parameter.batteryChargeErrorCounter > 0 ? "error" : "green"}>
+                {parameter.batteryChargeErrorCounter ? `${parameter.batteryChargeErrorCounter}` : "—"}
               </Tag>
             </Tooltip>
           ),
@@ -254,9 +292,9 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Успешные зарядки батареи: ${parameter.successful_battery_charging_counter ? parameter.successful_battery_charging_counter : "—"}`}>
-              <Tag color={parameter.successful_battery_charging_counter && parameter.successful_battery_charging_counter > 0 ? "success" : "green"}>
-                {parameter.successful_battery_charging_counter ? `${parameter.successful_battery_charging_counter}` : "—"}
+            <Tooltip title={`Успешные зарядки батареи: ${parameter.successfulBatteryChargingCounter ? parameter.successfulBatteryChargingCounter : "—"}`}>
+              <Tag color={parameter.successfulBatteryChargingCounter && parameter.successfulBatteryChargingCounter > 0 ? "success" : "green"}>
+                {parameter.successfulBatteryChargingCounter ? `${parameter.successfulBatteryChargingCounter}` : "—"}
               </Tag>
             </Tooltip>
           ),
@@ -271,22 +309,32 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Зарядка низковольтных батарей: ${parameter.charging_low_voltage_batteries === "on" ? "Включена" : "Отключена"}`}>
-              {parameter.charging_low_voltage_batteries === "on" ? (
+            <Tooltip
+              title={`Зарядка низковольтных батарей: ${
+                parameter.chargingLowVoltageBatteries === "on"
+                  ? "Включена"
+                  : parameter.chargingLowVoltageBatteries === "off"
+                  ? "Отключена"
+                  : "" 
+              }`}
+            >
+              {parameter.chargingLowVoltageBatteries === "on" ? (
                 <Tag icon={<CheckCircleOutlined />} color="success">
                   Включена
                 </Tag>
-              ) : (
+              ) : parameter.chargingLowVoltageBatteries === "off" ? (
                 <Tag icon={<CloseCircleOutlined />} color="error">
                   Отключена
                 </Tag>
+              ) : (
+                <Tag color="default"> </Tag> 
               )}
             </Tooltip>
           ),
         }),
         {}
       ),
-    },
+    },    
     {
       key: "12",
       parameter: "Ошибка зарядки батарей",
@@ -295,28 +343,28 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
           ...acc,
           [`time${index}`]: (
             <div>
-              {parameter.charging_error_battery_not_enabled === "on" && (
+              {parameter.chargingErrorBatteryNotEnabled === "on" && (
                 <Tooltip title="Ошибка: Батарея не включена">
                   <Tag icon={<CloseCircleOutlined />} color="error">
                     Батарея не включена
                   </Tag>
                 </Tooltip>
               )}
-              {parameter.charging_error_dcdc_not_enabled === "on" && (
+              {parameter.chargingErrorDcDcNotEnabled === "on" && (
                 <Tooltip title="Ошибка: DCDC не включен">
                   <Tag icon={<CloseCircleOutlined />} color="error">
                     DCDC не включен
                   </Tag>
                 </Tooltip>
               )}
-              {parameter.charging_error_battery_not_disabled === "on" && (
+              {parameter.chargingErrorBatteryNotDisabled === "on" && (
                 <Tooltip title="Ошибка: Батарея не отключена">
                   <Tag icon={<CloseCircleOutlined />} color="error">
                     Батарея не отключена
                   </Tag>
                 </Tooltip>
               )}
-              {parameter.charging_error_dcdc_not_disabled === "on" && (
+              {parameter.chargingErrorDcDcNotDisabled === "on" && (
                 <Tooltip title="Ошибка: DCDC не отключен">
                   <Tag icon={<CloseCircleOutlined />} color="error">
                     DCDC не отключен
@@ -335,9 +383,9 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Счетчик ошибок: Батарея не включена - ${parameter.error_counter_battery_not_enabled}`}>
+            <Tooltip title={`Счетчик ошибок: Батарея не включена - ${parameter.errorCounterBatteryNotEnabled}`}>
               <Tag color="error">
-                {parameter.error_counter_battery_not_enabled !== undefined ? parameter.error_counter_battery_not_enabled : "0"}
+                {parameter.errorCounterBatteryNotEnabled !== undefined ? parameter.errorCounterBatteryNotEnabled : "0"}
               </Tag>
             </Tooltip>
           ),
@@ -353,9 +401,9 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Счетчик ошибок: DCDC не включен - ${parameter.error_counter_dcdc_not_enabled}`}>
+            <Tooltip title={`Счетчик ошибок: DCDC не включен - ${parameter.errorCounterDcDcNotEnabled}`}>
               <Tag color="error">
-                {parameter.error_counter_dcdc_not_enabled !== undefined ? parameter.error_counter_dcdc_not_enabled : "0"}
+                {parameter.errorCounterDcDcNotEnabled !== undefined ? parameter.errorCounterDcDcNotEnabled : "0"}
               </Tag>
             </Tooltip>
           ),
@@ -371,9 +419,9 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Счетчик ошибок: Батарея не отключена - ${parameter.error_counter_battery_not_disabled}`}>
+            <Tooltip title={`Счетчик ошибок: Батарея не отключена - ${parameter.errorCounterBatteryNotDisabled}`}>
               <Tag color="error">
-                {parameter.error_counter_battery_not_disabled !== undefined ? parameter.error_counter_battery_not_disabled : "0"}
+                {parameter.errorCounterBatteryNotDisabled !== undefined ? parameter.errorCounterBatteryNotDisabled : "0"}
               </Tag>
             </Tooltip>
           ),
@@ -389,9 +437,9 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Счетчик ошибок: DCDC не отключен - ${parameter.error_counter_dcdc_not_disabled}`}>
+            <Tooltip title={`Счетчик ошибок: DCDC не отключен - ${parameter.errorCounterDcDcNotDisabled}`}>
               <Tag color="error">
-                {parameter.error_counter_dcdc_not_disabled !== undefined ? parameter.error_counter_dcdc_not_disabled : "0"}
+                {parameter.errorCounterDcDcNotDisabled !== undefined ? parameter.errorCounterDcDcNotDisabled : "0"}
               </Tag>
             </Tooltip>
           ),

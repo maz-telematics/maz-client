@@ -1,56 +1,33 @@
-
-
-import { useState, useEffect } from "react";
-import { Table, Modal, Button, Row, Col, message, Input, Progress, Pagination } from "antd";
+import { useState } from "react";
+import { Button, Input, Modal, message, Form, Select, DatePicker } from "antd";
 import { useNavigate } from "react-router-dom";
-import { Organization } from "../../../types/transportListTypes";
-import moment from "moment";
-import LibraryAddOutlinedIcon from "@mui/icons-material/LibraryAddOutlined";
-import ArchiveOutlinedIcon from "@mui/icons-material/ArchiveOutlined";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import { LibraryAddOutlined, ArchiveOutlined, EditOutlined } from "@mui/icons-material";
 import axiosInstance from "../../../services/axiosInstance";
-import DownloadButton from "../../../Components/DownloadButton";
-import DownloadIcon from "@mui/icons-material/Download";
+import OrganizationsPage from "../../shared/OrganizationsPage";
+import { Organization } from "../../../types/transportListTypes";
+import dayjs from "dayjs";  // Если у вас не установлен dayjs, установите его с помощью npm
 
-const OrganizationsPage = () => {
-  const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+const SuperAdminOrganizationsPage = () => {
   const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [updatedOrganization, setUpdatedOrganization] = useState<Organization | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10); // Размер страницы
-  const [totalCount, setTotalCount] = useState(0); // Общее количество записей
-
+  const [loading, setLoading] = useState(false); // добавляем состояние для загрузки
+  const [form] = Form.useForm(); // Создаем экземпляр формы
   const navigate = useNavigate();
+  const isMobile = window.innerWidth < 768;
 
-  const navigateToNewOrganization = () => {
-    navigate("/master/create-organization");
-  };
-
-  // Получение данных с учетом пагинации
-  const fetchOrganizations = async (page: number) => {
-    try {
-      const response = await axiosInstance.get<{
-        organizations: Organization[];
-        total: number;
-      }>("/organizations/list", {
-        params: { page, size: pageSize },
-      });
-      setOrganizations(response.data);
-      setTotalCount(response.data.total);
-    } catch (error) {
-      console.error(error);
-      message.error("Ошибка загрузки организаций.");
-    }
-  };
-
-  useEffect(() => {
-    fetchOrganizations(currentPage);
-  }, [currentPage]);
-
-  const handleRedirectAndSaveOrganizationId = async (id: number) => {
-    await sessionStorage.setItem("organization_id", String(id));
-    navigate("/master/organization");
+  const handleEditOrganization = (organization: Organization) => {
+    setCurrentOrganization(organization);
+    setUpdatedOrganization({ ...organization });
+    form.setFieldsValue({
+      organizationName: organization.organizationName,
+      contactInfo: organization.contactInfo,
+      contactPerson: organization.contactPerson,
+      organizationAddress: organization.organizationAddress,
+      emailContactPerson: organization.emailContactPerson,
+      registrationDate: organization.registrationDate ? dayjs(organization.registrationDate) : null,
+    });
+    setIsModalVisible(true);
   };
 
   const handleDeleteOrganization = async (idOrganization: number) => {
@@ -65,7 +42,6 @@ const OrganizationsPage = () => {
           const response = await axiosInstance.delete(`/organizations/${idOrganization}`);
           if (response.status === 200) {
             message.success("Организация перемещена в архив успешно!");
-            fetchOrganizations(currentPage);
           }
         } catch (error) {
           console.error("Ошибка при архивировании:", error);
@@ -75,14 +51,13 @@ const OrganizationsPage = () => {
     });
   };
 
-  const handleEditOrganization = (organization: Organization) => {
-    setCurrentOrganization(organization);
-    setUpdatedOrganization({ ...organization });
-    setIsModalVisible(true);
+  const navigateToNewOrganization = () => {
+    navigate("/master/create-organization");
   };
 
   const handleSaveChanges = async () => {
     if (updatedOrganization) {
+      setLoading(true); // включаем загрузку
       try {
         const response = await axiosInstance.patch(
           `/organizations/${updatedOrganization.id}`,
@@ -91,291 +66,137 @@ const OrganizationsPage = () => {
         if (response.status === 200) {
           message.success("Данные организации успешно обновлены!");
           setIsModalVisible(false);
-          fetchOrganizations(currentPage);
         }
       } catch (error) {
         console.error("Ошибка при обновлении данных:", error);
         message.error("Не удалось обновить данные организации.");
+      } finally {
+        setLoading(false); // выключаем загрузку
       }
     }
   };
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        width: "100%",
-        backgroundColor: "#E1E1E1",
-      }}
+  const handleValuesChange = (changedValues: any) => {
+    setUpdatedOrganization((prevState) => ({
+      ...prevState,
+      ...changedValues,
+    }));
+  };
+
+  const extraControls = (
+    <Button
+      type="primary"
+      onClick={navigateToNewOrganization}
+      icon={<LibraryAddOutlined />}
+      className="add-transport-btn"
     >
-      <Row style={{ padding: "0 40px" }}>
-        <Col xs={24}>
-          <Row justify="space-between" style={{ marginBottom: 16, alignItems: "flex-end" }}>
-            <Col>
-              <h1 style={{ margin: 0, fontSize: window.innerWidth < 768 ? "24px" : "32px" }}>
-                Организации
-              </h1>
-            </Col>
-            <Col>
-              <Row align="middle" wrap={false} style={{ gap: "10px",  }}>
-                <DownloadButton
-                  url="/api/organizations/download"
-                  filename="organizations.pdf"
-                  buttonText="Скачать"
-                  icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
+      {!isMobile && "Создать организацию"}
+    </Button>
+  );
 
-                  buttonProps={{
-                    className: "add-transport-btn", // Общий класс для стиля
-                  }}
-                />
-                <Button
-                  type="primary"
-                  onClick={navigateToNewOrganization}
-                  icon={<LibraryAddOutlinedIcon />}
-                  className="add-transport-btn" // Общий класс для стиля
-                >
-                  {"Создать организацию"}
-                </Button>
+  const extraActions = (record: any) => (
+    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+      <Button
+        style={{
+          backgroundColor: "#1B232A",
+          color: "#fff",
+          display: "flex",
+          alignItems: "center",
+          transition: "all 0.3s ease",
+        }}
+        size="middle"
+        onClick={() => handleEditOrganization(record)}
+        icon={<EditOutlined />}
+        onMouseOver={(e) => {
+          e.currentTarget.style.backgroundColor = "red";
+          e.currentTarget.style.borderColor = "red";
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.backgroundColor = "#1B232A";
+          e.currentTarget.style.borderColor = "#1B232A";
+        }}
+      >
+        Изменить
+      </Button>
+      <Button
+        disabled={true}
+        size="middle"
+        onClick={() => handleDeleteOrganization(record.id)}
+        style={{
+          backgroundColor: "#1B232A",
+          color: "#fff",
+        }}
+        icon={<ArchiveOutlined />}
+      >
+        Переместить в архив
+      </Button>
+    </div>
+  );
 
-              </Row>
-            </Col>
-          </Row>
-          <Table
-            components={{
-              header: {
-                cell: (props: any) => (
-                  <th
-                    {...props}
-                    style={{
-                      backgroundColor: "#1B232A",
-                      color: "#fff",
-                      border: "none",
-                    }}
-                  >
-                    {props.children}
-                  </th>
-                ),
-              },
-            }}
-                      columns={[
-              {
-                title: "Название организации",
-                dataIndex: "organizationName",
-                key: "organizationName",
-                render: (text, record) => (
-                  <a
-                    onClick={() =>
-                      handleRedirectAndSaveOrganizationId(record.id)
-                    }
-                    style={{
-                      color: "red",
-                      fontWeight: "500",
-                      textDecoration: "none",
-                      cursor: "pointer",
-                    }}
-                    onMouseOver={(e) => (e.currentTarget.style.textDecoration = "underline")}
-                    onMouseOut={(e) => (e.currentTarget.style.textDecoration = "none")}
-                  >
-                    {text}
-                  </a>
-                ),
-              },
-              {
-                title: "Контактное лицо",
-                dataIndex: "contactPerson",
-                key: "contactPerson",
-              },
-              {
-                title: "Номер телефона",
-                dataIndex: "contactInfo",
-                key: "contactInfo",
-              },
-              {
-                title: "Электронная почта",
-                dataIndex: "emailContactPerson",
-                key: "emailContactPerson",
-              },
-              {
-                title: "Адрес",
-                dataIndex: "organizationAddress",
-                key: "organizationAddress",
-              },
-   
-              {
-                title: "Дата регистрации",
-                dataIndex: "registrationDate",
-                key: "registrationDate",
-                render: (text) => <span>{moment(text).format("YYYY-MM-DD")}</span>,
-              },
-              {
-                title: "Договор",
-                dataIndex: "contractFile",
-                key: "contractFile",
-                render: (text) => (
-                  <>
-                    <a
-                      href={text}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: "red", textDecoration: "none" }}
-                      onMouseOver={(e) => (e.currentTarget.style.textDecoration = "underline")}
-                      onMouseOut={(e) => (e.currentTarget.style.textDecoration = "none")}
-                    >
-                      Открыть
-                    </a>
-              
-                    <span style={{ margin: "0 8px" }}>|</span>
-                    <a
-                      href={text}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      download
-                      style={{ color: "red", textDecoration: "none" }}
-                      onMouseOver={(e) => (e.currentTarget.style.textDecoration = "underline")}
-                      onMouseOut={(e) => (e.currentTarget.style.textDecoration = "none")}
-                    >
-                      Скачать
-                    </a>
-                  </>
-                ),
-              },
-              {
-                title: "Тип подписки",
-                dataIndex: "subscriptionType",
-                key: "subscriptionType",
-              },
-              {
-                title: "Статус подписки",
-                dataIndex: "subscription_status",
-                key: "subscription_status",
-                render: (text) => <Progress percent={text} status="active" strokeColor="red" />,
-              },
-              {
-                dataIndex: "actions",
-                key: "actions",
-                width: 150,
-                align: "center",
-                render: (text, record) => (
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <Button
-                      style={{
-                        backgroundColor: "#1B232A",
-                        color: "#fff",
-                        display: "flex",
-                        alignItems: "center",
-                        // border: "1px solid red",
-                        transition: "all 0.3s ease", // Добавляет плавный переход
-                      }}
-                      size="middle"
-                      onClick={() => handleEditOrganization(record)}
-                      icon={<EditOutlinedIcon />}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = "red"; // Красный фон
-                        e.currentTarget.style.borderColor = "red";     // Красный бордер
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = "#1B232A"; // Исходный фон
-                        e.currentTarget.style.borderColor = "#1B232A";         // Исходный бордер
-                      }}
-                    >
-                      Изменить
-                    </Button>
-                  <Button
-                    disabled={true}
-                    size="middle"
-                    onClick={() => handleDeleteOrganization(record.id)}
-                    style={{
-                      backgroundColor: "#1B232A",
-                      color: "#fff",
-                    }}
-                    icon={<ArchiveOutlinedIcon />}
-                  >
-                    Переместить в архив
-                  </Button>
-                </div>
-                ),
-              },
-            ]}
-            pagination={false}
-            dataSource={organizations}
-            bordered
-            rowKey={(record) => record.id}
-            style={{
-              borderRadius: "8px",
-              overflow: "hidden",
-              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-              backgroundColor: "#F7F9FB",
-            }}
-            scroll={{ x: "max-content" }}
-          />
-          <div
-  style={{
-    display: "flex",
-    justifyContent: "center",
-    marginTop: "16px",
-    paddingBottom: "16px",
-  }}
->
-          <Pagination
-            current={currentPage}
-            total={totalCount}
-            pageSize={pageSize}
-            onChange={(page) => setCurrentPage(page)}
-            style={{ marginTop: 16, textAlign: "right" }}
-          /></div>
-        </Col>
-      </Row>
-
-     <Modal
+  return (
+    <>
+      <OrganizationsPage extraControls={extraControls} extraActions={extraActions} />
+      <Modal
         title="Изменить организацию"
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         onOk={handleSaveChanges}
+        footer={null}
       >
         {updatedOrganization && (
-          <>
-            <div style={{ marginBottom: 16 }}>
-              <label>Название организации</label>
-              <Input
-                value={updatedOrganization.organization_name}
-                onChange={(e) => setUpdatedOrganization({ ...updatedOrganization, organization_name: e.target.value })}
-              />
-            </div>
-            <div style={{ marginBottom: 16 }}>
-              <label>Номер телефона</label>
-              <Input
-                value={updatedOrganization.contact_info}
-                onChange={(e) => setUpdatedOrganization({ ...updatedOrganization, contact_info: e.target.value })}
-              />
-            </div>
-            <div style={{ marginBottom: 16 }}>
-              <label>Контактное лицо</label>
-              <Input
-                value={updatedOrganization.contact_person}
-                onChange={(e) => setUpdatedOrganization({ ...updatedOrganization, contact_person: e.target.value })}
-              />
-            </div>
-            <div style={{ marginBottom: 16 }}>
-              <label>Адрес</label>
-              <Input
-                value={updatedOrganization.organization_address}
-                onChange={(e) => setUpdatedOrganization({ ...updatedOrganization, organization_address: e.target.value })}
-              />
-            </div>
-            <div style={{ marginBottom: 16 }}>
-              <label>Электронная почта</label>
-              <Input
-                value={updatedOrganization.email_contact_person}
-                onChange={(e) => setUpdatedOrganization({ ...updatedOrganization, email_contact_person: e.target.value })}
-              />
-            </div>
-          </>
+          <Form
+            form={form} // Привязка формы
+            layout="vertical"
+            onFinish={handleSaveChanges}
+            onValuesChange={handleValuesChange} // Добавляем обработчик изменения значений
+          >
+            <Form.Item
+              label="Название организации"
+              name="organizationName"
+              rules={[{ required: true, message: 'Пожалуйста, введите название организации!' }]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              label="Номер телефона"
+              name="contactInfo"
+              rules={[{ required: true, message: 'Пожалуйста, введите номер телефона!' }]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              label="Контактное лицо"
+              name="contactPerson"
+              rules={[{ required: true, message: 'Пожалуйста, введите контактное лицо!' }]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              label="Адрес"
+              name="organizationAddress"
+              rules={[{ required: true, message: 'Пожалуйста, введите адрес!' }]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              label="Электронная почта"
+              name="emailContactPerson"
+              rules={[{ type: 'email', message: 'Пожалуйста, введите корректный email!' }]}
+            >
+              <Input />
+            </Form.Item>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Сохранить
+            </Button>
+          </Form>
         )}
       </Modal>
-    </div>
+    </>
   );
 };
 
-export default OrganizationsPage;
-
+export default SuperAdminOrganizationsPage;

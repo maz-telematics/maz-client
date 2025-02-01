@@ -1,6 +1,6 @@
 import React from "react";
 import { Table, Tag, Tooltip } from "antd";
-
+import { ClockCircleOutlined } from "@ant-design/icons";
 // Тип данных для параметров команды освещения
 interface LightingCommand {
   implementOemOption1LightCommand: string;
@@ -29,7 +29,7 @@ interface DescriptionsDbkOutputsProps {
 const DescriptionsDbkOutputs: React.FC<DescriptionsDbkOutputsProps> = ({ data }) => {
   // Получаем список уникальных временных меток
   const sortedData = [...data].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
-
+console.log("data",data)
   // Получаем список уникальных временных меток
   const times = sortedData.map((parameter) =>
     new Date(parameter.time).toLocaleTimeString("ru-RU", {
@@ -40,22 +40,52 @@ const DescriptionsDbkOutputs: React.FC<DescriptionsDbkOutputsProps> = ({ data })
   );
 
 
-  // Создаем колонки для таблицы
-  const columns = [
-    {
-      title: "Параметры",
-      dataIndex: "parameter",
-      key: "parameter",
-      fixed: "left" as const,
-      render: (text: string) => <b>{text}</b>,
-    },
-    ...times.map((time, index) => ({
-      title: time,
-      dataIndex: `time${index}`,
-      key: `time${index}`,
-      align: "center" as const,
-    })),
-  ];
+    const isMobile = window.innerWidth < 768;
+    const columns= isMobile
+  ? [
+      {
+        title: "Параметр",
+        dataIndex: "parameter",
+        key: "parameter",
+        align: "left" as const,
+        render: (text: string) => (
+          <div style={{ textAlign: "left" }}>{text}</div>
+        ),
+        onCell: () => ({ style: { textAlign: "left" } }) as React.TdHTMLAttributes<HTMLTableCellElement>,
+      },
+      ...times.map((time, index) => ({
+        title: (
+          <Tag icon={<ClockCircleOutlined />} color="processing">
+            {time}
+          </Tag>
+        ),
+        dataIndex: `time${index}`,
+        key: `time${index}`,
+        align: "center" as const,
+      })),
+    ]
+  : [
+      {
+        title: "Параметры",
+        dataIndex: "parameter",
+        key: "parameter",
+        fixed: "left" as const,
+        render: (text: string) => (
+          <b style={{ textAlign: "left", display: "block" }}>{text}</b>
+        ),
+        onCell: () => ({ style: { textAlign: "left" } }) as React.TdHTMLAttributes<HTMLTableCellElement>,
+      },
+      ...times.map((time, index) => ({
+        title: (
+          <Tag icon={<ClockCircleOutlined />} color="processing">
+            {time}
+          </Tag>
+        ),
+        dataIndex: `time${index}`,
+        key: `time${index}`,
+        align: "center" as const,
+      })),
+    ];
 
   // Создаем данные для таблицы
   const tableData = [
@@ -66,9 +96,15 @@ const DescriptionsDbkOutputs: React.FC<DescriptionsDbkOutputsProps> = ({ data })
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Состояние: ${parameter.runningLightCommand === "on" ? "Активно" : "Неактивно"}`}>
-              <Tag color={parameter.runningLightCommand === "on" ? "green" : "red"}>
-                {parameter.runningLightCommand === "on" ? "Активно" : "Неактивно"}
+            <Tooltip title={`Состояние: ${
+              parameter.runningLightCommand === "on" 
+                ? "Активно" 
+                : parameter.runningLightCommand === "off" 
+                ? "Неактивно" 
+                : ""
+            }`}>
+              <Tag color={parameter.runningLightCommand === "on" ? "green" : parameter.runningLightCommand === "off" ? "red" : "default"}>
+                {parameter.runningLightCommand === "on" ? "Активно" : parameter.runningLightCommand === "off" ? "Неактивно" : " "}
               </Tag>
             </Tooltip>
           ),
@@ -82,9 +118,15 @@ const DescriptionsDbkOutputs: React.FC<DescriptionsDbkOutputsProps> = ({ data })
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Состояние: ${parameter.alternateBeamHeadLightCommand === "on" ? "Активно" : "Неактивно"}`}>
-              <Tag color={parameter.alternateBeamHeadLightCommand === "on" ? "green" : "red"}>
-                {parameter.alternateBeamHeadLightCommand === "on" ? "Активно" : "Неактивно"}
+            <Tooltip title={`Состояние: ${
+              parameter.alternateBeamHeadLightCommand === "on" 
+                ? "Активно" 
+                : parameter.alternateBeamHeadLightCommand === "off" 
+                ? "Неактивно" 
+                : ""
+            }`}>
+              <Tag color={parameter.alternateBeamHeadLightCommand === "on" ? "green" : parameter.alternateBeamHeadLightCommand === "off" ? "red" : "default"}>
+                {parameter.alternateBeamHeadLightCommand === "on" ? "Активно" : parameter.alternateBeamHeadLightCommand === "off" ? "Неактивно" : " "}
               </Tag>
             </Tooltip>
           ),
@@ -98,9 +140,15 @@ const DescriptionsDbkOutputs: React.FC<DescriptionsDbkOutputsProps> = ({ data })
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Состояние: ${parameter.lowBeamHeadLightCommand === "on" ? "Активно" : "Неактивно"}`}>
-              <Tag color={parameter.lowBeamHeadLightCommand === "on" ? "green" : "red"}>
-                {parameter.lowBeamHeadLightCommand === "on" ? "Активно" : "Неактивно"}
+            <Tooltip title={`Состояние: ${
+              parameter.lowBeamHeadLightCommand === "on" 
+                ? "Активно" 
+                : parameter.lowBeamHeadLightCommand === "off" 
+                ? "Неактивно" 
+                : ""
+            }`}>
+              <Tag color={parameter.lowBeamHeadLightCommand === "on" ? "green" : parameter.lowBeamHeadLightCommand === "off" ? "red" : "default"}>
+                {parameter.lowBeamHeadLightCommand === "on" ? "Активно" : parameter.lowBeamHeadLightCommand === "off" ? "Неактивно" : " "}
               </Tag>
             </Tooltip>
           ),
@@ -114,9 +162,15 @@ const DescriptionsDbkOutputs: React.FC<DescriptionsDbkOutputsProps> = ({ data })
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Состояние: ${parameter.highBeamHeadLightCommand === "on" ? "Активно" : "Неактивно"}`}>
-              <Tag color={parameter.highBeamHeadLightCommand === "on" ? "green" : "red"}>
-                {parameter.highBeamHeadLightCommand === "on" ? "Активно" : "Неактивно"}
+            <Tooltip title={`Состояние: ${
+              parameter.highBeamHeadLightCommand === "on" 
+                ? "Активно" 
+                : parameter.highBeamHeadLightCommand === "off" 
+                ? "Неактивно" 
+                : ""
+            }`}>
+              <Tag color={parameter.highBeamHeadLightCommand === "on" ? "green" : parameter.highBeamHeadLightCommand === "off" ? "red" : "default"}>
+                {parameter.highBeamHeadLightCommand === "on" ? "Активно" : parameter.highBeamHeadLightCommand === "off" ? "Неактивно" : " "}
               </Tag>
             </Tooltip>
           ),
@@ -130,9 +184,15 @@ const DescriptionsDbkOutputs: React.FC<DescriptionsDbkOutputsProps> = ({ data })
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Состояние: ${parameter.tractorFrontFogLightsCommand === "on" ? "Активно" : "Неактивно"}`}>
-              <Tag color={parameter.tractorFrontFogLightsCommand === "on" ? "green" : "red"}>
-                {parameter.tractorFrontFogLightsCommand === "on" ? "Активно" : "Неактивно"}
+            <Tooltip title={`Состояние: ${
+              parameter.tractorFrontFogLightsCommand === "on" 
+                ? "Активно" 
+                : parameter.tractorFrontFogLightsCommand === "off" 
+                ? "Неактивно" 
+                : ""
+            }`}>
+              <Tag color={parameter.tractorFrontFogLightsCommand === "on" ? "green" : parameter.tractorFrontFogLightsCommand === "off" ? "red" : "default"}>
+                {parameter.tractorFrontFogLightsCommand === "on" ? "Активно" : parameter.tractorFrontFogLightsCommand === "off" ? "Неактивно" : " "}
               </Tag>
             </Tooltip>
           ),
@@ -146,9 +206,15 @@ const DescriptionsDbkOutputs: React.FC<DescriptionsDbkOutputsProps> = ({ data })
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Состояние: ${parameter.rotatingBeaconLightCommand === "on" ? "Активно" : "Неактивно"}`}>
-              <Tag color={parameter.rotatingBeaconLightCommand === "on" ? "green" : "red"}>
-                {parameter.rotatingBeaconLightCommand === "on" ? "Активно" : "Неактивно"}
+            <Tooltip title={`Состояние: ${
+              parameter.rotatingBeaconLightCommand === "on" 
+                ? "Активно" 
+                : parameter.rotatingBeaconLightCommand === "off" 
+                ? "Неактивно" 
+                : ""
+            }`}>
+              <Tag color={parameter.rotatingBeaconLightCommand === "on" ? "green" : parameter.rotatingBeaconLightCommand === "off" ? "red" : "default"}>
+                {parameter.rotatingBeaconLightCommand === "on" ? "Активно" : parameter.rotatingBeaconLightCommand === "off" ? "Неактивно" : " "}
               </Tag>
             </Tooltip>
           ),
@@ -162,9 +228,15 @@ const DescriptionsDbkOutputs: React.FC<DescriptionsDbkOutputsProps> = ({ data })
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Состояние: ${parameter.rightTurnSignalLightsCommand === "on" ? "Активно" : "Неактивно"}`}>
-              <Tag color={parameter.rightTurnSignalLightsCommand === "on" ? "green" : "red"}>
-                {parameter.rightTurnSignalLightsCommand === "on" ? "Активно" : "Неактивно"}
+            <Tooltip title={`Состояние: ${
+              parameter.rightTurnSignalLightsCommand === "on" 
+                ? "Активно" 
+                : parameter.rightTurnSignalLightsCommand === "off" 
+                ? "Неактивно" 
+                : ""
+            }`}>
+              <Tag color={parameter.rightTurnSignalLightsCommand === "on" ? "green" : parameter.rightTurnSignalLightsCommand === "off" ? "red" : "default"}>
+                {parameter.rightTurnSignalLightsCommand === "on" ? "Активно" : parameter.rightTurnSignalLightsCommand === "off" ? "Неактивно" : " "}
               </Tag>
             </Tooltip>
           ),
@@ -178,9 +250,15 @@ const DescriptionsDbkOutputs: React.FC<DescriptionsDbkOutputsProps> = ({ data })
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Состояние: ${parameter.leftTurnSignalLightsCommand === "on" ? "Активно" : "Неактивно"}`}>
-              <Tag color={parameter.leftTurnSignalLightsCommand === "on" ? "green" : "red"}>
-                {parameter.leftTurnSignalLightsCommand === "on" ? "Активно" : "Неактивно"}
+            <Tooltip title={`Состояние: ${
+              parameter.leftTurnSignalLightsCommand === "on" 
+                ? "Активно" 
+                : parameter.leftTurnSignalLightsCommand === "off" 
+                ? "Неактивно" 
+                : ""
+            }`}>
+              <Tag color={parameter.leftTurnSignalLightsCommand === "on" ? "green" : parameter.leftTurnSignalLightsCommand === "off" ? "red" : "default"}>
+                {parameter.leftTurnSignalLightsCommand === "on" ? "Активно" : parameter.leftTurnSignalLightsCommand === "off" ? "Неактивно" : " "}
               </Tag>
             </Tooltip>
           ),
@@ -194,9 +272,15 @@ const DescriptionsDbkOutputs: React.FC<DescriptionsDbkOutputsProps> = ({ data })
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Состояние: ${parameter.centerStopLightCommand === "on" ? "Активно" : "Неактивно"}`}>
-              <Tag color={parameter.centerStopLightCommand === "on" ? "green" : "red"}>
-                {parameter.centerStopLightCommand === "on" ? "Активно" : "Неактивно"}
+            <Tooltip title={`Состояние: ${
+              parameter.centerStopLightCommand === "on" 
+                ? "Активно" 
+                : parameter.centerStopLightCommand === "off" 
+                ? "Неактивно" 
+                : ""
+            }`}>
+              <Tag color={parameter.centerStopLightCommand === "on" ? "green" : parameter.centerStopLightCommand === "off" ? "red" : "default"}>
+                {parameter.centerStopLightCommand === "on" ? "Активно" : parameter.centerStopLightCommand === "off" ? "Неактивно" : " "}
               </Tag>
             </Tooltip>
           ),
@@ -210,9 +294,15 @@ const DescriptionsDbkOutputs: React.FC<DescriptionsDbkOutputsProps> = ({ data })
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Состояние: ${parameter.rightStopLightCommand === "on" ? "Активно" : "Неактивно"}`}>
-              <Tag color={parameter.rightStopLightCommand === "on" ? "green" : "red"}>
-                {parameter.rightStopLightCommand === "on" ? "Активно" : "Неактивно"}
+            <Tooltip title={`Состояние: ${
+              parameter.rightStopLightCommand === "on" 
+                ? "Активно" 
+                : parameter.rightStopLightCommand === "off" 
+                ? "Неактивно" 
+                : ""
+            }`}>
+              <Tag color={parameter.rightStopLightCommand === "on" ? "green" : parameter.rightStopLightCommand === "off" ? "red" : "default"}>
+                {parameter.rightStopLightCommand === "on" ? "Активно" : parameter.rightStopLightCommand === "off" ? "Неактивно" : " "}
               </Tag>
             </Tooltip>
           ),
@@ -226,9 +316,15 @@ const DescriptionsDbkOutputs: React.FC<DescriptionsDbkOutputsProps> = ({ data })
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Состояние: ${parameter.leftStopLightCommand === "on" ? "Активно" : "Неактивно"}`}>
-              <Tag color={parameter.leftStopLightCommand === "on" ? "green" : "red"}>
-                {parameter.leftStopLightCommand === "on" ? "Активно" : "Неактивно"}
+            <Tooltip title={`Состояние: ${
+              parameter.leftStopLightCommand === "on" 
+                ? "Активно" 
+                : parameter.leftStopLightCommand === "off" 
+                ? "Неактивно" 
+                : ""
+            }`}>
+              <Tag color={parameter.leftStopLightCommand === "on" ? "green" : parameter.leftStopLightCommand === "off" ? "red" : "default"}>
+                {parameter.leftStopLightCommand === "on" ? "Активно" : parameter.leftStopLightCommand === "off" ? "Неактивно" : " "}
               </Tag>
             </Tooltip>
           ),
@@ -242,9 +338,15 @@ const DescriptionsDbkOutputs: React.FC<DescriptionsDbkOutputsProps> = ({ data })
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Состояние: ${parameter.implementClearanceLightCommand === "on" ? "Активно" : "Неактивно"}`}>
-              <Tag color={parameter.implementClearanceLightCommand === "on" ? "green" : "red"}>
-                {parameter.implementClearanceLightCommand === "on" ? "Активно" : "Неактивно"}
+            <Tooltip title={`Состояние: ${
+              parameter.implementClearanceLightCommand === "on" 
+                ? "Активно" 
+                : parameter.implementClearanceLightCommand === "off" 
+                ? "Неактивно" 
+                : ""
+            }`}>
+              <Tag color={parameter.implementClearanceLightCommand === "on" ? "green" : parameter.implementClearanceLightCommand === "off" ? "red" : "default"}>
+                {parameter.implementClearanceLightCommand === "on" ? "Активно" : parameter.implementClearanceLightCommand === "off" ? "Неактивно" : " "}
               </Tag>
             </Tooltip>
           ),
@@ -258,9 +360,15 @@ const DescriptionsDbkOutputs: React.FC<DescriptionsDbkOutputsProps> = ({ data })
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Состояние: ${parameter.tractorSideLowMountedWorkLightsCommand === "on" ? "Активно" : "Неактивно"}`}>
-              <Tag color={parameter.tractorSideLowMountedWorkLightsCommand === "on" ? "green" : "red"}>
-                {parameter.tractorSideLowMountedWorkLightsCommand === "on" ? "Активно" : "Неактивно"}
+            <Tooltip title={`Состояние: ${
+              parameter.tractorSideLowMountedWorkLightsCommand === "on" 
+                ? "Активно" 
+                : parameter.tractorSideLowMountedWorkLightsCommand === "off" 
+                ? "Неактивно" 
+                : ""
+            }`}>
+              <Tag color={parameter.tractorSideLowMountedWorkLightsCommand === "on" ? "green" : parameter.tractorSideLowMountedWorkLightsCommand === "off" ? "red" : "default"}>
+                {parameter.tractorSideLowMountedWorkLightsCommand === "on" ? "Активно" : parameter.tractorSideLowMountedWorkLightsCommand === "off" ? "Неактивно" : " "}
               </Tag>
             </Tooltip>
           ),
@@ -274,9 +382,15 @@ const DescriptionsDbkOutputs: React.FC<DescriptionsDbkOutputsProps> = ({ data })
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Состояние: ${parameter.implementOemOption1LightCommand === "on" ? "Активно" : "Неактивно"}`}>
-              <Tag color={parameter.implementOemOption1LightCommand === "on" ? "green" : "red"}>
-                {parameter.implementOemOption1LightCommand === "on" ? "Активно" : "Неактивно"}
+            <Tooltip title={`Состояние: ${
+              parameter.implementOemOption1LightCommand === "on" 
+                ? "Активно" 
+                : parameter.implementOemOption1LightCommand === "off" 
+                ? "Неактивно" 
+                : ""
+            }`}>
+              <Tag color={parameter.implementOemOption1LightCommand === "on" ? "green" : parameter.implementOemOption1LightCommand === "off" ? "red" : "default"}>
+                {parameter.implementOemOption1LightCommand === "on" ? "Активно" : parameter.implementOemOption1LightCommand === "off" ? "Неактивно" : " "}
               </Tag>
             </Tooltip>
           ),
@@ -290,9 +404,15 @@ const DescriptionsDbkOutputs: React.FC<DescriptionsDbkOutputsProps> = ({ data })
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Состояние: ${parameter.implementRightFacingWorkLightCommand === "on" ? "Активно" : "Неактивно"}`}>
-              <Tag color={parameter.implementRightFacingWorkLightCommand === "on" ? "green" : "red"}>
-                {parameter.implementRightFacingWorkLightCommand === "on" ? "Активно" : "Неактивно"}
+            <Tooltip title={`Состояние: ${
+              parameter.implementRightFacingWorkLightCommand === "on" 
+                ? "Активно" 
+                : parameter.implementRightFacingWorkLightCommand === "off" 
+                ? "Неактивно" 
+                : ""
+            }`}>
+              <Tag color={parameter.implementRightFacingWorkLightCommand === "on" ? "green" : parameter.implementRightFacingWorkLightCommand === "off" ? "red" : "default"}>
+                {parameter.implementRightFacingWorkLightCommand === "on" ? "Активно" : parameter.implementRightFacingWorkLightCommand === "off" ? "Неактивно" : " "}
               </Tag>
             </Tooltip>
           ),
@@ -306,9 +426,15 @@ const DescriptionsDbkOutputs: React.FC<DescriptionsDbkOutputsProps> = ({ data })
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Состояние: ${parameter.implementLeftFacingWorkLightCommand === "on" ? "Активно" : "Неактивно"}`}>
-              <Tag color={parameter.implementLeftFacingWorkLightCommand === "on" ? "green" : "red"}>
-                {parameter.implementLeftFacingWorkLightCommand === "on" ? "Активно" : "Неактивно"}
+            <Tooltip title={`Состояние: ${
+              parameter.implementLeftFacingWorkLightCommand === "on" 
+                ? "Активно" 
+                : parameter.implementLeftFacingWorkLightCommand === "off" 
+                ? "Неактивно" 
+                : ""
+            }`}>
+              <Tag color={parameter.implementLeftFacingWorkLightCommand === "on" ? "green" : parameter.implementLeftFacingWorkLightCommand === "off" ? "red" : "default"}>
+                {parameter.implementLeftFacingWorkLightCommand === "on" ? "Активно" : parameter.implementLeftFacingWorkLightCommand === "off" ? "Неактивно" : " "}
               </Tag>
             </Tooltip>
           ),

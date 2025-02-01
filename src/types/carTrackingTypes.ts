@@ -20,7 +20,7 @@ export type Parameters = {
 };
 
 export interface ParametersResponce{
-   data: Parameters[];
+  transportData: Parameters[];
    totalPages: number;
    currentPage:number;
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import { Table, Tooltip, Tag } from "antd";
 import { CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
-
+import type { ColumnsType } from "antd/es/table";
 interface PowertrainSystemParameter {
   time:string;
   engineTorque?: number; // Крутящий момент двигателя (Нм)
@@ -31,25 +31,53 @@ const DescriptionsPowertrainSystemParameters: React.FC<DescriptionsPowertrainSys
     })
   );
   // Определяем колонки таблицы
-  const columns = [
-    {
-      title: "Параметры",
-      dataIndex: "parameter",
-      key: "parameter",
-      fixed: "left" as const,
-      render: (text: string) => <b>{text}</b>,
-    },
-    ...times.map((time, index) => ({
-      title: (
-        <Tag icon={<ClockCircleOutlined />} color="processing">
-          {time}
-        </Tag>
-      ),
-      dataIndex: `time${index}`,
-      key: `time${index}`,
-      align: "center" as const,
-    })),
-  ];
+    const isMobile = window.innerWidth < 768;
+    const columns= isMobile
+  ? [
+      {
+        title: "Параметр",
+        dataIndex: "parameter",
+        key: "parameter",
+        align: "left" as const,
+        render: (text: string) => (
+          <div style={{ textAlign: "left" }}>{text}</div>
+        ),
+        onCell: () => ({ style: { textAlign: "left" } }) as React.TdHTMLAttributes<HTMLTableCellElement>,
+      },
+      ...times.map((time, index) => ({
+        title: (
+          <Tag icon={<ClockCircleOutlined />} color="processing">
+            {time}
+          </Tag>
+        ),
+        dataIndex: `time${index}`,
+        key: `time${index}`,
+        align: "center" as const,
+      })),
+    ]
+  : [
+      {
+        title: "Параметры",
+        dataIndex: "parameter",
+        key: "parameter",
+        fixed: "left" as const,
+        render: (text: string) => (
+          <b style={{ textAlign: "left", display: "block" }}>{text}</b>
+        ),
+        onCell: () => ({ style: { textAlign: "left" } }) as React.TdHTMLAttributes<HTMLTableCellElement>,
+      },
+      ...times.map((time, index) => ({
+        title: (
+          <Tag icon={<ClockCircleOutlined />} color="processing">
+            {time}
+          </Tag>
+        ),
+        dataIndex: `time${index}`,
+        key: `time${index}`,
+        align: "center" as const,
+      })),
+    ];
+  
 
   const tableData = [
     {
@@ -59,15 +87,31 @@ const DescriptionsPowertrainSystemParameters: React.FC<DescriptionsPowertrainSys
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Крутящий момент двигателя: ${parameter.engineTorque !== undefined ? parameter.engineTorque : ''} Нм`}>
-              <Tag color={parameter.engineTorque !== undefined && parameter.engineTorque > 1000 ? "error" : "green"}>
-                {parameter.engineTorque !== undefined ? `${parameter.engineTorque} Нм` : "Нм"}
+            <Tooltip
+              title={`Крутящий момент двигателя: ${
+                parameter.engineTorque !== null && parameter.engineTorque !== undefined
+                  ? parameter.engineTorque
+                  : ""
+              } Нм`}
+            >
+              <Tag
+                color={
+                  parameter.engineTorque !== null &&
+                  parameter.engineTorque !== undefined &&
+                  parameter.engineTorque > 1000
+                    ? "error"
+                    : "green"
+                }
+              >
+                {parameter.engineTorque !== null && parameter.engineTorque !== undefined
+                  ? `${parameter.engineTorque} Нм`
+                  : "Нм"}
               </Tag>
             </Tooltip>
           ),
         }),
       ),
-    },    
+    },      
     {
       key: "2",
       parameter: "Частота вращения двигателя (об/мин)",
@@ -75,15 +119,32 @@ const DescriptionsPowertrainSystemParameters: React.FC<DescriptionsPowertrainSys
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Частота вращения двигателя: ${parameter.engineRpm !== undefined ? parameter.engineRpm : ''} об/мин`}>
-              <Tag color={parameter.engineRpm !== undefined && parameter.engineRpm > 5000 ? "error" : "green"}>
-                {parameter.engineRpm !== undefined ? `${parameter.engineRpm} об/мин` : "об/мин"}
+            <Tooltip
+              title={`Частота вращения двигателя: ${
+                parameter.engineRpm !== null && parameter.engineRpm !== undefined
+                  ? parameter.engineRpm
+                  : ""
+              } об/мин`}
+            >
+              <Tag
+                color={
+                  parameter.engineRpm !== null &&
+                  parameter.engineRpm !== undefined &&
+                  parameter.engineRpm > 5000
+                    ? "error"
+                    : "green"
+                }
+              >
+                {parameter.engineRpm !== null && parameter.engineRpm !== undefined
+                  ? `${parameter.engineRpm} об/мин`
+                  : "об/мин"}
               </Tag>
             </Tooltip>
           ),
         }),
+        {}
       ),
-    },    
+    },   
     {
       key: "3",
       parameter: "Статус трансмиссии",

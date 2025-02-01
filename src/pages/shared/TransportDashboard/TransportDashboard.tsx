@@ -58,7 +58,47 @@ const TransportDashboard = () => {
           flexDirection: isMobile ? "column" : "row",
         }}
       >
-        <Radio.Group
+<Radio.Group
+  value={activeTab}
+  onChange={onTabChange}
+  style={{
+    display: "flex",
+    flexWrap: isMobile ? "wrap" : "nowrap",
+    flexDirection: isMobile ? "column" : "row", // Вертикально на мобильных, горизонтально на больших
+    width: "100%",
+    marginBottom: isMobile ? "10px" : "0",
+    gap: isMobile ? "10px" : "0", // Отступы между кнопками на мобильных
+  }}
+>
+  {["params", "map", "errors"].map((tab) => (
+    <Radio.Button
+      key={tab}
+      value={tab}
+      style={{
+        backgroundColor: getButtonBackgroundColor(tab),
+        color: "#fff",
+        border: "none",
+        borderRadius: "4px",
+        margin: isMobile ? "0" : "0 5px", // Убираем боковые отступы на мобильных
+        transition: "background-color 0.3s, color 0.3s",
+        fontSize: isMobile ? "12px" : "14px",
+        width: isMobile ? "100%" : "auto", // Кнопки занимают всю ширину только на мобильных
+        textAlign: "center",
+        height: "40px", // Фиксированная высота для лучшего вида
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+      onMouseEnter={() => setHoveredButton(tab)}
+      onMouseLeave={() => setHoveredButton(null)}
+    >
+      {tab === "params" ? "Параметры" : tab === "map" ? "Карта" : "Ошибки"}
+    </Radio.Button>
+  ))}
+</Radio.Group>
+
+
+        {/* <Radio.Group
           value={activeTab}
           onChange={onTabChange}
           style={{
@@ -117,7 +157,7 @@ const TransportDashboard = () => {
           >
             Ошибки
           </Radio.Button>
-        </Radio.Group>
+        </Radio.Group> */}
 
         <ConfigProvider locale={locale}>
           <DatePicker
