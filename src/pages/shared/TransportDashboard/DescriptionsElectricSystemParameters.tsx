@@ -90,10 +90,10 @@ const DescriptionsElectricSystemParameters: React.FC<DescriptionsElectricSystemP
           ...acc,
           [`time${index}`]: (
             <Tooltip
-              title={`Расход энергии гидроусилителем руля: ${parameter.powerConsumptionHydraulic !== undefined ? parameter.powerConsumptionHydraulic : ''} Ампер`}
+              title={`Расход энергии гидроусилителем руля: ${parameter.powerConsumptionHydraulic !== null ? parameter.powerConsumptionHydraulic : ''} Ампер`}
             >
               <Tag color={parameter.powerConsumptionHydraulic && parameter.powerConsumptionHydraulic > 12 ? "error" : "green"}>
-                {parameter.powerConsumptionHydraulic !== undefined ? `${parameter.powerConsumptionHydraulic} Ампер` : "Ампер"}
+                {parameter.powerConsumptionHydraulic !== null ? `${parameter.powerConsumptionHydraulic} Ампер` : "Ампер"}
               </Tag>
             </Tooltip>
           ),
@@ -108,10 +108,10 @@ const DescriptionsElectricSystemParameters: React.FC<DescriptionsElectricSystemP
           ...acc,
           [`time${index}`]: (
             <Tooltip
-              title={`Расход энергии воздушным компрессором: ${parameter.powerConsumptionAirCompressor !== undefined ? parameter.powerConsumptionAirCompressor : ''} Ампер`}
+              title={`Расход энергии воздушным компрессором: ${parameter.powerConsumptionAirCompressor !== null ? parameter.powerConsumptionAirCompressor : ''} Ампер`}
             >
               <Tag color={parameter.powerConsumptionAirCompressor && parameter.powerConsumptionAirCompressor > 12 ? "error" : "green"}>
-                {parameter.powerConsumptionAirCompressor !== undefined ? `${parameter.powerConsumptionAirCompressor} Ампер` : "Ампер"}
+                {parameter.powerConsumptionAirCompressor !== null ? `${parameter.powerConsumptionAirCompressor} Ампер` : "Ампер"}
               </Tag>
             </Tooltip>
           ),
@@ -126,10 +126,10 @@ const DescriptionsElectricSystemParameters: React.FC<DescriptionsElectricSystemP
           ...acc,
           [`time${index}`]: (
             <Tooltip
-              title={`Расход энергии DC-DC преобразователем: ${parameter.powerConsumptionDcdc !== undefined ? parameter.powerConsumptionDcdc : ''} Ампер`}
+              title={`Расход энергии DC-DC преобразователем: ${parameter.powerConsumptionDcdc !== null ? parameter.powerConsumptionDcdc : ''} Ампер`}
             >
               <Tag color={parameter.powerConsumptionDcdc && parameter.powerConsumptionDcdc > 8 ? "error" : "green"}>
-                {parameter.powerConsumptionDcdc !== undefined ? `${parameter.powerConsumptionDcdc} Ампер` : "Ампер"}
+                {parameter.powerConsumptionDcdc !== null ? `${parameter.powerConsumptionDcdc} Ампер` : "Ампер"}
               </Tag>
             </Tooltip>
           ),
@@ -145,7 +145,7 @@ const DescriptionsElectricSystemParameters: React.FC<DescriptionsElectricSystemP
           [`time${index}`]: (
             <Tooltip title={`Расход энергии двигателем: ${parameter.powerConsumptionEngine || 'неизвестно'} Ампер`}>
               <Tag color={parameter.powerConsumptionEngine && parameter.powerConsumptionEngine > 15 ? "error" : "green"}>
-                {parameter.powerConsumptionEngine !== undefined ? `${parameter.powerConsumptionEngine} Ампер` : "неизвестно"}
+                {parameter.powerConsumptionEngine !== null ? `${parameter.powerConsumptionEngine} Ампер` : "неизвестно"}
               </Tag>
             </Tooltip>
           ),

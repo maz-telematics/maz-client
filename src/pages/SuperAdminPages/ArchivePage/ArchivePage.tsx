@@ -1,56 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Button } from 'antd';
-import RestoreOutlinedIcon from '@mui/icons-material/RestoreOutlined';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-
-interface Transport {
-  id: number;
-  name: string;
-  archivedDate: string;
-}
-
-interface Organization {
-  id: number;
-  name: string;
-  archivedDate: string;
-}
+import { Radio } from "antd";
+import ArchivedTransportsTable from './ArchivedTransportsTable';
+import ArchivedOrganizationsTable from './ArchiveOrganizationsTable';
 
 const ArchivePage: React.FC = () => {
-  const [archivedTransports, setArchivedTransports] = useState<Transport[]>([]);
-  const [archivedOrganizations, setArchivedOrganizations] = useState<Organization[]>([]);
-
-  useEffect(() => {
-    const fetchArchivedData = async () => {
-      const transports: Transport[] = [
-        { id: 1, name: 'Bus #23', archivedDate: '2024-09-12' },
-        { id: 2, name: 'Truck #11', archivedDate: '2024-09-05' },
-      ];
-      const organizations: Organization[] = [
-        { id: 1, name: 'Transport Company A', archivedDate: '2024-08-21' },
-        { id: 2, name: 'Logistics Ltd.', archivedDate: '2024-07-14' },
-      ];
-      setArchivedTransports(transports);
-      setArchivedOrganizations(organizations);
-    };
-
-    fetchArchivedData();
-  }, []);
-
-  const restoreTransport = (id: number) => {
-    setArchivedTransports((prev) => prev.filter((transport) => transport.id !== id));
+  const [activeTab, setActiveTab] = useState("transports");
+  const [hoveredButton, setHoveredButton] = useState<string | null>(null);
+  const onTabChange = (e: any) => {
+    setActiveTab(e.target.value);
+  };
+  const getButtonBackgroundColor = (value: string) => {
+    if (hoveredButton === value) return "#FF0000"; 
+    if (activeTab === value) return "#FF0000";
+    return "#1B232A"; 
   };
 
-  const deleteTransport = (id: number) => {
-    setArchivedTransports((prev) => prev.filter((transport) => transport.id !== id));
-  };
 
-  const restoreOrganization = (id: number) => {
-    setArchivedOrganizations((prev) => prev.filter((org) => org.id !== id));
-  };
-
-  const deleteOrganization = (id: number) => {
-    setArchivedOrganizations((prev) => prev.filter((org) => org.id !== id));
-  };
   const isMobile = window.innerWidth < 768;
   return (
     <div
@@ -63,12 +29,12 @@ const ArchivePage: React.FC = () => {
     >
       <Row
         style={{
-          padding: '0 40px',
+          padding: isMobile ? "0 20px" : "0 40px" ,
           flex: '1',
         }}
       >
         <Col xs={24}>
-          <Row justify="start" align="middle" style={{ marginBottom: 16 }}>
+        <Row justify="space-between" style={{ marginBottom: 16, alignItems: 'flex-end' }}>
             <Col>
               <h1
                 style={{
@@ -78,180 +44,63 @@ const ArchivePage: React.FC = () => {
               >Архив</h1>
             </Col>
           </Row>
-          <section style={sectionStyle}>
-            <h2 style={sectionTitleStyle}>Архивированные транспортные средства</h2>
-            <ul style={listStyle}>
-              {archivedTransports.map((transport) => (
-                <li key={transport.id} style={listItemStyle}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                    <div style={{ ...itemTextStyle, marginRight: '1rem' }}> {/* Added marginRight */}
-                      <strong>{transport.name}</strong> <br />
-                      <span style={{ fontSize: '0.9rem', color: '#555' }}>
-                        (архивировано: {transport.archivedDate})
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <Button
-                        icon={<RestoreOutlinedIcon />}
-                        onClick={() => restoreTransport(transport.id)}
-                        style={{
-                          backgroundColor: "#1B232A", // Исходный фон
-                          color: "#fff", // Цвет текста
-                          transition: "all 0.3s ease", // Плавный переход
-                          cursor: "pointer", // Курсор в виде указателя
-                          border: "none", // Убираем рамку
-                          marginRight: "10px", // Отступ справа
-                        }}
-                        onMouseOver={(e) => {
-                          e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
-                        }}
-                        onMouseOut={(e) => {
-                          e.currentTarget.style.backgroundColor = "#1B232A"; // Возврат к исходному фону
-                        }}
-                      >
-                        {!isMobile && "Востановить транспорт"}
-                      </Button>
-
-                      <Button
-                        icon={<DeleteOutlineOutlinedIcon />}
-                        onClick={() => deleteTransport(transport.id)}
-                        style={{
-                          backgroundColor: "#1B232A", // Исходный фон
-                          color: "#fff", // Цвет текста
-                          transition: "all 0.3s ease", // Плавный переход
-                          cursor: "pointer", // Курсор в виде указателя
-                          border: "none", // Убираем рамку
-                        }}
-                        onMouseOver={(e) => {
-                          e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
-                        }}
-                        onMouseOut={(e) => {
-                          e.currentTarget.style.backgroundColor = "#1B232A"; // Возврат к исходному фону
-                        }}
-                      >
-                        {!isMobile && "Удалить транспорт"}
-                      </Button>
-
-
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
-
-
-          <section style={sectionStyle}>
-            <h2 style={sectionTitleStyle}>Архивированные организации</h2>
-            <ul style={listStyle}>
-              {archivedOrganizations.map((organization) => (
-                <li key={organization.id} style={listItemStyle}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                    <div style={{ ...itemTextStyle, marginRight: '1rem' }}> {/* Added marginRight */}
-                      <strong>{organization.name}</strong> <br />
-                      <span style={{ fontSize: '0.9rem', color: '#555' }}>
-                        (архивировано: {organization.archivedDate})
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <div style={{ display: "flex", gap: "10px" }}>
-                    <div style={{ display: "flex", gap: "10px" }}>
-                          <Button
-                            icon={<RestoreOutlinedIcon />}
-                            onClick={() => restoreOrganization(organization.id)}
-                            style={{
-                              backgroundColor: "#1B232A", // Исходный фон
-                              color: "#fff", // Цвет текста
-                              transition: "all 0.3s ease", // Плавный переход
-                              cursor: "pointer", // Курсор в виде указателя
-                              border: "none", // Убираем рамку
-                            }}
-                            onMouseOver={(e) => {
-                              e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
-                            }}
-                            onMouseOut={(e) => {
-                              e.currentTarget.style.backgroundColor = "#1B232A"; // Возврат к исходному фону
-                            }}
-                          >
-                            {!isMobile && "Востановить организацию"}
-                          </Button>
-
-                          <Button
-                            icon={<DeleteOutlineOutlinedIcon />}
-                            onClick={() => deleteOrganization(organization.id)}
-                            style={{
-                              backgroundColor: "#1B232A", // Исходный фон
-                              color: "#fff", // Цвет текста
-                              transition: "all 0.3s ease", // Плавный переход
-                              cursor: "pointer", // Курсор в виде указателя
-                              border: "none", // Убираем рамку
-                            }}
-                            onMouseOver={(e) => {
-                              e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
-                            }}
-                            onMouseOut={(e) => {
-                              e.currentTarget.style.backgroundColor = "#1B232A"; // Возврат к исходному фону
-                            }}
-                          >
-                            {!isMobile && "Удалить организацию"}
-                          </Button>
-                        </div>
-
-                      </div>
-
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
+          <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+          flexDirection: isMobile ? "column" : "row",
+        }}
+      >
+        <Radio.Group
+          value={activeTab}
+          onChange={onTabChange}
+          style={{
+            display: "flex",
+            flexWrap: isMobile ? "wrap" : "nowrap",
+            flexDirection: isMobile ? "column" : "row", 
+            width: "100%",
+            marginBottom: isMobile ? "10px" : "0",
+            gap: isMobile ? "10px" : "0", 
+          }}
+        >
+          {["transports", "organizations", "employees"].map((tab) => (
+            <Radio.Button
+              key={tab}
+              value={tab}
+              style={{
+                backgroundColor: getButtonBackgroundColor(tab),
+                color: "#fff",
+                border: "none",
+                borderRadius: "4px",
+                margin: isMobile ? "0" : "0 5px",
+                transition: "background-color 0.3s, color 0.3s",
+                fontSize: isMobile ? "12px" : "14px",
+                width: isMobile ? "100%" : "auto", 
+                textAlign: "center",
+                height: "40px", 
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              onMouseEnter={() => setHoveredButton(tab)}
+              onMouseLeave={() => setHoveredButton(null)}
+            >
+              {tab === "transports" ? "Транспорт" : tab === "organizations" ? "Организации" : "Сотрудники"}
+            </Radio.Button>
+          ))}
+        </Radio.Group>
+      </div>
+      {activeTab === "transports" && 
+       <ArchivedTransportsTable/>
+      }
+      {activeTab === "organizations" &&   <ArchivedOrganizationsTable/>}
+      {activeTab === "employees" &&   <></>}
         </Col>
       </Row>
     </div>
   );
-};
-const isMobile = window.innerWidth < 768;
-const sectionStyle = {
-  marginBottom: '2rem',
-};
-
-const sectionTitleStyle = {
- fontSize: isMobile ? '18px' : '24px',
-  // color: '#374151',
-  marginBottom: '1rem',
-};
-
-const listStyle = {
-  listStyleType: 'none' as const,
-  padding: 0,
-};
-
-const listItemStyle = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  padding: '0.75rem 1rem',
-  margin: 0,
-  backgroundColor: '#fff',
-  borderRadius: '8px',
-  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-  marginBottom: '1rem',
-  flexWrap: 'wrap' as const,
-};
-
-const itemTextStyle = {
-  flex: '1 1 auto',
-  marginBottom: '0.5rem',
-};
-
-const responsiveButtonStyle = {
-  padding: '0.5rem',
-  backgroundColor: '#3A5F73',
-  color: '#fff',
-  border: 'none',
-  borderRadius: '4px',
-  cursor: 'pointer',
-  marginRight: '0.5rem',
 };
 
 export default ArchivePage;

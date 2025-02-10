@@ -102,11 +102,11 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Минимальная температура: ${parameter.batteryMinTemp !== undefined ? parameter.batteryMinTemp : "Неизвестно"}°C`}>
+            <Tooltip title={`Минимальная температура: ${parameter.batteryMinTemp !== null ? parameter.batteryMinTemp : "Неизвестно"}°C`}>
               <Tag 
-                color={parameter.batteryMinTemp !== undefined && parameter.batteryMinTemp < 10 ? "error" : "green"}
+                color={parameter.batteryMinTemp !== null && parameter.batteryMinTemp < 10 ? "error" : "green"}
               >
-                {parameter.batteryMinTemp !== undefined ? `${parameter.batteryMinTemp}°C` : "°C"}
+                {parameter.batteryMinTemp !== null ? `${parameter.batteryMinTemp}°C` : "°C"}
               </Tag>
             </Tooltip>
           ),
@@ -121,11 +121,11 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Максимальная температура: ${parameter.batteryMaxTemp !== undefined ? parameter.batteryMaxTemp : "Неизвестно"}°C`}>
+            <Tooltip title={`Максимальная температура: ${parameter.batteryMaxTemp !== null ? parameter.batteryMaxTemp : "Неизвестно"}°C`}>
               <Tag 
-                color={parameter.batteryMaxTemp !== undefined && parameter.batteryMaxTemp > 35 ? "error" : "green"}
+                color={parameter.batteryMaxTemp !== null && parameter.batteryMaxTemp > 35 ? "error" : "green"}
               >
-                {parameter.batteryMaxTemp !== undefined ? `${parameter.batteryMaxTemp}°C` : "°C"}
+                {parameter.batteryMaxTemp !== null ? `${parameter.batteryMaxTemp}°C` : "°C"}
               </Tag>
             </Tooltip>
           ),
@@ -140,10 +140,10 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Уровень заряда: ${parameter.batterySoc !== undefined ? parameter.batterySoc : "Неизвестно"}%`}>
+            <Tooltip title={`Уровень заряда: ${parameter.batterySoc !== null ? parameter.batterySoc : "Неизвестно"}%`}>
               <Progress
-                percent={parameter.batterySoc !== undefined ? Math.min(Math.max(parameter.batterySoc, 0), 100) : 0}
-                status={parameter.batterySoc !== undefined && parameter.batterySoc < 20 ? "exception" : "active"}
+                percent={parameter.batterySoc !== null ? Math.min(Math.max(parameter.batterySoc, 0), 100) : 0}
+                status={parameter.batterySoc !== null && parameter.batterySoc < 20 ? "exception" : "active"}
                 width={80}
               />
             </Tooltip>
@@ -159,9 +159,9 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
         (acc, parameter, index) => ({
           ...acc,
           [`time${index}`]: (
-            <Tooltip title={`Напряжение батареи: ${parameter.batteryVoltage !== undefined ? parameter.batteryVoltage : ""} V`}>
-              <Tag color={parameter.batteryVoltage !== undefined && parameter.batteryVoltage < 45 ? "error" : "green"}>
-                {parameter.batteryVoltage !== undefined ? `${parameter.batteryVoltage} V` : "V"}
+            <Tooltip title={`Напряжение батареи: ${parameter.batteryVoltage !== null ? parameter.batteryVoltage : ""} V`}>
+              <Tag color={parameter.batteryVoltage !== null && parameter.batteryVoltage < 45 ? "error" : "green"}>
+                {parameter.batteryVoltage !== null ? `${parameter.batteryVoltage} V` : "V"}
               </Tag>
             </Tooltip>
           ),

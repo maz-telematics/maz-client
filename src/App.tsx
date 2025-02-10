@@ -54,25 +54,23 @@ const App = () => {
               `,
             }}
           >
-  
             <div style={{ gridArea: "main", overflow: "auto" }}>
               <Routes>
-              <Route element={<SuperAdminRoutes />}>
-              <Route path="/master" element={<SuperAdmin />}>
-                <Route path="/master/:urlView" element={<SuperAdmin/>} />
-              </Route>
-            </Route>
-            <Route element={<AdminRoutes />}>
-              <Route path="/admin" element={<Admin />}>
-                <Route path="/admin/:urlView" element={<Admin/>} />
-              </Route>
-            </Route>
-            <Route element={<DirectorRoutes />}>
-              <Route path="/director" element={<Director />}>
-                <Route path="/director/:urlView" element={<Director/>} />
-              </Route>
-            </Route>
+                <Route element={<SuperAdminRoutes />}>
+                  <Route path="/master" element={<SuperAdmin />} />
+                  <Route path="/master/:urlView" element={<SuperAdmin />} />
+                </Route>
+                <Route element={<AdminRoutes />}>
+                  <Route path="/admin" element={<Admin />} />
+                  <Route path="/admin/:urlView" element={<Admin />} />
+                </Route>
+                <Route element={<DirectorRoutes />}>
+                  <Route path="/director" element={<Director />} />
+                  <Route path="/director/:urlView" element={<Director />} />
+                </Route>
+
                 <Route path="/edit-profile" element={<EditProfile />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} /> 
                 <Route path="*" element={<Navigate to="/not-found" replace />} />
               </Routes>
             </div>
@@ -93,9 +91,9 @@ const App = () => {
               />
             }
           />
-          <Route path="*" element={<NotFound />} />
           <Route path="/about" element={<AboutPage />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} /> {/* ✅ Добавлен маршрут */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       )}
     </AuthContext.Provider>
@@ -103,4 +101,3 @@ const App = () => {
 };
 
 export default App;
-

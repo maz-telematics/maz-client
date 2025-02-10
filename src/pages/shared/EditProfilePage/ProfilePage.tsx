@@ -61,9 +61,10 @@ const ProfilePage = () => {
     }
 
     try {
-      const response = await axios.patch(`/user/${id}/password`, {
+      const response = await axiosInstance.post(`/user/change-password`, {
         currentPassword,
         newPassword,
+        newPasswordConfirm:newPassword
       });
 
       if (response.status === 200) {

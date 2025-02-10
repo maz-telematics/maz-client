@@ -123,7 +123,7 @@ const Slidebar: React.FC = () => {
     <div className="h-full flex flex-col" style={{width: "94px", height: "100vh"}}>
       <Menu
         style={{ backgroundColor: '#1B232A' }}
-        className="h-full m -6 pt-5"
+        className="h-full pt-5"
         onClick={handleMenuClick}
         mode="inline"
         items={getSlidebarItems()} // Вызов функции

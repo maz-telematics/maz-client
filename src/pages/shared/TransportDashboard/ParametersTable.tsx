@@ -1,6 +1,6 @@
 import { Parameters } from "../../../types/carTrackingTypes";
 import { ParametersResponce } from "../../../types/carTrackingTypes";
-import { Pagination, Tabs, Row, Col } from "antd";
+import { Pagination, Tabs, Row, Col, Checkbox, Spin } from "antd";
 const { TabPane } = Tabs;
 import { useEffect, useState } from "react";
 import axiosInstance from "../../../services/axiosInstance";
@@ -13,6 +13,8 @@ import DescriptionsLightingParameters from "./DescriptionsLightingParameters";
 import DescriptionsPowertrainSystemParameters from "./DescriptionsPowertrainSystemParameters";
 import dayjs, { Dayjs } from "dayjs";
 import { fetchTransportParameters } from "../../../Store/apis/transportParameter";
+
+
 interface ParametersProps {
   selectedDate: Dayjs | null;
 }
@@ -53,6 +55,7 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
   const [totalPages, setTotalPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const id = sessionStorage.getItem("id");
+  const [loading, setLoading] = useState<boolean>(false);
   const isCurrentDay = (date: Dayjs | null): boolean => {
     return date ? date.isSame(dayjs(), "day") : false;
   };
@@ -87,7 +90,7 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
 
   const fetchAndProcessParameters = async () => {
     if (!id || !selectedDate) return;
-
+    setLoading(true);
     try {
       const dateStr = selectedDate.format("YYYY-MM-DDTHH:mm:ss.SSSZ");
 
@@ -103,26 +106,55 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
       console.log("processedParameters", processed);
     } catch (error) {
       console.error("Error fetching or processing parameters:", error);
+    }finally {
+      setLoading(false); // Завершаем загрузку
     }
   };
 
+  // useEffect(() => {
+  //   if (!id) return;
+
+  //   if (isCurrentDay(selectedDate)) {
+      
+  //     fetchTransportParameters(currentPage, id)
+  //       .then((data) => {
+  //         setTotalPages(data.totalPages);
+  //         const processed = processParameters(data.transportData);
+  //         console.log("data", data)
+  //         setProcessedParameters(processed);
+  //       })
+  //       .catch((err) => {
+  //         console.error(err);
+  //       });
+  //   } else {
+  //     fetchAndProcessParameters();
+  //   }
+  // }, [id, selectedDate, currentPage]);
+
   useEffect(() => {
     if (!id) return;
-
-    if (isCurrentDay(selectedDate)) {
-      fetchTransportParameters(currentPage, id)
-        .then((data) => {
+  
+    setLoading(true); // Включаем спиннер при начале загрузки
+  
+    const fetchData = async () => {
+      try {
+        if (isCurrentDay(selectedDate)) {
+          const data = await fetchTransportParameters(currentPage, id);
           setTotalPages(data.totalPages);
           const processed = processParameters(data.transportData);
-          console.log("data", data)
+          console.log("data", data);
           setProcessedParameters(processed);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    } else {
-      fetchAndProcessParameters();
-    }
+        } else {
+          await fetchAndProcessParameters(); // Ожидаем выполнения другой асинхронной функции
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false); // Отключаем спиннер после завершения загрузки
+      }
+    };
+  
+    fetchData(); // Запуск функции для получения данных
   }, [id, selectedDate, currentPage]);
 
   const handlePageChange = (page: number) => {
@@ -130,10 +162,22 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
   };
   const isMobile = window.innerWidth < 768;
   return (
-    <>
+    <>{loading ? ( // Отображаем спиннер, если загрузка идет
+      <Spin
+        size="large"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "80vh",
+          width: "100%",
+        }}
+      />
+    ) : 
+    (<>
       {processedParameters.length > 0 && (
         <Tabs
-          defaultActiveKey="transport_lighting"
+          defaultActiveKey="battery_parameters"
           tabPosition="top"
           type="card"
           style={{ width: "100%", overflowX: isMobile ? "auto" : "visible" }}
@@ -144,32 +188,6 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
             overflowX: isMobile ? "auto" : "visible",
           }}
         >
-          <TabPane key="transport_lighting" tab="Освещение транспорта">
-            <Row gutter={[16, 16]}>
-              <Col span={24}>
-                <DescriptionsLightingParameters
-                  data={processedParameters.map(parameter => ({
-                    ...parameter.transportLighting,
-                    date: parameter.date,
-                  }))}
-                />
-              </Col>
-            </Row>
-          </TabPane>
-
-          <TabPane key="transport_air_conditioning" tab="Система кондиционирования">
-            <Row gutter={[16, 16]}>
-              <Col span={24}>
-                <DescriptionsAirConditioningParameters
-                  data={processedParameters.map(parameter => ({
-                    ...parameter.transportAirConditioning,
-                    date: parameter.date,
-                  }))}
-                />
-              </Col>
-            </Row>
-          </TabPane>
-
           <TabPane key="battery_parameters" tab="Параметры батареи">
             <Row gutter={[16, 16]}>
               <Col span={24}>
@@ -182,7 +200,6 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
               </Col>
             </Row>
           </TabPane>
-
           <TabPane key="electric_system_parameters" tab="Параметры электрической системы">
             <Row gutter={[16, 16]}>
               <Col span={24}>
@@ -202,6 +219,32 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
                 <DescriptionsPowertrainSystemParameters
                   data={processedParameters.map(parameter => ({
                     ...parameter.powertrainSystemParameters,
+                    date: parameter.date,
+                  }))}
+                />
+              </Col>
+            </Row>
+          </TabPane>
+
+          <TabPane key="transport_lighting" tab="Освещение транспорта">
+            <Row gutter={[16, 16]}>
+              <Col span={24}>
+                <DescriptionsLightingParameters
+                  data={processedParameters.map(parameter => ({
+                    ...parameter.transportLighting,
+                    date: parameter.date,
+                  }))}
+                />
+              </Col>
+            </Row>
+          </TabPane>
+
+          <TabPane key="transport_air_conditioning" tab="Система кондиционирования">
+            <Row gutter={[16, 16]}>
+              <Col span={24}>
+                <DescriptionsAirConditioningParameters
+                  data={processedParameters.map(parameter => ({
+                    ...parameter.transportAirConditioning,
                     date: parameter.date,
                   }))}
                 />
@@ -269,6 +312,8 @@ const ParametersTable: React.FC<ParametersProps> = ({ selectedDate }) => {
         />
       </div>
     </>
+ )}
+</>
   );
 };
 

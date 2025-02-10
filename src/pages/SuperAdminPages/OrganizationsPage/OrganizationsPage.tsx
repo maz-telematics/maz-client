@@ -9,12 +9,20 @@ import dayjs from "dayjs";  // Если у вас не установлен dayj
 
 const SuperAdminOrganizationsPage = () => {
   const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false)
+  const [idOrganization, setIdOrganizations] = useState<number | null>(null);;
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [updatedOrganization, setUpdatedOrganization] = useState<Organization | null>(null);
   const [loading, setLoading] = useState(false); // добавляем состояние для загрузки
   const [form] = Form.useForm(); // Создаем экземпляр формы
   const navigate = useNavigate();
   const isMobile = window.innerWidth < 768;
+
+  
+  const handleArchive = ( organizationId: number) => {
+    setIdOrganizations(organizationId);
+    setDeleteModalVisible(true);
+  };
 
   const handleEditOrganization = (organization: Organization) => {
     setCurrentOrganization(organization);
@@ -49,6 +57,21 @@ const SuperAdminOrganizationsPage = () => {
         }
       },
     });
+  };
+
+  const archiveOrganization = async () => {
+    try {
+      const response = await axiosInstance.post(`archive/archive/organization/${idOrganization}`);
+
+      if (response.status !== 200) {
+        throw new Error("Ошибка при архивировании транспорта");
+      }
+      // refetch();
+      message.success("Транспорт успешно перемещен в архив");
+    } catch (error) {
+      console.error("Ошибка:", error);
+      message.error("Не удалось архивировать транспорт");
+    }
   };
 
   const navigateToNewOrganization = () => {
@@ -119,9 +142,8 @@ const SuperAdminOrganizationsPage = () => {
         Изменить
       </Button>
       <Button
-        disabled={true}
         size="middle"
-        onClick={() => handleDeleteOrganization(record.id)}
+        onClick={() => handleArchive(record.name)} 
         style={{
           backgroundColor: "#1B232A",
           color: "#fff",
@@ -136,6 +158,19 @@ const SuperAdminOrganizationsPage = () => {
   return (
     <>
       <OrganizationsPage extraControls={extraControls} extraActions={extraActions} />
+      <Modal
+        title="Подтверждение архивирования"
+        open={deleteModalVisible}
+        onOk={() => {
+          archiveOrganization();
+          setDeleteModalVisible(false);
+        }}
+        onCancel={() => setDeleteModalVisible(false)}
+        okText="Подтвердить"
+        cancelText="Отмена"
+      >
+        <p>Вы действительно хотите хотите переместить транспорт в архив? Это действие нельзя отменить.</p>
+      </Modal>
       <Modal
         title="Изменить организацию"
         visible={isModalVisible}

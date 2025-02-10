@@ -210,11 +210,11 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
         </p>
         <p style={{ fontSize: "13px", color: "#555", display: "flex", alignItems: "center", marginBottom: "8px" }}>
           <PhoneOutlined style={{ marginRight: "8px", color: "#FF4D4F" }} />
-          <span>+375 (44) 44-44-444</span>
+          <span>+375 (29) 311-88-78</span>
         </p>
         <p style={{ fontSize: "13px", color: "#555", display: "flex", alignItems: "center" }}>
           <MailOutlined style={{ marginRight: "8px", color: "#007aff" }} />
-          <span>support@example.com</span>
+          <span>maztelematics@gmail.com</span>
         </p>
       </div>
     </div>

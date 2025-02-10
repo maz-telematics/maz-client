@@ -7,6 +7,7 @@ import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
 import { useAddCarMutation, useUpdateCarMutation } from "../../../Store/apis/transportApi"
 import dayjs from "dayjs";
 import { useGetCarsQuery } from "../../../Store/apis/transportApi"; // Import for refetch
+import axiosInstance from "../../../services/axiosInstance";
 
 const { Option } = Select;
 
@@ -16,21 +17,17 @@ const SuperAdminTransportsPage = () => {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [deleteVin, setDeleteVin] = useState<string | null>(null);
-  const [deleteOrganizationId, setDeleteOrganizationId] = useState<number | null>(null);
   const [editingTransport, setEditingTransport] = useState<any>(null);
   const [form] = Form.useForm();
   const [addForm] = Form.useForm();
 
-  // Fetch cars data for the table
   const { data, error, isLoading, refetch } = useGetCarsQuery({ page: 1, size: 10 });
 
-  // Mutation hooks for add and update
   const [addCar] = useAddCarMutation();
   const [updateCar] = useUpdateCarMutation();
 
-  const handleDelete = (vin: string, organizationId: number) => {
+  const handleArchive = (vin: string) => {
     setDeleteVin(vin);
-    setDeleteOrganizationId(organizationId);
     setDeleteModalVisible(true);
   };
 
@@ -42,6 +39,21 @@ const SuperAdminTransportsPage = () => {
     });
     setEditModalVisible(true);
   };
+  const archiveTransport = async () => {
+    try {
+      const response = await axiosInstance.post(`archive/archive/transport/${deleteVin}`);
+
+      if (response.status !== 200) {
+        throw new Error("Ошибка при архивировании транспорта");
+      }
+      refetch();
+      message.success("Транспорт успешно перемещен в архив");
+    } catch (error) {
+      console.error("Ошибка:", error);
+      message.error("Не удалось архивировать транспорт");
+    }
+  };
+
 
   const handleSaveEdit = async (values: any) => {
     try {
@@ -85,13 +97,12 @@ const SuperAdminTransportsPage = () => {
       {!isMobile && "Добавить транспорт"}
     </Button>
   );
-
   const extraActions = (record: any) => (
     <div style={{ display: "flex", gap: "8px" }}>
       <Button size="middle" onClick={() => handleEdit(record)} icon={<ModeEditOutlinedIcon />}>
         Изменить
       </Button>
-      <Button size="middle" onClick={() => handleDelete(record.id, record.organizationId)} icon={<ArchiveOutlinedIcon />}>
+      <Button size="middle" onClick={() => handleArchive(record.id)} icon={<ArchiveOutlinedIcon />}>
         Переместить в архив
       </Button>
     </div>
@@ -100,17 +111,20 @@ const SuperAdminTransportsPage = () => {
   return (
     <>
       <TransportsPage extraControls={extraControls} extraActions={extraActions} />
-      {/* Модальное окно для удаления */}
       <Modal
         title="Подтверждение архивирования"
         open={deleteModalVisible}
-        onOk={() => setDeleteModalVisible(false)}
+        onOk={() => {
+          archiveTransport();
+          setDeleteModalVisible(false);
+        }}
         onCancel={() => setDeleteModalVisible(false)}
-        okText="Закрыть"
+        okText="Подтвердить"
         cancelText="Отмена"
       >
-        <p>Функция архивирования транспорта временно недоступна.</p>
+        <p>Вы действительно хотите хотите переместить транспорт в архив? Это действие нельзя отменить.</p>
       </Modal>
+
       {/* Модальное окно для добавления */}
       <Modal
         title="Добавление транспорта"

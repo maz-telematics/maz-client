@@ -15,7 +15,7 @@ import { MenuInfo } from "rc-menu/lib/interface";
 const { Content, Sider, Header } = Layout;
 const { useBreakpoint } = Grid;
 import { showSuperAdminMain } from "../../../Store/utils/superAdminModuleViewSlice";
-
+import { User } from "../../../pages/shared/TransportsPage";
 
 
 interface FormWrapperProps {
@@ -46,11 +46,18 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
     logoutMutation();
   };
 
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-   const firstName = user?.name?.split(" ")[1] || "Имя";
   const dispatch = useDispatch();
-  const userRole = sessionStorage.getItem("role"); // Получаем роль пользователя
-  const basePath = userRole === "admin" ? "/admin/profile" : "/master/profile";
+  const storedUser = localStorage.getItem("user");
+  const user: User | null = storedUser ? JSON.parse(storedUser) : null;
+  const firstName = user?.name?.split(" ")[1] || "Имя";
+  const basePath =
+    user?.role === "ROLE_SUPERADMIN"
+      ? "/superadmin/profile"
+      : user?.role === "ROLE_ADMIN"
+        ? "/admin/profile"
+        : user?.role === "ROLE_DIRECTOR"
+          ? "/director/profile"
+          : "/master/profile";
 
   return (
     <Layout style={{ backgroundColor: "#E1E1E1", minHeight: "100vh" }}>
@@ -144,7 +151,7 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
               >
                 <Link
                   className="icon-hover profile"
-                  to='/master/profile'
+                  to={basePath}
                 >
                   <AccountBoxIcon
                     style={{ fontSize: "40px", color: "white" }}
@@ -222,7 +229,18 @@ const MobileWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
     logoutMutation();
   };
 
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const storedUser = localStorage.getItem("user");
+  const user: User | null = storedUser ? JSON.parse(storedUser) : null;
+  const firstName = user?.name?.split(" ")[1] || "Имя";
+  const basePath =
+    user?.role === "ROLE_SUPERADMIN"
+      ? "/superadmin/profile"
+      : user?.role === "ROLE_ADMIN"
+        ? "/admin/profile"
+        : user?.role === "ROLE_DIRECTOR"
+          ? "/director/profile"
+          : "/master/profile";
+
   const dispatch = useDispatch();
 
   return (
@@ -265,7 +283,7 @@ const MobileWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
               <Badge count={0} showZero>
                 <MessageOutlined style={{ fontSize: "18px", color: "white" }} />
               </Badge>
-              <Link to="/master/profile" className="icon-hover profile">
+              <Link to={basePath} className="icon-hover profile">
                 <AccountBoxIcon style={{ fontSize: "28px", color: "white" }} />
               </Link>
               <div className="icon-hover exit" onClick={logOut}>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Table, Modal, Button, Row, Col, message, Pagination, Spin } from "antd";
+import { Table, Modal, Button, Row, Col, message,Typography, Pagination, Spin, Empty } from "antd";
 import { useNavigate } from "react-router-dom";
 import { Car } from "../../Store/apis/transportApi";
 import axiosInstance from "../../services/axiosInstance";
@@ -7,14 +7,16 @@ import DownloadButton from "../../Components/DownloadButton";
 import DownloadIcon from '@mui/icons-material/Download';
 import moment from "moment";
 import { useGetCarsQuery } from "../../Store/apis/transportApi";
-
+import { CarOutlined } from '@ant-design/icons';
+const { Title, Paragraph  } = Typography;
 interface TransportsPageProps {
   extraControls?: React.ReactNode;
   extraActions?: (record: Car) => React.ReactNode;
 }
 
 export interface User {
-  role: "ROLE_ADMIN" | "ROLE_SUPERADMIN";
+  role: "ROLE_ADMIN" | "ROLE_SUPERADMIN" | "ROLE_DIRECTOR";
+  name:string
 }
 
 const TransportsPage: React.FC<TransportsPageProps> = ({ extraControls, extraActions }) => {
@@ -42,7 +44,29 @@ const TransportsPage: React.FC<TransportsPageProps> = ({ extraControls, extraAct
   }
   
   if (!cars.length) {
-    return <div>Нет данных для отображения</div>;  
+    return <Row justify="center" align="middle" >
+    <Col>
+      <Empty
+        image={<CarOutlined style={{ fontSize: '80px', color: '#1890ff', animation: 'pulse 2s infinite' }} />}
+        description={
+          <div style={{ textAlign: 'center', padding: '20px', borderRadius: '10px', backgroundColor: '#ffffff', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
+            <Title level={3} style={{ color: '#1890ff', fontWeight: 'bold' }}>
+              Транспорт пока не подключен к вашей организации
+            </Title>
+            <Paragraph style={{ fontSize: '16px', color: '#888' }}>
+              Для добавления транспорта, пожалуйста, обратитесь в техническую поддержку.
+            </Paragraph>
+            <Paragraph style={{ fontSize: '16px', color: '#888' }}>
+            <strong>Телефон поддержки:</strong> +375 (29) 311-88-78
+            </Paragraph>
+            <Paragraph style={{ fontSize: '16px', color: '#888' }}>
+              <strong>Электронная почта:</strong> maztelematics@gmail.com
+            </Paragraph>
+          </div>
+        }
+      />
+    </Col>
+  </Row>
   }
 
   const columns = [

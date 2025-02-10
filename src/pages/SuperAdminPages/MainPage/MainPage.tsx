@@ -10,21 +10,24 @@ import TransportTab from './TransportTab';
 import UsersTab from './UsersTab';
 import MapComponent from './Map';
 import TransportInfo from './TransportInfo';
+import { User } from "../../../pages/shared/TransportsPage";
 const { useBreakpoint } = Grid;
 const MainPage: React.FC = () => {
-  
+
 
   const screen = useBreakpoint();
   return screen.xs ? (
-    <ModileMainPage  />
+    <ModileMainPage />
   ) : (
-    <DestkopMainPage  />
+    <DestkopMainPage />
   );
 };
 
 const DestkopMainPage: React.FC = () => {
   const dispatch = useAppDispatch();
-
+  const storedUser = localStorage.getItem("user");
+  const user: User | null = storedUser ? JSON.parse(storedUser) : null;
+  const isAdminOrSuperAdmin = user?.role === "ROLE_SUPERADMIN" || user?.role === "ROLE_ADMIN";
   useEffect(() => {
     dispatch(fetchRoles());
     fetchTransportData()
@@ -41,12 +44,12 @@ const DestkopMainPage: React.FC = () => {
         display: "flex",
         flexDirection: "column",
         width: "100%",
-        height:'90vh',
-        flexGrow: 1, 
+        height: '90vh',
+        flexGrow: 1,
       }}
     >
-  <Row className="w-full flex">
-    <Col span={5} className="bg-white px-5 py-2 border-gray-300">
+      <Row className="w-full flex">
+        <Col span={5} className="bg-white px-5 py-2 border-gray-300">
           <Carousel dots={false} infinite>
             <Tabs
               defaultActiveKey="1"
@@ -67,11 +70,18 @@ const DestkopMainPage: React.FC = () => {
                   <TransportTab />
                 </div>
               </Tabs.TabPane>
-              <Tabs.TabPane tab="Подписки" key="3">
+              {/* <Tabs.TabPane tab="Подписки" key="3">
                 <div className="h-[calc(100vh-100px)] p-4 custom-scrollbar">
                   <SubscriptionTab />
                 </div>
-              </Tabs.TabPane>
+              </Tabs.TabPane> */}
+              {isAdminOrSuperAdmin && (
+                <Tabs.TabPane tab="Подписки" key="3">
+                  <div className="h-[calc(100vh-100px)] p-4 custom-scrollbar">
+                    <SubscriptionTab />
+                  </div>
+                </Tabs.TabPane>
+              )}
               <Tabs.TabPane tab="Пользователи" key="4">
                 <div className="h-[calc(100vh-100px)] p-4 custom-scrollbar">
                   <UsersTab />
@@ -92,7 +102,9 @@ const DestkopMainPage: React.FC = () => {
 
 const ModileMainPage: React.FC = () => {
   const dispatch = useAppDispatch();
-
+  const storedUser = localStorage.getItem("user");
+  const user: User | null = storedUser ? JSON.parse(storedUser) : null;
+  const isAdminOrSuperAdmin = user?.role === "ROLE_SUPERADMIN" || user?.role === "ROLE_ADMIN";
   useEffect(() => {
     dispatch(fetchRoles());
     fetchTransportData()
@@ -109,12 +121,12 @@ const ModileMainPage: React.FC = () => {
         display: "flex",
         flexDirection: "column",
         width: "100%",
-        height:'90vh',
-        flexGrow: 1, 
+        height: '90vh',
+        flexGrow: 1,
       }}
     >
-  <Row className="w-full flex">
-         <Col span={24} className="bg-white px-5 py-2 border-gray-300">
+      <Row className="w-full flex">
+        <Col span={24} className="bg-white px-5 py-2 border-gray-300">
           <TransportInfo />
           <Carousel dots={false} infinite>
             <Tabs
@@ -136,11 +148,18 @@ const ModileMainPage: React.FC = () => {
                   <TransportTab />
                 </div>
               </Tabs.TabPane>
-              <Tabs.TabPane tab="Подписки" key="3">
+              {/* <Tabs.TabPane tab="Подписки" key="3">
                 <div className="h-[calc(100vh-200px)] p-4 custom-scrollbar">
                   <SubscriptionTab />
                 </div>
-              </Tabs.TabPane>
+              </Tabs.TabPane> */}
+              {isAdminOrSuperAdmin && (
+                <Tabs.TabPane tab="Подписки" key="3">
+                  <div className="h-[calc(100vh-100px)] p-4 custom-scrollbar">
+                    <SubscriptionTab />
+                  </div>
+                </Tabs.TabPane>
+              )}
               <Tabs.TabPane tab="Пользователи" key="4">
                 <div className="h-[calc(100vh-200px)] p-4 custom-scrollbar">
                   <UsersTab />
@@ -148,7 +167,7 @@ const ModileMainPage: React.FC = () => {
               </Tabs.TabPane>
               <Tabs.TabPane tab="Карта" key="5">
                 <div className="h-[calc(100vh-200px)] p-4 custom-scrollbar">
-                <MapComponent />
+                  <MapComponent />
                 </div>
               </Tabs.TabPane>
             </Tabs>

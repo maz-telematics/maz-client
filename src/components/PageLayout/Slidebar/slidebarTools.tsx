@@ -39,7 +39,13 @@ export const superAdminItems = (): MenuItem[] => {
 
   return [
     getItem(
-      <Link to="/master/main" style={{ color: "white" }}>Главная</Link>,
+      <Link to="/master/main" style={{ 
+        color: "white" ,
+        display:"flex",
+        alignItems: "center", // Центрирование по вертикали
+        justifyContent: "center", // Центрирование по горизонтали
+        gap: "8px", // Отступ между текстом и иконкой
+      }}>Главная</Link>,
       "main",
       <DashboardIcon
         style={{
@@ -48,7 +54,6 @@ export const superAdminItems = (): MenuItem[] => {
         }}
       />
     ),
-    
     getItem(
       <Link to="/master/transports" style={{ color: "white" }}>Транспорт</Link>,
       "transports",
