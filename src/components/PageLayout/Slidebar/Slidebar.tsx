@@ -64,7 +64,7 @@ const Slidebar: React.FC = () => {
           case "logs":
             dispatch(showSuperAdminLogs());
             break;
-          case "changelogs":
+          case "change-logs":
             dispatch(showSuperAdminChangeLogs());
             break;
         }
@@ -134,7 +134,7 @@ const Slidebar: React.FC = () => {
       "/master/archive": "archive",
       "/master/firmwares": "firmwares",
       "/master/logs": "logs",
-      "/master/changelogs": "changelogs",
+      "/master/change-logs": "change-logs",
     };
     
     setSelectedKey(pathToKeyMap[location.pathname] || "main"); // Если путь не найден, ставим "main, ВОТ ТУТ ЛОГИКА ПЕРЕХОДА ЧИНАЗЕСА"

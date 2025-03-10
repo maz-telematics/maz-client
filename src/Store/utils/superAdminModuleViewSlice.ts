@@ -54,7 +54,7 @@ export const superAdminModuleViewSlice = createSlice({
       state.view = "logs"
     },
     showSuperAdminChangeLogs:(state) => {
-      state.view = "logs"
+      state.view = "change-logs"
     },
   },
 });

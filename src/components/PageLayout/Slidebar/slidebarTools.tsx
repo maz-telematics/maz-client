@@ -123,12 +123,12 @@ export const superAdminItems = (): MenuItem[] => {
       />
     ),
     getItem(
-      <Link to="/master/changelogs" style={{ color: "white" }}>Изменения</Link>,
+      <Link to="/master/change-logs" style={{ color: "white" }}>Изменения</Link>,
       "changelogs",
       <ManageAccountsOutlinedIcon
         style={{
           fontSize: 25,
-          color: isActive("/master/changelogs") ? "black" : "white",
+          color: isActive("/master/change-logs") ? "black" : "white",
         }}
       />
     ),
