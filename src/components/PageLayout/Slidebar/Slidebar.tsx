@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { MenuOutlined } from "@ant-design/icons";
 import { UserInfoContext } from "../../UserProvider/UserProvider";
 import { RootState } from "../../../Store/store";
-import { showSuperAdminArchive, showSuperAdminEmpoyess, showSuperAdminFirmware, showSuperAdminMain, showSuperAdminOrganizations, showSuperAdminReports, showSuperAdminTransports } from "../../../Store/utils/superAdminModuleViewSlice";
+import { showSuperAdminArchive, showSuperAdminEmpoyess, showSuperAdminFirmware, showSuperAdminMain, showSuperAdminOrganizations, showSuperAdminReports, showSuperAdminTransports, showSuperAdminLogs, showSuperAdminChangeLogs } from "../../../Store/utils/superAdminModuleViewSlice";
 import { toggleSlicebar } from "../../../Store/utils/slidebarSlice";
 import { Menu } from "antd";
 import { MenuInfo } from "rc-menu/lib/interface";
@@ -61,6 +61,12 @@ const Slidebar: React.FC = () => {
           case "firmware":
             dispatch(showSuperAdminFirmware());
               break;
+          case "logs":
+            dispatch(showSuperAdminLogs());
+            break;
+          case "changelogs":
+            dispatch(showSuperAdminChangeLogs());
+            break;
         }
         case "ROLE_ADMIN":
           switch (e.key) {
@@ -118,7 +124,21 @@ const Slidebar: React.FC = () => {
         return [];
     }
   };
-
+  useEffect(() => {
+    const pathToKeyMap: Record<string, string> = {
+      "/master/main": "main",
+      "/master/transports": "transports",
+      "/master/organizations": "organizations",
+      "/master/employees": "employees",
+      "/master/reports": "reports",
+      "/master/archive": "archive",
+      "/master/firmwares": "firmwares",
+      "/master/logs": "logs",
+      "/master/changelogs": "changelogs",
+    };
+    
+    setSelectedKey(pathToKeyMap[location.pathname] || "main"); // Если путь не найден, ставим "main, ВОТ ТУТ ЛОГИКА ПЕРЕХОДА ЧИНАЗЕСА"
+  }, [location.pathname]);
   return (
     <div className="h-full flex flex-col" style={{width: "94px", height: "100vh"}}>
       <Menu

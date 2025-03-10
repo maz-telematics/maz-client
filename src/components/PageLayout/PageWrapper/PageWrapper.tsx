@@ -89,7 +89,9 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
               xxl={10}
               style={{ display: "flex", alignItems: "center" }}
             >
-              <Link to={basePath} onClick={() => { (dispatch(showSuperAdminMain())) }}>
+              <Link to={"/master/main"} onClick={(e) => {
+                dispatch(showSuperAdminMain());
+              }}>
                 <img
                   src="/mazIcon1.svg"
                   alt="Maz Icon"
@@ -102,6 +104,7 @@ const DestkopWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
                   }}
                 />
               </Link>
+
               <div>
                 <h1
                   style={{
@@ -241,7 +244,6 @@ const MobileWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
           ? "/director/profile"
           : "/master/profile";
 
-  const dispatch = useDispatch();
 
   return (
     <Layout style={{ height: "auto", minHeight: "100vh" }}>
@@ -266,13 +268,7 @@ const MobileWrapper: React.FC<FormWrapperProps> = ({ children, menu }) => {
             }}
           >
             <Col style={{ display: "flex", alignItems: "center" }}>
-              <Link to="/master/main" onClick={() => dispatch(showSuperAdminMain())}>
-                <img
-                  src="/mazIcon1.svg"
-                  alt="Maz Icon"
-                  style={{ width: "40px", height: "40px", cursor: "pointer" }}
-                />
-              </Link>
+              
               <h1
                 style={{ fontSize: "18px", fontWeight: "600", color: "white", margin: 0, marginLeft: "10px" }}
               >

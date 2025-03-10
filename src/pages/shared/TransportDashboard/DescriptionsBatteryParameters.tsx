@@ -42,7 +42,7 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
       second: "2-digit",
     })
   );
-
+    
 
   // Создаем колонки для таблицы
     const isMobile = window.innerWidth < 768;
@@ -53,6 +53,7 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
         dataIndex: "parameter",
         key: "parameter",
         align: "left" as const,
+        fixed: "left" as const,
         render: (text: string) => (
           <div style={{ textAlign: "left" }}>{text}</div>
         ),
@@ -450,15 +451,14 @@ const DescriptionsBatteryParameters: React.FC<DescriptionsBatteryParametersProps
   ];
 
   return (
-    <div style={{ overflowX: "auto" }}>
-      <Table
-        columns={columns}
-        dataSource={tableData}
-        pagination={false}
-        bordered
-        scroll={{ x: "max-content" }}
-      />
-    </div>
+        <Table
+          columns={columns}
+          dataSource={tableData}
+          pagination={false}
+          bordered
+          scroll={{ x: "max-content", y: "65vh" }}
+            
+        />
   );
 };
 

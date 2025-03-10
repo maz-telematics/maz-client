@@ -57,7 +57,7 @@ const TransportsPage: React.FC<TransportsPageProps> = ({ extraControls, extraAct
               Для добавления транспорта, пожалуйста, обратитесь в техническую поддержку.
             </Paragraph>
             <Paragraph style={{ fontSize: '16px', color: '#888' }}>
-            <strong>Телефон поддержки:</strong> +375 (29) 311-88-78
+            <strong>Телефон поддержки:</strong> 102
             </Paragraph>
             <Paragraph style={{ fontSize: '16px', color: '#888' }}>
               <strong>Электронная почта:</strong> maztelematics@gmail.com

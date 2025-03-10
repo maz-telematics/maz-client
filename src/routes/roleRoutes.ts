@@ -11,6 +11,8 @@ interface Route {
       { path: '/super-admin/employees', label: 'Сотрудники' },
       { path: '/super-admin/reports', label: 'Отчеты' },
       { path: '/super-admin/archive', label: 'Архив' },
+      { path: '/super-admin/logs', label: 'Логи' },
+      { path: '/super-admin/changelogs', label: 'Изменения' },
     ],
     ROLE_ADMIN: [
       { path: '/admin/main', label: 'Главная' },

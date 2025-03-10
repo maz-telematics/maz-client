@@ -12,6 +12,7 @@ import DirectorRoutes from "./routes/DirectorRoutes";
 import Director from "./pages/DirectorPages/DirectorPages";
 import AdminRoutes from "./routes/AdminRoutes";
 import Admin from "./pages/AdminPages/Admin";
+import Logs from "./Components/LogsComponents/Logs";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -59,6 +60,7 @@ const App = () => {
                 <Route element={<SuperAdminRoutes />}>
                   <Route path="/master" element={<SuperAdmin />} />
                   <Route path="/master/:urlView" element={<SuperAdmin />} />
+                  <Route path="/master/logs" element={<Logs />}/>
                 </Route>
                 <Route element={<AdminRoutes />}>
                   <Route path="/admin" element={<Admin />} />

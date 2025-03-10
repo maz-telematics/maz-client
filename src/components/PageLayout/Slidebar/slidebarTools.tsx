@@ -7,6 +7,8 @@ import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import StoreOutlinedIcon from "@mui/icons-material/StoreOutlined";
 import TuneIcon from '@mui/icons-material/Tune';
 import type { MenuProps } from "antd";
+import FolderCopyOutlinedIcon from '@mui/icons-material/FolderCopyOutlined';
+import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -29,6 +31,9 @@ export const getItem = (
   } as MenuItem;
 };
 
+
+
+
 export const superAdminItems = (): MenuItem[] => {
   const location = useLocation();
   const [view, setView] = useState("main");
@@ -42,13 +47,14 @@ export const superAdminItems = (): MenuItem[] => {
       <Link to="/master/main" style={{ 
         color: "white" ,
         display:"flex",
-        alignItems: "center", // Центрирование по вертикали
-        justifyContent: "center", // Центрирование по горизонтали
-        gap: "8px", // Отступ между текстом и иконкой
+        
+        
       }}>Главная</Link>,
       "main",
       <DashboardIcon
         style={{
+          marginRight: "10px",
+          marginTop: "6px",
           fontSize: 25,
           color: isActive("/master/main") ? "black" : "white",
         }}
@@ -69,6 +75,8 @@ export const superAdminItems = (): MenuItem[] => {
       "organizations",
       <StoreOutlinedIcon
         style={{
+          textAlign: "left",
+          marginTop: "6px",
           fontSize: 25,
           color: isActive("/master/organizations") ? "black" : "white",
         }}
@@ -95,12 +103,12 @@ export const superAdminItems = (): MenuItem[] => {
       />
     ),
     getItem(
-      <Link to="/master/archive" style={{ color: "white" }}>Архив</Link>,
-      "archive",
-      <ArchiveOutlinedIcon
+      <Link to="/master/logs" style={{ color: "white" }}>Логи</Link>,
+      "logs",
+      <FolderCopyOutlinedIcon
         style={{
           fontSize: 25,
-          color: isActive("/master/archive") ? "black" : "white",
+          color: isActive("/master/logs") ? "black" : "white",
         }}
       />
     ),
@@ -110,10 +118,31 @@ export const superAdminItems = (): MenuItem[] => {
       <TuneIcon
         style={{
           fontSize: 25,
-          color: isActive("/master/firmware") ? "black" : "white",
+          color: isActive("/master/firmwares") ? "black" : "white",
         }}
       />
     ),
+    getItem(
+      <Link to="/master/changelogs" style={{ color: "white" }}>Изменения</Link>,
+      "changelogs",
+      <ManageAccountsOutlinedIcon
+        style={{
+          fontSize: 25,
+          color: isActive("/master/changelogs") ? "black" : "white",
+        }}
+      />
+    ),
+    getItem(
+      <Link to="/master/archive" style={{ color: "white" }}>Архив</Link>,
+      "archive",
+      <ArchiveOutlinedIcon
+        style={{
+          fontSize: 25,
+          color: isActive("/master/archive") ? "black" : "white",
+        }}
+      />
+    ),
+    
   ];
 };
 
@@ -130,7 +159,7 @@ export const directorItems = (): MenuItem[] =>  [
   ),
   getItem(
     <Link to="/director/employees" style={{color:"white" }}>Сотрудники</Link>,
-    "empoyess",
+    "employess",
     <PeopleAltOutlinedIcon style={{ fontSize: 25,color:"white"}} />
   ),
   getItem(
