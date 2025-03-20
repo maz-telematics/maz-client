@@ -6,7 +6,7 @@ import SuperAdminArchivePage from "../../pages/SuperAdminPages/ArchivePage/Archi
 import SuperAdminReportsPage from "../../pages/SuperAdminPages/ReportsPage/ReportsPage";
 import SuperAdminTransportsPage from "./TransportsPage/TransportsPage";
 
-import { showSuperAdminArchive, showSuperAdminCreateOrganization, showSuperAdminCreateTransport, showSuperAdminEditTransport, showSuperAdminEmpoyess,showSuperAdminFirmwares, showSuperAdminFirmware, showSuperAdminMain, showSuperAdminOrganization, showSuperAdminOrganizations, showSuperAdminProfile, showSuperAdminReports, showSuperAdminTransport, showSuperAdminTransports,showSuperAdminLogs, showSuperAdminChangeLogs } from "../../Store/utils/superAdminModuleViewSlice";
+import { showSuperAdminArchive, showSuperAdminCreateOrganization, showSuperAdminCreateTransport, showSuperAdminEditTransport, showSuperAdminEmpoyess, showSuperAdminFirmwares, showSuperAdminFirmware, showSuperAdminMain, showSuperAdminOrganization, showSuperAdminOrganizations, showSuperAdminProfile, showSuperAdminReports, showSuperAdminTransport, showSuperAdminTransports,showSuperAdminLogs, showSuperAdminChangeLogs } from "../../Store/utils/superAdminModuleViewSlice";
 import { Typography } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -21,59 +21,59 @@ import FirmwarePage from "./Firmware/Firmware";
 import FirmwareDetailsPage from "./Firmware/FirmwareDetails";
 import SuperAdminOrganizationsPage from "../../pages/SuperAdminPages/OrganizationsPage/OrganizationsPage";
 import SuperAdminEmployeesPage from "../../pages/SuperAdminPages/EmployeesPage/EmployeesPage";
+import LogsPage from "../../components/LogsComponents/Logs"
 import ChangeLogsPage from "./ChangeLogsPage/ChangeLogsPage";
-import Logs from "../../Components/LogsComponents/Logs";
 export default function SuperAdmin() {
   const view = useSelector((state: RootState) => state.superAdminView.view);
-  const { urlView} = useParams();
+  const { urlView } = useParams();
   const dispatch = useDispatch();
   useEffect(() => {
     if (urlView === "main") {
-        dispatch(showSuperAdminMain());
-      } 
+      dispatch(showSuperAdminMain());
+    }
     if (urlView === "transports") {
-        dispatch(showSuperAdminTransports());
-      } 
+      dispatch(showSuperAdminTransports());
+    }
     if (urlView === "organizations") {
       dispatch(showSuperAdminOrganizations());
-    } 
+    }
     if (urlView === "employees") {
       dispatch(showSuperAdminEmpoyess());
     }
     if (urlView === "reports") {
       dispatch(showSuperAdminReports());
     }
-    if((urlView === "archive")) {
+    if ((urlView === "archive")) {
       dispatch(showSuperAdminArchive());
     }
-    if((urlView === "transport")) {
+    if ((urlView === "transport")) {
       dispatch(showSuperAdminTransport());
     }
-    if((urlView === "edit-transport")) {
+    if ((urlView === "edit-transport")) {
       dispatch(showSuperAdminEditTransport());
     }
-    if((urlView === "create-organization")) {
+    if ((urlView === "create-organization")) {
       dispatch(showSuperAdminCreateOrganization());
     }
-    if((urlView === "organization")) {
+    if ((urlView === "organization")) {
       dispatch(showSuperAdminOrganization());
     }
-    if((urlView === "create-transport")) {
+    if ((urlView === "create-transport")) {
       dispatch(showSuperAdminCreateTransport());
     }
-    if((urlView === "profile")) {
+    if ((urlView === "profile")) {
       dispatch(showSuperAdminProfile());
     }
-    if((urlView === "firmwares")) {
+    if ((urlView === "firmwares")) {
       dispatch(showSuperAdminFirmwares());
     }
-    if((urlView === "firmware")) {
+    if ((urlView === "firmware")) {
       dispatch(showSuperAdminFirmware());
     }
-    if((urlView === "change-logs")) {
+    if ((urlView === "change-logs")) {
       dispatch(showSuperAdminChangeLogs());
     }
-    if((urlView === "logs")) {
+    if ((urlView === "logs")) { 
       dispatch(showSuperAdminLogs());
     }
   }, [urlView, dispatch]);
@@ -95,26 +95,27 @@ export default function SuperAdmin() {
       case "archive":
         return <SuperAdminArchivePage />;
       case "transport":
-          return <TransportDashboard />
+        return <TransportDashboard />
       case "edit-transport":
-          return <EditTransportPage />
+        return <EditTransportPage />
       case "create-organization":
-          return <CreateOrganization />
+        return <CreateOrganization />
       case "organization":
-          return <OrganizationDetails/>
+        return <OrganizationDetails />
       case "create-transport":
-          return <CreateTransportPage/>
+        return <CreateTransportPage />
       case "profile":
-          return <ProfilePage/>
+        return <ProfilePage />
       case "firmwares":
-          return <FirmwarePage/>
+        return <FirmwarePage />
       case "firmware":
-          return <FirmwareDetailsPage />     
+        return <FirmwareDetailsPage />
       case "change-logs":
-          return <ChangeLogsPage/>   
-      case "logs":
-          return <Logs/>      
+        return <ChangeLogsPage />
+      case "logs": // Добавляем отображение LogsPage
+        return <LogsPage />;
     }
+
   };
   return (
     <PageWrapper menu>
