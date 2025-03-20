@@ -6,7 +6,7 @@ import SuperAdminArchivePage from "../../pages/SuperAdminPages/ArchivePage/Archi
 import SuperAdminReportsPage from "../../pages/SuperAdminPages/ReportsPage/ReportsPage";
 import SuperAdminTransportsPage from "./TransportsPage/TransportsPage";
 
-import { showSuperAdminArchive, showSuperAdminCreateOrganization, showSuperAdminCreateTransport, showSuperAdminEditTransport, showSuperAdminEmpoyess,showSuperAdminFirmwares, showSuperAdminFirmware, showSuperAdminMain, showSuperAdminOrganization, showSuperAdminOrganizations, showSuperAdminProfile, showSuperAdminReports, showSuperAdminTransport, showSuperAdminTransports, showSuperAdminChangeLogs } from "../../Store/utils/superAdminModuleViewSlice";
+import { showSuperAdminArchive, showSuperAdminCreateOrganization, showSuperAdminCreateTransport, showSuperAdminEditTransport, showSuperAdminEmpoyess,showSuperAdminFirmwares, showSuperAdminFirmware, showSuperAdminMain, showSuperAdminOrganization, showSuperAdminOrganizations, showSuperAdminProfile, showSuperAdminReports, showSuperAdminTransport, showSuperAdminTransports,showSuperAdminLogs, showSuperAdminChangeLogs } from "../../Store/utils/superAdminModuleViewSlice";
 import { Typography } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -22,7 +22,7 @@ import FirmwareDetailsPage from "./Firmware/FirmwareDetails";
 import SuperAdminOrganizationsPage from "../../pages/SuperAdminPages/OrganizationsPage/OrganizationsPage";
 import SuperAdminEmployeesPage from "../../pages/SuperAdminPages/EmployeesPage/EmployeesPage";
 import ChangeLogsPage from "./ChangeLogsPage/ChangeLogsPage";
-
+import Logs from "../../Components/LogsComponents/Logs";
 export default function SuperAdmin() {
   const view = useSelector((state: RootState) => state.superAdminView.view);
   const { urlView} = useParams();
@@ -73,7 +73,12 @@ export default function SuperAdmin() {
     if((urlView === "change-logs")) {
       dispatch(showSuperAdminChangeLogs());
     }
+    if((urlView === "logs")) {
+      dispatch(showSuperAdminLogs());
+    }
   }, [urlView, dispatch]);
+
+{/* <Route path="/master/logs" element={<Logs />}/> */}
 
   const switchPageView = () => {
     switch (view) {
@@ -106,7 +111,9 @@ export default function SuperAdmin() {
       case "firmware":
           return <FirmwareDetailsPage />     
       case "change-logs":
-          return <ChangeLogsPage/>         
+          return <ChangeLogsPage/>   
+      case "logs":
+          return <Logs/>      
     }
   };
   return (

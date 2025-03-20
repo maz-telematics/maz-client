@@ -3,9 +3,10 @@ import { ContainerList } from "./containersList";
 import { DatePickerField } from './datePicker';
 import MovingCar from "./movingCar";
 import LogsTable from "./logsTable";
+import { Row, Col } from "antd";
 const mazIcon = "/mazIcon.png";
 
-const App: React.FC = () => {
+const Logs: React.FC = () => {
   const [containerName, setContainerName] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
@@ -16,11 +17,37 @@ const App: React.FC = () => {
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date.toISOString().split('T')[0]);
   };
-
+  const isMobile = window.innerWidth < 768;
   return (
-    <div className="bg-white font-sans min-h-screen relative">
+    <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      width: "100%",
+      backgroundColor: "#E1E1E1",
+    }}
+    >
+        <Row
+              style={{
+                padding: isMobile ? "0 20px" : "0 40px" ,
+                flex: '1',
+              }}
+            >
+              <Col xs={24}>
+              <Row justify="space-between" style={{ marginBottom: 16, alignItems: 'flex-end' }}>
+                  <Col>
+                    <h1
+                      style={{
+                        margin: 0,
+                        fontSize: isMobile ? '24px' : '32px',
+                      }}
+                    >Логи</h1>
+                  </Col>
+                </Row>
       {/* Фоновая картинка скрывается при выборе контейнера */}
-      {!containerName && (
+
+
+      {/* {!containerName && (
         <img
           src={mazIcon}
           alt="Background"
@@ -45,9 +72,13 @@ const App: React.FC = () => {
 
       <div className="mt-[180px] mb-[20px]">
         {containerName && <LogsTable containerName={containerName} date={selectedDate} />}
-      </div>
+      </div> */}
+
+      </Col>
+          </Row>
     </div>
+      
   );
 };
 
-export default App;
+export default Logs;

@@ -60,7 +60,7 @@ const App = () => {
                 <Route element={<SuperAdminRoutes />}>
                   <Route path="/master" element={<SuperAdmin />} />
                   <Route path="/master/:urlView" element={<SuperAdmin />} />
-                  <Route path="/master/logs" element={<Logs />}/>
+                  {/* <Route path="/master/logs" element={<Logs />} /> */}
                 </Route>
                 <Route element={<AdminRoutes />}>
                   <Route path="/admin" element={<Admin />} />
@@ -94,7 +94,7 @@ const App = () => {
             }
           />
           <Route path="/about" element={<AboutPage />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} /> {/* ✅ Добавлен маршрут */}
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} /> 
           <Route path="*" element={<NotFound />} />
         </Routes>
       )}

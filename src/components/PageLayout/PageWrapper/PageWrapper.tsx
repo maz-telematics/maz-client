@@ -9,9 +9,9 @@ import Slidebar from "../Slidebar/Slidebar";
 import { AuthContext } from "../../../services/auth";
 import { AuthContextIntarface } from "../../../types/authTypes";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
-import ExitToAppIcon from '@mui/icons-material/ExitToApp'; // Импортируем иконку для выхода
-import '../../../App.css'; // Убедитесь, что путь правильный
-import { MenuInfo } from "rc-menu/lib/interface";
+import ExitToAppIcon from '@mui/icons-material/ExitToApp'; 
+import '../../../App.css'; 
+
 const { Content, Sider, Header } = Layout;
 const { useBreakpoint } = Grid;
 import { showSuperAdminMain } from "../../../Store/utils/superAdminModuleViewSlice";

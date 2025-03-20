@@ -17,7 +17,6 @@ const ErrorsTab: React.FC = () => {
     const ws = new WebSocket(`${apiUrl.replace(/^http/, "ws")}/ws`);
 
     ws.onopen = () => {
-      // Отправка сообщения с запросом ошибок
       ws.send(
         JSON.stringify({
           messageType: 'mainErrors',

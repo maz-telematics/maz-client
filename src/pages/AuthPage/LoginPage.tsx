@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, notification, Button, Row, Col, message, Spin, Checkbox, Popover } from "antd";
+import { Form, Input, notification, Button, Row, Col, message, Spin, Checkbox } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../../services/auth";
 import axiosInstance from "../../services/axiosInstance";
@@ -13,9 +13,7 @@ import Outputs6 from "../../../public/avtub_reverse.png";
 import Outputs7 from "../../../public/avtub.png";
 import Outputs8 from "../../../public/chinarik.png";
 import LogoImage from "../../../public/mazIcon.png";
-import { PhoneOutlined, MailOutlined, CloseOutlined } from "@mui/icons-material";
-import ChatBot from "../../Components/ChatBot";
-import ChatBotPopup from "../../Components/ChatBot";
+import ChatBotPopup from "../../Components/ChatBot/ChatBotPopup";
 
 interface LoginProps {
   setToken: (token: string) => void;
@@ -140,85 +138,6 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
     { src: Outputs4, direction: "right", size: { width: "205px", height: "73px" } },
     { src: Outputs8, direction: "left", size: { width: "240px", height: "100px" } },
   ];
-
-  const [visiblePopover, setVisiblePopover] = useState(false); // Состояние для Popover
-  const [loadingPopover, setLoadingPopover] = useState(false);
-
-  useEffect(() => {
-    // Показываем Popover через 5 секунд
-    const timer = setTimeout(() => {
-      setVisiblePopover(true);
-    }, 5000); // Показ через 5 секунд
-    
-    return () => clearTimeout(timer); // Очищаем таймер при размонтировании компонента
-  }, []);
-
-  const content = (
-    <div
-      style={{
-        width: "320px",
-        borderRadius: "15px",
-        boxShadow: "0 4px 15px rgba(0, 0, 0, 0.1)",
-        fontFamily: "'Arial', sans-serif",
-        position: "relative",
-        backgroundColor: "white",
-      }}
-    >
-      {/* Header окна */}
-      <div
-        style={{
-          backgroundColor: "#FF4D4F",
-          color: "white",
-          padding: "10px 16px",
-          borderTopLeftRadius: "15px",
-          borderTopRightRadius: "15px",
-          fontSize: "16px",
-          fontWeight: "bold",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <span>Поддержка</span>
-
-        {/* Кнопка закрытия */}
-        <Button
-          type="text"
-          icon={<CloseOutlined />}
-          onClick={() => setVisiblePopover(false)}
-          style={{
-            backgroundColor: "transparent",
-            color: "white",
-            border: "none",
-            fontSize: "16px",
-            cursor: "pointer",
-          }}
-        />
-      </div>
-
-      {/* Контент сообщения */}
-      <div
-        style={{
-          padding: "16px",
-          backgroundColor: "#e3efff",
-          borderBottomLeftRadius: "15px",
-          borderBottomRightRadius: "15px",
-        }}
-      >
-        <p style={{ fontSize: "14px", color: "#333", marginBottom: "10px", lineHeight: "1.4" }}>
-          Если у вас возникли вопросы по системе телематики, мы готовы помочь!
-        </p>
-        <p style={{ fontSize: "13px", color: "#555", display: "flex", alignItems: "center", marginBottom: "8px" }}>
-          <PhoneOutlined style={{ marginRight: "8px", color: "#FF4D4F" }} />
-          <span>+375 (29) 311-88-78</span>
-        </p>
-        <p style={{ fontSize: "13px", color: "#555", display: "flex", alignItems: "center" }}>
-          <MailOutlined style={{ marginRight: "8px", color: "#007aff" }} />
-          <span>maztelematics@gmail.com</span>
-        </p>
-      </div>
-    </div>
-  );
 
   return (
     <div
@@ -426,35 +345,7 @@ const LoginPage: React.FC<LoginProps> = ({ setToken, setIsAuthenticated }) => {
           </Form.Item>
         </Form>
       </Col>
-      {/* <Popover
-        content={content}
-        trigger="click"
-        placement="topLeft"
-        open={visiblePopover}
-        onOpenChange={(visible) => setVisiblePopover(visible)}
-        overlayStyle={{ borderRadius: "10px", boxShadow: "0 4px 15px rgba(0, 0, 0, 0.1)" }}
-      >
-        <Button
-          type="primary"
-          shape="circle"
-          icon={<PhoneOutlined />}
-          style={{
-            position: "absolute",
-            bottom: "20px",
-            right: "20px",
-            zIndex: 10,
-            backgroundColor: "#FF4D4F",
-            color: "white",
-            borderRadius: "50%",
-            width: "60px",
-            height: "60px",
-            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-            fontSize: "26px",
-            border: "none",
-          }}
-          onClick={() => setVisiblePopover(true)}
-        />
-      </Popover> */}
+  
       <ChatBotPopup />
       <style>
         {`
