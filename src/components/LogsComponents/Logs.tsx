@@ -9,7 +9,7 @@ import axiosInstance from "../../services/axiosInstance";
 
 const mazIcon = "/mazIcon.png";
 
-const App: React.FC = () => {
+const Logs: React.FC = () => {
   const [containerName, setContainerName] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
@@ -20,10 +20,11 @@ const App: React.FC = () => {
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date.toISOString().split('T')[0]);
   };
-
+  const isMobile = window.innerWidth < 768;
   return (
     <div className="flex flex-col w-full bg-[#E1E1E1]">
       {!containerName && (
+
         <img
           src={mazIcon}
           alt="Background"
@@ -102,9 +103,10 @@ const App: React.FC = () => {
       <hr className="border-t-2 border-red-500 w-full" />
       <div className="mb-[20px]">
         {containerName && <LogsTable containerName={containerName} date={selectedDate} />}
-      </div>
+      </div> 
     </div>
+      
   );
 };
 
-export default App;
+export default Logs;

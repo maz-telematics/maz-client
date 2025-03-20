@@ -70,11 +70,6 @@ const DestkopMainPage: React.FC = () => {
                   <TransportTab />
                 </div>
               </Tabs.TabPane>
-              {/* <Tabs.TabPane tab="Подписки" key="3">
-                <div className="h-[calc(100vh-100px)] p-4 custom-scrollbar">
-                  <SubscriptionTab />
-                </div>
-              </Tabs.TabPane> */}
               {isAdminOrSuperAdmin && (
                 <Tabs.TabPane tab="Подписки" key="3">
                   <div className="h-[calc(100vh-100px)] p-4 custom-scrollbar">
@@ -148,11 +143,6 @@ const ModileMainPage: React.FC = () => {
                   <TransportTab />
                 </div>
               </Tabs.TabPane>
-              {/* <Tabs.TabPane tab="Подписки" key="3">
-                <div className="h-[calc(100vh-200px)] p-4 custom-scrollbar">
-                  <SubscriptionTab />
-                </div>
-              </Tabs.TabPane> */}
               {isAdminOrSuperAdmin && (
                 <Tabs.TabPane tab="Подписки" key="3">
                   <div className="h-[calc(100vh-100px)] p-4 custom-scrollbar">

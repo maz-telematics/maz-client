@@ -13,6 +13,9 @@ import {
   Row,
   Col,
   Tabs,
+  Select,
+  Menu,
+  Dropdown,
 } from "antd";
 import moment from "moment";
 import dayjs, { Dayjs } from 'dayjs';
@@ -21,7 +24,8 @@ import axios from "axios";
 import axiosInstance from '../../../services/axiosInstance';
 import DownloadButton from "../../../Components/DownloadButton";
 import DownloadIcon from '@mui/icons-material/Download';
-
+import { DownloadOutlined } from "@mui/icons-material";
+import { saveAs } from "file-saver";
 const { RangePicker } = DatePicker;
 const { TabPane } = Tabs;
 
@@ -68,7 +72,51 @@ const OrganizationDetails: React.FC = () => {
   const [isEmployeeModalVisible, setIsEmployeeModalVisible] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [subscriptions, setSubscriptions] = useState(organizationData?.subscriptions);
-  
+  const [format, setFormat] = useState<"pdf" | "excel">("pdf");
+
+
+  const handleDownload = async (selectedFormat: string) => {
+    try {
+      const response = await axiosInstance.get(
+        `/report/organization/${organizationData?.organizationName}/${selectedFormat}`,
+        { responseType: "blob" } // Чтобы корректно обработать файл
+      );
+
+      // Создаем Blob из ответа сервера
+      const blob = new Blob([response.data], {
+        type: selectedFormat === "pdf" ? "application/pdf" : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      });
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      // Создаем временную ссылку и эмулируем клик
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = `report_${organizationData?.organizationName}.${selectedFormat}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      // Освобождаем объект Blob
+      window.URL.revokeObjectURL(blobUrl);
+
+      message.success("Файл успешно загружен!");
+    } catch (error) {
+      console.error("Ошибка при скачивании файла:", error);
+      message.error("Ошибка при скачивании файла.");
+    }
+  };
+  const menu = (
+    <Menu
+      onClick={(e) => {
+        setFormat(e.key as "pdf" | "excel");
+        handleDownload(e.key);
+      }}
+    >
+      <Menu.Item key="pdf">PDF</Menu.Item>
+      <Menu.Item key="excel">Excel</Menu.Item>
+    </Menu>
+  );
+
   // Функция для изменения статуса подписки
   const toggleSubscriptionStatus = () => {
     const updatedSubscriptions = subscriptions?.map(sub => {
@@ -107,10 +155,10 @@ const OrganizationDetails: React.FC = () => {
     }
   };
 
-const activeSubscription = organizationData?.subscriptions.find(sub => sub.status === 'active');
-const lastSubscription = organizationData?.subscriptions.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())[0];
+  const activeSubscription = organizationData?.subscriptions.find(sub => sub.status === 'active');
+  const lastSubscription = organizationData?.subscriptions.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())[0];
 
-const subscriptionToDisplay = activeSubscription || lastSubscription;
+  const subscriptionToDisplay = activeSubscription || lastSubscription;
 
   const addEmployee = async (employeeData: any) => {
     try {
@@ -296,7 +344,7 @@ const subscriptionToDisplay = activeSubscription || lastSubscription;
       key: "end_date",
       render: (text: string) => moment(text).format("YYYY-MM-DD"),
     },
-    
+
     {
       title: "Статус",
       dataIndex: "status",
@@ -352,7 +400,7 @@ const subscriptionToDisplay = activeSubscription || lastSubscription;
     1: (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'flex-end' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <DownloadButton
+          {/* <DownloadButton
             url="/api/organization_transport/download"
             filename="organization_transport.pdf"
             buttonText="Скачать таблицу"
@@ -375,76 +423,80 @@ const subscriptionToDisplay = activeSubscription || lastSubscription;
                 e.currentTarget.style.borderColor = "none"; // Убираем бордер
               },
             }}
-          />
+          /> */}
 
           <Button
             onClick={() => setVisible(true)}
+            // style={{
+            //   marginLeft: "10px",
+            //   backgroundColor: "#1b232a", // Фон кнопки
+            //   color: "#fff", // Цвет текста
+            //   padding: "0 16px", // Отступы
+            //   display: "flex",
+            //   alignItems: "center", // Центрируем иконку и текст
+            //   height: "auto", // Автоматическая высота
+            //   border: "none", // Убираем рамки
+            //   outline: "none", // Убираем контур при фокусе
+            //   textDecoration: "none", // Убираем подчеркивание текста
+            //   transition: "all 0.3s ease", // Плавный переход
+            // }}
             style={{
+              fontSize: isMobile ? "12px" : "16px",
               marginLeft: "10px",
-              backgroundColor: "#1b232a", // Фон кнопки
-              color: "#fff", // Цвет текста
-              padding: "0 16px", // Отступы
-              display: "flex",
-              alignItems: "center", // Центрируем иконку и текст
-              height: "auto", // Автоматическая высота
-              border: "none", // Убираем рамки
-              outline: "none", // Убираем контур при фокусе
-              textDecoration: "none", // Убираем подчеркивание текста
-              transition: "all 0.3s ease", // Плавный переход
+              width: isMobile ? "100%" : "200px",
+              backgroundColor: "#1B232A",
+              color: "#fff",
+              transition: "all 0.3s ease",
             }}
             onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
-              e.currentTarget.style.borderColor = "red"; // Красный бордер при наведении
+              e.currentTarget.style.backgroundColor = "red";
+              e.currentTarget.style.borderColor = "red";
             }}
             onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = "#1B232A"; // Исходный фон при убирании мыши
-              e.currentTarget.style.borderColor = "none"; // Убираем бордер
+              e.currentTarget.style.backgroundColor = "#1B232A";
+              e.currentTarget.style.borderColor = "none";
             }}
           >
-            {/* Иконка */}
-            <DownloadIcon
-              style={{ fontSize: 18, color: "white", marginRight: "8px" }}
-            />
             Добавить транспорт
           </Button>
 
 
 
-    </div>
-  </div>
+        </div>
+      </div>
     ),
     2: (
-      <DownloadButton
-        url="/api/organization_subscriptions/download"
-        filename="organization_subscriptions.pdf"
-        buttonText="Скачать таблицу"
-        icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
-        buttonProps={{
-          style: {
-            border: "none", // Убираем рамку
-            outline: "none", // Убираем обводку при фокусе
-            cursor: "pointer", // Курсор в виде указателя
-            backgroundColor: "#1B232A", // Исходный фон
-            color: "#fff", // Цвет текста
-            transition: "all 0.3s ease", // Плавный переход
-          },
-          onMouseOver: (e) => {
-            e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
-            e.currentTarget.style.borderColor = "red"; // Красный бордер при наведении
-          },
-          onMouseOut: (e) => {
-            e.currentTarget.style.backgroundColor = "#1B232A"; // Исходный фон при убирании мыши
-            e.currentTarget.style.borderColor = "none"; // Убираем бордер
-          },
-        }}
-      />
-
+      // <DownloadButton
+      //   url="/api/organization_subscriptions/download"
+      //   filename="organization_subscriptions.pdf"
+      //   buttonText="Скачать таблицу"
+      //   icon={<DownloadIcon style={{ fontSize: 18, color: "white" }} />}
+      //   buttonProps={{
+      //     style: {
+      //       border: "none", // Убираем рамку
+      //       outline: "none", // Убираем обводку при фокусе
+      //       cursor: "pointer", // Курсор в виде указателя
+      //       backgroundColor: "#1B232A", // Исходный фон
+      //       color: "#fff", // Цвет текста
+      //       transition: "all 0.3s ease", // Плавный переход
+      //     },
+      //     onMouseOver: (e) => {
+      //       e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
+      //       e.currentTarget.style.borderColor = "red"; // Красный бордер при наведении
+      //     },
+      //     onMouseOut: (e) => {
+      //       e.currentTarget.style.backgroundColor = "#1B232A"; // Исходный фон при убирании мыши
+      //       e.currentTarget.style.borderColor = "none"; // Убираем бордер
+      //     },
+      //   }}
+      // />
+      <></>
 
     ),
     3: (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'flex-end' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <DownloadButton
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          {/* <DownloadButton
             url="/api/organization_subscriptions/download"
             filename="organization_subscriptions.pdf"
             buttonText="Скачать таблицу"
@@ -465,7 +517,7 @@ const subscriptionToDisplay = activeSubscription || lastSubscription;
                 e.currentTarget.style.backgroundColor = "#1B232A"; // Исходный фон при убирании мыши
               },
             }}
-          />
+          /> */}
 
           <Button
             disabled={true}
@@ -473,15 +525,15 @@ const subscriptionToDisplay = activeSubscription || lastSubscription;
               fontSize: isMobile ? "12px" : "16px",
               marginLeft: "10px",
               width: isMobile ? "100%" : "200px",
-              backgroundColor: "#1B232A", // Исходный фон
-              color: "#fff", // Цвет текста
-              transition: "all 0.3s ease", // Плавный переход
+              backgroundColor: "#1B232A",
+              color: "#fff",
+              transition: "all 0.3s ease",
             }}
             onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = "red"; // Красный фон при наведении
+              e.currentTarget.style.backgroundColor = "red";
             }}
             onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = "#1B232A"; // Исходный фон при убирании мыши
+              e.currentTarget.style.backgroundColor = "#1B232A";
             }}
             onClick={() => {
               setEditingEmployee(null);
@@ -491,8 +543,8 @@ const subscriptionToDisplay = activeSubscription || lastSubscription;
             Добавить сотрудника
           </Button>
 
+        </div>
       </div>
-    </div>
     ),
   };
 
@@ -509,7 +561,7 @@ const subscriptionToDisplay = activeSubscription || lastSubscription;
         padding: "0 40px",
         flex: "1",
         maxHeight: '50px',
-        marginBottom:"10px"
+        marginBottom: "10px"
       }}>
         <h1
           style={{
@@ -521,7 +573,7 @@ const subscriptionToDisplay = activeSubscription || lastSubscription;
         >{organizationData?.organizationName || "Название компании"}</h1>
       </Row>
 
-      <Card
+      {/* <Card
 
         title={<div style={{ fontSize: isMobile ? '14px' : '18px' }}>Информация об организации</div>}
         style={{
@@ -532,56 +584,83 @@ const subscriptionToDisplay = activeSubscription || lastSubscription;
           borderRadius: 8,
           boxShadow: '0 2px 12px rgba(0, 0, 0, 0.1)'
         }}
+      > */}
+      <Card
+        title={
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ fontSize: isMobile ? "14px" : "18px" }}>Информация об организации</div>
+            <Dropdown overlay={menu} trigger={["click"]}>
+              <Button style={{
+                backgroundColor: "#1B232A",
+                color: "#fff",
+                display: "flex",
+                alignItems: "center",
+                minWidth: 160,
+                transition: "all 0.3s ease",
+              }} type="primary" icon={<DownloadIcon style={{ fontSize: 18, color: 'white' }} />}>
+                Скачать ({format.toUpperCase()})
+              </Button>
+            </Dropdown>
+          </div>
+        }
+        style={{
+          backgroundColor: "#F7F9FB",
+          width: "auto",
+          marginRight: 40,
+          marginLeft: 40,
+          borderRadius: 8,
+          boxShadow: "0 2px 12px rgba(0, 0, 0, 0.1)",
+        }}
       >
         <Row gutter={16}>
           <Col span={24}>
-          <Typography.Paragraph>
-      <Row>
-        <Col xs={24} sm={4}>
-          <strong>Дата начала подписки:</strong>
-        </Col>
-        <Col xs={24} sm={4} style={{ color: "#1890f", fontWeight: "bold" }}>
-          {moment(subscriptionToDisplay?.startDate).format("YYYY-MM-DD")}
-        </Col>
-      </Row>
-    </Typography.Paragraph>
+            <Typography.Paragraph>
+              <Row>
+                <Col xs={24} sm={4}>
+                  <strong>Дата начала подписки:</strong>
+                </Col>
+                <Col xs={24} sm={4} style={{ color: "#1890f", fontWeight: "bold" }}>
+                  {moment(subscriptionToDisplay?.startDate).format("YYYY-MM-DD")}
+                </Col>
+              </Row>
+            </Typography.Paragraph>
 
-    <Typography.Paragraph>
-      <Row>
-        <Col xs={24} sm={4}>
-          <strong>Дата окончания подписки:</strong>
-        </Col>
-        <Col xs={24} sm={4} style={{ color: "#1890f", fontWeight: "bold" }}>
-          {moment(subscriptionToDisplay?.endDate).format("YYYY-MM-DD")}
-        </Col>
-      </Row>
-    </Typography.Paragraph>
+            <Typography.Paragraph>
+              <Row>
+                <Col xs={24} sm={4}>
+                  <strong>Дата окончания подписки:</strong>
+                </Col>
+                <Col xs={24} sm={4} style={{ color: "#1890f", fontWeight: "bold" }}>
+                  {moment(subscriptionToDisplay?.endDate).format("YYYY-MM-DD")}
+                </Col>
+              </Row>
+            </Typography.Paragraph>
 
-    <Typography.Paragraph>
-      <Row>
-        <Col xs={24} sm={4}>
-          <strong>Статус подписки:</strong>
-        </Col>
-        <Col xs={24} sm={4}>
-          <span style={{ fontWeight: 500, color: subscriptionToDisplay?.status === 'active' ? 'black' : 'red' }}>
-            {subscriptionToDisplay?.status === 'active' ? "Активна" : "Заблокирована"}
-          </span>
-        </Col>
-      </Row>
-    </Typography.Paragraph>
-    <Typography.Paragraph>
-        <Row>
-          <Col xs={24} sm={4}>
-            <strong>План подписки:</strong>
-          </Col>
-          <Col xs={24} sm={4}>
-            <span style={{ fontWeight: 500, color: subscriptionToDisplay?.status === 'active' ? 'black' : 'red' }}>
-              {subscriptionToDisplay?.type} {/* Отображаем тип подписки */}
-            </span>
-          </Col>
-        </Row>
-      </Typography.Paragraph>
-            
+            <Typography.Paragraph>
+              <Row>
+                <Col xs={24} sm={4}>
+                  <strong>Статус подписки:</strong>
+                </Col>
+                <Col xs={24} sm={4}>
+                  <span style={{ fontWeight: 500, color: subscriptionToDisplay?.status === 'active' ? 'black' : 'red' }}>
+                    {subscriptionToDisplay?.status === 'active' ? "Активна" : "Заблокирована"}
+                  </span>
+                </Col>
+              </Row>
+            </Typography.Paragraph>
+            <Typography.Paragraph>
+              <Row>
+                <Col xs={24} sm={4}>
+                  <strong>План подписки:</strong>
+                </Col>
+                <Col xs={24} sm={4}>
+                  <span style={{ fontWeight: 500, color: subscriptionToDisplay?.status === 'active' ? 'black' : 'red' }}>
+                    {subscriptionToDisplay?.type} {/* Отображаем тип подписки */}
+                  </span>
+                </Col>
+              </Row>
+            </Typography.Paragraph>
+
             <Typography.Paragraph style={{ marginBottom: 0 }}>
               <Row>
                 <Col xs={24} sm={4}>
@@ -692,39 +771,35 @@ const subscriptionToDisplay = activeSubscription || lastSubscription;
                       ),
                     },
                   }}
-    
-  
-
-
-          columns={[
-            { title: 'Имя', dataIndex: 'name', key: 'name' },
-            { title: 'Должность', dataIndex: 'position', key: 'position' },
-            { title: 'Контакт', dataIndex: 'contact', key: 'contact' },
-            {
-              title: 'Действия',
-              key: 'actions',
-              render: (text, employee) => (
-                <>
-                  <Button type="link" disabled={true} onClick={() => { /* Редактирование сотрудника */ }}>
-                    Редактировать
-                  </Button>
-                  <Button disabled={true} type="link" danger onClick={() => { /* Удалить сотрудника */ }}>
-                    Удалить
-                  </Button>
-                </>
-              ),
-            },
-          ]}
-          scroll={{ x: 'max-content' }}
-          rowKey="id"
-          style={{
-            marginTop: '16px',
-            borderRadius: '8px',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-          }}
-        />
-      </TabPane>
-    </Tabs>
+                  columns={[
+                    { title: 'Имя', dataIndex: 'name', key: 'name' },
+                    { title: 'Должность', dataIndex: 'position', key: 'position' },
+                    { title: 'Контакт', dataIndex: 'contact', key: 'contact' },
+                    {
+                      title: 'Действия',
+                      key: 'actions',
+                      render: (text, employee) => (
+                        <>
+                          <Button type="link" disabled={true} onClick={() => { /* Редактирование сотрудника */ }}>
+                            Редактировать
+                          </Button>
+                          <Button disabled={true} type="link" danger onClick={() => { /* Удалить сотрудника */ }}>
+                            Удалить
+                          </Button>
+                        </>
+                      ),
+                    },
+                  ]}
+                  scroll={{ x: 'max-content' }}
+                  rowKey="id"
+                  style={{
+                    marginTop: '16px',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                  }}
+                />
+              </TabPane>
+            </Tabs>
           </Col>
         </Row>
       </Card>

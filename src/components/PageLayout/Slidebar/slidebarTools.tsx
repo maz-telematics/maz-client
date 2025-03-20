@@ -12,8 +12,6 @@ import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlin
 
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { showSuperAdminArchive, showSuperAdminEmpoyess, showSuperAdminMain, showSuperAdminOrganizations, showSuperAdminReports, showSuperAdminTransports } from "../../../Store/utils/superAdminModuleViewSlice";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -31,17 +29,10 @@ export const getItem = (
   } as MenuItem;
 };
 
-
-
-
 export const superAdminItems = (): MenuItem[] => {
   const location = useLocation();
   const [view, setView] = useState("main");
-  const [selectedKey, setSelectedKey] = useState(view); // начальный выбранный пункт
-
   const isActive = (path: string) => location.pathname === path;
-  
-
   return [
     getItem(
       <Link to="/master/main" style={{ 

@@ -12,7 +12,6 @@ import DirectorRoutes from "./routes/DirectorRoutes";
 import Director from "./pages/DirectorPages/DirectorPages";
 import AdminRoutes from "./routes/AdminRoutes";
 import Admin from "./pages/AdminPages/Admin";
-import Logs from "./Components/LogsComponents/Logs";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -93,7 +92,7 @@ const App = () => {
             }
           />
           <Route path="/about" element={<AboutPage />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} /> {/* ✅ Добавлен маршрут */}
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} /> 
           <Route path="*" element={<NotFound />} />
         </Routes>
       )}
