@@ -64,15 +64,15 @@ const LogsTable: React.FC<TableProps> = ({ containerName, date }) => {
       <table className="border-collapse w-full logs-table">
         <thead>
           <tr>
-            <th className="p-[15px_30px] text-left border-b border-gray-300">Время</th>
-            <th className="p-[15px_30px] text-left border-b border-gray-300">Текст сообщения</th>
+            <th className="p-[15px_30px] text-left border-b border-gray-300 min-w-[150px] text-xl">Время</th>
+            <th className="p-[15px_30px] text-left border-b border-gray-300 text-xl">Текст сообщения</th>
           </tr>
         </thead>
         <tbody>
           {logs.map((log, index) => (
             <tr key={index}>
-              <td className="p-[15px_30px] border-b border-gray-300">{log.timestamp}</td>
-              <td className="p-[15px_30px] border-b border-gray-300">{log.message}</td>
+              <td className="p-[15px_30px] border-b border-gray-300 min-w-[10px] text-lg">{log.timestamp}</td>
+              <td className="p-[15px_30px] border-b border-gray-300 text-lg">{log.message}</td>
             </tr>
           ))}
         </tbody>

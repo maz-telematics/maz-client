@@ -13,7 +13,7 @@ const MovingCar: React.FC = () => {
     const container = document.querySelector(".car-container") as HTMLElement;
     if (!container) return;
 
-    const maxWidth = container.clientWidth - 200; // Длина движения машины
+    const maxWidth = container.clientWidth - 350; // Длина движения машины
 
     const interval = setInterval(() => {
       setPosition((prev) => {

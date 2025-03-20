@@ -60,7 +60,6 @@ const App = () => {
                 <Route element={<SuperAdminRoutes />}>
                   <Route path="/master" element={<SuperAdmin />} />
                   <Route path="/master/:urlView" element={<SuperAdmin />} />
-                  <Route path="/master/logs" element={<Logs />}/>
                 </Route>
                 <Route element={<AdminRoutes />}>
                   <Route path="/admin" element={<Admin />} />
